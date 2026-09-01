@@ -8,3 +8,6 @@ LICENSE
 packages/ee/LICENSE
 *.md
 web
+.next
+apps/**/.next
+apps/**/next-env.d.ts

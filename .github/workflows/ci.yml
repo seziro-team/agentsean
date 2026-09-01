@@ -40,10 +40,10 @@ jobs:
         run: pnpm lint
 
       - name: Build
-        run: pnpm build
+        run: pnpm --filter "./packages/**" build
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm --filter "./packages/**" typecheck
 
       - name: Test
         run: pnpm test
@@ -77,3 +77,32 @@ jobs:
           bash install/install.sh --from-source "$PWD" --prefix /tmp/sean-smoke --no-onboard
           /tmp/sean-smoke/bin/sean doctor --json --home /tmp/sean-smoke-home
           /tmp/sean-smoke/bin/sean --version
+
+  cloud:
+    name: Cloud app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+        run: pnpm install --frozen-lockfile
+
+      # No secrets are provided on purpose. The app must build and run with
+      # every integration unconfigured, so a contributor can work on it without
+      # a Supabase project or a billing account.
+      - name: Build with an empty environment
+        run: pnpm --filter @agentsean/cloud build
+
+      - name: Typecheck
+        run: pnpm --filter @agentsean/cloud typecheck
