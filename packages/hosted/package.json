@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/hosted",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "@agentsean/db": "workspace:*",
-    "@agentsean/ee": "workspace:*",
     "drizzle-orm": "0.45.2"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@agentsean/ee": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

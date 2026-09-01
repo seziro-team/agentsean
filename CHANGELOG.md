@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-09-02
+
+First version that installs. `1.0.0` through `1.0.3` are deprecated on npm; a
+clean-room `npx agentsean` is now the check that gates a release.
+
+### Fixed
+
+- `@agentsean/daemon` and `@agentsean/hosted` statically imported
+  `@agentsean/ee`, which is commercially licensed and deliberately never
+  published. npm resolved it to a 404 and every install failed. EE now loads
+  through a caught dynamic import (`packages/hosted/src/ee.ts`), which is what
+  the EE boundary was always documented to be. Signature verification fails
+  closed when EE is absent; tracing degrades to a no-op.
+- Publishing per-package with `npm publish` left `workspace:*` in the published
+  manifests. `pnpm publish` rewrites the protocol; the release workflow uses it.
+- `@agentsean/adapter-wordpress@1.0.0` reached a state where the registry
+  served 404 while refusing to recreate the name. Publishing a higher version
+  cleared it.
+
+### Added
+
+- `packages/launch/src/packaging.test.ts` — six guards that catch this class of
+  bug in CI: no published package may depend on a private one, no static import
+  of `@agentsean/ee`, every scoped package declares public access, every
+  package ships a `files` allowlist, and nothing stays on `0.0.0`.
+
+
 ## [1.0.0] - 2026-09-02
 
 Initial public release. Agent Sean is a self-hosted, always-on autonomous SEO

@@ -1,4 +1,10 @@
 export {
+  loadEe,
+  setEeForTesting,
+  verifyBillingSignature,
+  type EeModule,
+} from "./ee.js";
+export {
   PLAN_IDS,
   PLANS,
   NON_LLM_COGS_USD,

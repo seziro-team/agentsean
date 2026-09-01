@@ -1,7 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { tenants, type SqliteDatabase } from "@agentsean/db";
-import { stripeSignatureValid } from "@agentsean/ee";
 import {
   addTenantSite,
   applyStripeEvent,
@@ -10,6 +9,7 @@ import {
   hostedStatus,
   isPlanId,
   signupTenant,
+  verifyBillingSignature,
   type PlanId,
   type StripeEvent,
 } from "@agentsean/hosted";
@@ -100,7 +100,7 @@ export function registerHostedRoutes(
       typeof req.headers["stripe-signature"] === "string"
         ? req.headers["stripe-signature"]
         : "";
-    if (secret && !stripeSignatureValid(raw, sig, secret)) {
+    if (secret && !(await verifyBillingSignature(raw, sig, secret))) {
       return reply.code(400).send({ error: "bad_signature" });
     }
     const event = (
