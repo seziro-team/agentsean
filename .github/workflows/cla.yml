@@ -27,4 +27,4 @@ jobs:
           path-to-signatures: signatures/version1/cla.json
           path-to-document: https://github.com/seziro-team/agentsean/blob/main/CLA.md
           branch: main
-          allowlist: dependabot[bot],github-actions[bot]
+          allowlist: seziro-team,dependabot[bot],github-actions[bot],renovate[bot]
