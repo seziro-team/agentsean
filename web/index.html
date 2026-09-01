@@ -1,45 +1,393 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Agent Sean — the SEO engineer that never sleeps</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="description" content="Every SEO tool tells you what's wrong. Agent Sean fixes it — as a revertible diff on your actual site."/>
-  <link rel="stylesheet" href="assets/style.css"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Agent Sean — the SEO engineer that never sleeps</title>
+<meta name="description" content="Open-source, self-hosted autonomous SEO agent. Finds issues across 425 checks and actually fixes them — in WordPress, Shopify, Git, or at the edge — as a diff you can read and revert."/>
+<link rel="canonical" href="https://agentsean.com/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Agent Sean — the SEO engineer that never sleeps"/>
+<meta property="og:description" content="Every SEO tool tells you what's wrong. Agent Sean fixes it. As a diff you can read and revert."/>
+<meta property="og:image" content="assets/social.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="assets/style.css"/>
 </head>
 <body>
-  <header>
-    <a href="index.html">Agent Sean</a>
-    <nav>
-      <a href="install.html">Install</a>
-      <a href="recipes/index.html">Recipes</a>
-      <a href="security.html">Security</a>
-      <a href="telemetry.html">Telemetry</a>
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#11161f" stroke="#2b3444" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#f85149"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#f85149" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#3fb950"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#3fb950" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#58a6ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#58a6ff" fill-opacity=".85"/></svg>
+      Agent Sean
+    </a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#security">Security</a>
+      <a href="#surfaces">Surfaces</a>
+      <a href="#pricing">Pricing</a>
+      <a href="install.html">Docs</a>
     </nav>
-  </header>
-  <main>
-    <section class="hero">
-      <h1>Every SEO tool tells you what's wrong. Agent Sean fixes it.</h1>
-      <p class="lead">A self-hosted daemon that writes reversible diffs to WordPress, Shopify, Git, or the edge — on a schedule you set, forever.</p>
-      <pre class="install">npx agentsean</pre>
-    </section>
-    <img class="demo" src="assets/demo.svg" alt="Finding, title-tag diff, and a Revert button"/>
-    <p><a href="assets/sean-demo.mp4">46-second demo (mp4)</a></p>
-    <h2>Supported surfaces</h2>
-    <table class="matrix">
-      <thead><tr><th>Where the site lives</th><th>How Sean writes</th></tr></thead>
-      <tbody>
-        <tr><td><a href="recipes/fix-title-tags-wordpress.html">WordPress</a></td><td>Companion plugin + Application Passwords</td></tr>
-        <tr><td><a href="recipes/fix-orphaned-pages-shopify.html">Shopify</a></td><td>Metafields. Theme writes refused.</td></tr>
-        <tr><td><a href="recipes/git-pr-title-tags-nextjs.html">Next.js / Git</a></td><td>A PR you can read</td></tr>
-        <tr><td><a href="recipes/index.html">Squarespace / Framer / Duda</a></td><td>Cloudflare edge overlay, no UA branch</td></tr>
-      </tbody>
-    </table>
-    <h2>Prior art</h2>
-    <p>OpenSEO proved an open-source SEO platform could work. Agent Sean is the execution layer that writes reversible diffs to your actual site — not a fork of OpenSEO, and not a report that stops at the finding.</p>
-    <h2>What Sean does not do</h2>
-    <p>Stakeholder negotiation, strategy arguments, and deciding whether a business should want the traffic. Tools that pretend otherwise are the ones people stop trusting.</p>
-  </main>
-  <footer>AGPL-3.0-only · <a href="https://github.com/seziro-team/agentsean">github.com/seziro-team/agentsean</a></footer>
+    <div class="nav-right">
+      <a class="ghstar" href="https://github.com/seziro-team/agentsean" rel="noopener">
+        <span class="gh-l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>Star</span>
+        <span class="gh-n" data-gh-stars>—</span>
+      </a>
+      <a class="btn btn-ghost btn-sm" href="#pricing">Sign in</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero center">
+  <div class="wrap">
+    <span class="eyebrow"><b>v1.0</b> · AGPL-3.0 · runs on your machine</span>
+    <h1>Every SEO tool tells you what's wrong.<br/>Agent Sean <span class="fix">fixes it.</span></h1>
+    <p class="lead">
+      An open-source, self-hosted autonomous SEO engineer. It crawls your site, connects to
+      Search Console, finds what's broken across 425 checks — and then writes the fix into
+      WordPress, Shopify, your Git repo, or the edge. As a diff you can read and revert.
+    </p>
+
+    <div class="cta-row">
+      <span class="cmd" data-copy="npx agentsean"><span class="p">$</span> npx agentsean <button type="button">Copy</button></span>
+      <a class="btn btn-ghost btn-lg" href="https://github.com/seziro-team/agentsean" rel="noopener">View source</a>
+    </div>
+    <p class="small muted">Free forever, self-hosted. No account, no credit card, no telemetry until you say yes.</p>
+  </div>
+</section>
+
+<div class="wrap" style="margin-bottom:76px">
+  <div class="term">
+    <div class="term-bar"><i style="background:#f85149"></i><i style="background:#e3b341"></i><i style="background:#3fb950"></i><span class="t">sean — 127.0.0.1:7777</span></div>
+<pre><span class="c-p">$</span> <span class="c-w">npx agentsean</span>
+
+<span class="c-d">?</span> What site should Sean work on? <span class="c-g">https://acme.example</span>
+<span class="c-d">?</span> Where does it live?              <span class="c-g">WordPress</span>
+<span class="c-d">?</span> Connect Search Console?          <span class="c-g">yes → opened 127.0.0.1:7777/connect</span>
+
+<span class="c-w">Crawling acme.example</span> <span class="c-d">·············</span> 80 pages · 6s
+<span class="c-w">Running 425 checks</span>    <span class="c-d">·············</span> 14 findings · score 62
+
+  <span class="c-r">critical</span>  ONP.TITLE_TOO_SHORT      Homepage title is 12 characters
+  <span class="c-a">high</span>      IMG.ALT_MISSING          31 images without alt text
+  <span class="c-a">high</span>      LINK.BROKEN_INTERNAL     4 internal links return 404
+  <span class="c-d">…10 more</span>
+
+<span class="c-g">✓</span> Sean is watching. 7-day observe window, then it starts fixing.
+  <span class="c-d">Dashboard</span>  <span class="c-p">http://127.0.0.1:7777</span>
+  <span class="c-d">Survive reboot</span>  <span class="c-w">sean service install</span>
+  <span class="c-d">Stop everything</span>  <span class="c-w">sean freeze</span>
+</pre>
+  </div>
+</div>
+
+<div class="proof">
+  <div class="proof-grid">
+    <div><b>425</b><span>SEO checks</span></div>
+    <div><b>30</b><span>Injection payloads blocked</span></div>
+    <div><b>562</b><span>Tests in CI</span></div>
+    <div><b>$0</b><span>To self-host, forever</span></div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>It doesn't stop at the finding</h2>
+      <p>Reports are cheap. The gap in every SEO tool is that a human still has to go and do the work. Sean closes that gap, safely.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="ic">01 — Crawl</div>
+        <h3>Sees your site like a search engine</h3>
+        <p>A polite, JS-capable crawler with adaptive rendering, RFC 9309 <code>robots.txt</code> handling, sitemap discovery, and incremental re-crawls. Plus Search Console, Analytics, PageSpeed, and CrUX every day.</p>
+      </div>
+      <div class="card">
+        <div class="ic">02 — Decide</div>
+        <h3>Deterministic first, model second</h3>
+        <p>Prioritization is a published formula, not a vibe. The LLM is used only for narrow judgement calls, it never holds a credential, and it never calls a write API. It emits typed actions that deterministic code validates.</p>
+      </div>
+      <div class="card">
+        <div class="ic">03 — Fix</div>
+        <h3>Writes into your source of truth</h3>
+        <p>Snapshot, apply, then re-fetch the live page to confirm it actually landed. If it didn't, Sean rolls back on its own. Every change keeps its before-state and a one-command revert.</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:44px">
+      <div>
+        <h3 style="font-size:1.25rem;margin-bottom:16px">What it does after you walk away</h3>
+        <ul class="ticks">
+          <li>Crawls weekly and after every deploy</li>
+          <li><b>Fixes</b> titles, meta, headings, alt text, broken links, sitemaps, and schema</li>
+          <li>Refreshes decaying content — capped at 2 refreshes and 2 new pages per day</li>
+          <li>Queues anything dangerous for one click</li>
+          <li>Tracks ranks, brand mentions, and AI citation share</li>
+          <li>Reports weekly with an honest evidence tier on every claim</li>
+          <li>Stops instantly and everywhere on <code>sean freeze</code></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size:1.25rem;margin-bottom:16px">What it will never do</h3>
+        <ul class="ticks crosses">
+          <li>Scrape Google</li>
+          <li>Serve different HTML to crawlers than to people</li>
+          <li>Buy links, build PBNs, or hide text</li>
+          <li>Write to a domain that isn't yours</li>
+          <li>Generate content for YMYL or affiliate sites</li>
+          <li>Spin up unbounded city × service pages</li>
+          <li>Claim causation it cannot prove</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Why not just use a proxy tool?</h2>
+      <p>Because the fixes evaporate the day you cancel, and the technique sits uncomfortably close to cloaking.</p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th></th><th>Report-only tools</th><th>Proxy "auto-fix" tools</th><th>Agent Sean</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Finds issues</strong></td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td><strong>Writes the fix</strong></td><td class="n">No</td><td>At a JS proxy</td><td class="y">Into your source of truth</td></tr>
+          <tr><td><strong>Fix survives cancellation</strong></td><td class="n">—</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td><strong>Reviewable diff</strong></td><td class="n">—</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td><strong>One-click revert</strong></td><td class="n">—</td><td class="n">—</td><td class="y">With a stored snapshot</td></tr>
+          <tr><td><strong>Self-hostable</strong></td><td class="n">Sometimes</td><td class="n">No</td><td class="y">Entirely</td></tr>
+          <tr><td><strong>Your data stays on your machine</strong></td><td class="n">No</td><td class="n">No</td><td class="y">Yes — local-first, BYOK</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Built for the actual threat model</h2>
+      <p>A crawling agent's entire input diet is written by people with a financial interest in you ranking worse — and that agent holds keys to your website. Everything below follows from that.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="ic">Three planes</div>
+        <h3>Nothing both reads the web and holds keys</h3>
+        <p>Analysis sees third-party bytes but has no credentials. Planning has neither. Execution has credentials but never sees raw page content. The separation is structural, not a policy.</p>
+      </div>
+      <div class="card">
+        <div class="ic">Keystone rule</div>
+        <h3>First appearance</h3>
+        <p>No action may contain a URL or domain whose first appearance was inside third-party content. One deterministic rule that kills canonical injection, attacker redirects, hreflang poisoning, and disavow attacks.</p>
+      </div>
+      <div class="card">
+        <div class="ic">Fail-closed</div>
+        <h3>Loopback only, or it won't start</h3>
+        <p>Binds <code>127.0.0.1:7777</code>. Host-header allowlist, Origin and <code>Sec-Fetch-Site</code> checks, CSRF header, constant-time token compare, CORS headers stripped. Auth cannot be turned off.</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="ic">Red team in CI</div>
+        <h3>30 injection payloads, every one blocked</h3>
+        <p>Hidden text, Unicode tag blocks, bidi overrides, base64 and HTML-entity payloads, <code>X-AI</code> header injection, off-site canonicals, JSON-LD hijacks. Adding a payload that gets through is a build failure.</p>
+      </div>
+      <div class="card">
+        <div class="ic">Locked lists</div>
+        <h3>Eight things always need a human</h3>
+        <p><code>robots.txt</code>, <code>noindex</code>, redirects, canonicals, page deletion, outreach email, disavow files. Not a setting. The constraint is Google's policies and the EU AI Act, not our caution.</p>
+      </div>
+    </div>
+    <p class="center" style="margin-top:26px"><a href="security.html">Read the security model →</a></p>
+  </div>
+</section>
+
+<section id="surfaces" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Where Sean can write</h2>
+      <p>Every adapter implements the same six methods, and <code>verify</code> always re-fetches the live page. The API saying "ok" is not evidence.</p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Surface</th><th>How Sean writes</th><th>Rollback</th></tr></thead>
+        <tbody>
+          <tr><td><strong>WordPress</strong></td><td>Companion plugin + Application Passwords. Understands Yoast, Rank Math, AIOSEO, SEOPress.</td><td>Revision restore</td></tr>
+          <tr><td><strong>Shopify</strong></td><td>Admin GraphQL SEO fields and metafields. Theme writes refused.</td><td>Field restore</td></tr>
+          <tr><td><strong>Next.js / any Git repo</strong></td><td>A branch, a commit, and a pull request you read before merging.</td><td><code>git revert</code></td></tr>
+          <tr><td><strong>Squarespace · Framer · Duda</strong></td><td>Cloudflare Worker overlay. Never branches on user-agent.</td><td>Overlay removal</td></tr>
+          <tr><td><strong>Webflow · Ghost · Wix · BigCommerce</strong></td><td>Native SEO APIs</td><td>Field restore</td></tr>
+          <tr><td><strong>Contentful · Sanity · Strapi · Payload</strong></td><td>Generic headless adapter</td><td>Field restore</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="center" style="margin-top:22px"><a href="https://github.com/seziro-team/agentsean/issues/new?template=03-adapter.yml" rel="noopener">Request an adapter →</a></p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Pricing</h2>
+      <p>Self-hosting is not a crippled tier. It is the whole product, and it is free forever. Cloud exists because not everyone wants to run a daemon.</p>
+    </div>
+
+    <div class="price-grid">
+      <div class="plan">
+        <h3>Self-host</h3>
+        <p class="sub">The complete product on your own machine.</p>
+        <div class="amt">$0</div>
+        <span class="per">forever · AGPL-3.0</span>
+        <ul class="ticks">
+          <li>Unlimited sites</li>
+          <li>All 425 checks</li>
+          <li>Autonomous fixes, every adapter</li>
+          <li>Bring your own LLM key</li>
+          <li>White-label reports</li>
+          <li>Nothing leaves your machine</li>
+          <li>Community support</li>
+        </ul>
+        <a class="btn btn-ghost" href="install.html">Install it</a>
+      </div>
+
+      <div class="plan feat">
+        <span class="tag">Most popular</span>
+        <h3>Cloud</h3>
+        <p class="sub">We run the daemon, handle Google OAuth, and keep the lights on.</p>
+        <div class="amt">$9</div>
+        <span class="per">per month · Pro $29 · Business $79 · Agency $249</span>
+        <ul class="ticks">
+          <li>Everything in Self-host</li>
+          <li><b>1 → 50 sites</b> by tier</li>
+          <li>Managed Google OAuth</li>
+          <li>Daily rank tracking from Pro</li>
+          <li>Attach to your daemon's terminal</li>
+          <li>Client seats and white-label on Agency</li>
+          <li>Email support · DPA available</li>
+        </ul>
+        <a class="btn btn-primary" href="#waitlist">Start free trial</a>
+      </div>
+
+      <div class="plan">
+        <h3>Enterprise</h3>
+        <p class="sub">For agencies and teams with procurement, and for regulated estates.</p>
+        <div class="amt">Talk to us</div>
+        <span class="per">annual · invoice billing</span>
+        <ul class="ticks">
+          <li>Unlimited sites and seats</li>
+          <li>SSO / SAML / SCIM</li>
+          <li>Self-managed or air-gapped deploy</li>
+          <li>Audit log export</li>
+          <li>SLA and uptime guarantee</li>
+          <li>Named contact, private channel</li>
+          <li>Custom contract, security review, DPA</li>
+        </ul>
+        <a class="btn btn-ghost" href="mailto:sales@agentsean.com?subject=Agent%20Sean%20Enterprise">Contact sales</a>
+      </div>
+    </div>
+    <p class="price-note">All plans are bring-your-own-LLM-key. That is what keeps the price honest — you pay the model provider directly, at cost.</p>
+  </div>
+</section>
+
+<section id="waitlist" class="alt">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2 style="margin-bottom:12px">Start with the free one</h2>
+      <p class="lead" style="margin-bottom:26px">
+        <code>sean audit</code> runs the full 425-check audit with no daemon, no account, and no
+        credentials. If it isn't useful, you have lost ninety seconds.
+      </p>
+      <div class="cta-row">
+        <span class="cmd" data-copy="npx agentsean audit https://your-site.com"><span class="p">$</span> npx agentsean audit https://your-site.com <button type="button">Copy</button></span>
+      </div>
+      <p class="small muted" style="margin-top:18px">
+        Cloud accounts are opening in batches — <a href="https://github.com/seziro-team/agentsean/discussions" rel="noopener">join the discussion</a> to get an invite,
+        or <a href="mailto:sales@agentsean.com?subject=Agent%20Sean%20Enterprise">talk to us</a> about Enterprise.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap grid-2">
+    <div>
+      <h2 style="font-size:1.5rem">Prior art</h2>
+      <p class="muted">
+        <a href="https://github.com/every-app/open-seo" rel="noopener">OpenSEO</a> proved an
+        open-source SEO platform could work. Agent Sean is the execution layer that writes
+        reversible diffs to your actual site — not a fork of OpenSEO, and not a report that
+        stops at the finding. Selected OpenSEO modules are ported under MIT with attribution.
+      </p>
+    </div>
+    <div>
+      <h2 style="font-size:1.5rem">Open, and staying open</h2>
+      <p class="muted">
+        The core is AGPL-3.0 — a real OSI-approved licence, not a source-available substitute.
+        You can self-host, modify, and redistribute. The network-use clause is what prevents
+        unlicensed resale. The 66k-word engineering plan and the 3&nbsp;MB of research behind it
+        are published in the repo.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:12px">
+          <svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#11161f" stroke="#2b3444" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#f85149"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#f85149" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#3fb950"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#3fb950" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#58a6ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#58a6ff" fill-opacity=".85"/></svg>
+          Agent Sean
+        </a>
+        <p class="small muted" style="max-width:280px">
+          The SEO engineer that never sleeps. Built by <a href="https://seziro.com" rel="noopener">Seziro</a>.
+        </p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="install.html">Install</a></li>
+          <li><a href="recipes/index.html">Recipes</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/blob/main/ARCHITECTURE.md" rel="noopener">Architecture</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/blob/main/ROADMAP.md" rel="noopener">Roadmap</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/seziro-team/agentsean" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/discussions" rel="noopener">Discussions</a></li>
+          <li><a href="https://www.npmjs.com/package/agentsean" rel="noopener">npm</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/blob/main/CONTRIBUTING.md" rel="noopener">Contributing</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="telemetry.html">Telemetry</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
+          <li><a href="tos.html">Terms</a></li>
+          <li><a href="https://github.com/seziro-team/agentsean/blob/main/LICENSE" rel="noopener">Licence</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© <span data-year>2026</span> Seziro. AGPL-3.0-only.</span>
+      <span>Sean never scrapes Google.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
 </body>
 </html>

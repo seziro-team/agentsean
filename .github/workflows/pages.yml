@@ -1,0 +1,57 @@
+name: Deploy site
+
+# Publishes web/ to GitHub Pages. The site is static — no build step, no
+# external requests except the GitHub API call that renders the star count.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check every internal link resolves
+        run: |
+          set -euo pipefail
+          fail=0
+          cd web
+          # collect href/src targets that are local files, ignore anchors and externals
+          targets=$(grep -rhoE '(href|src)="[^"#:]+\.(html|css|js|svg|png|jpg|mp4)"' . \
+            | sed -E 's/^(href|src)="//; s/"$//' | sort -u)
+          for t in $targets; do
+            found=0
+            for base in . recipes; do
+              if [ -f "$base/$t" ]; then found=1; break; fi
+            done
+            if [ "$found" -eq 0 ]; then echo "MISSING: $t"; fail=1; fi
+          done
+          if [ "$fail" -ne 0 ]; then echo "::error::broken internal links in web/"; exit 1; fi
+          echo "all internal links resolve"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
