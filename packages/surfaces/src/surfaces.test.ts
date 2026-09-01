@@ -285,3 +285,20 @@ describe("Phase 9 surfaces", () => {
     sqlite.close();
   });
 });
+
+// ReDoS regression: parseCitations runs on LLM-produced answer text. The
+// trailing-punctuation trim previously used `/[.,;]+$/`, which backtracks on a
+// URL ending in a long run of punctuation; the while-slice must stay linear.
+describe("parseCitations ReDoS hardening", () => {
+  it("is linear on a URL with a huge trailing punctuation run", () => {
+    const answer = "https://acme.example/x" + ".".repeat(400_000);
+    const start = performance.now();
+    parseCitations(answer, "acme.example");
+    expect(performance.now() - start).toBeLessThan(1000);
+  });
+
+  it("still trims trailing sentence punctuation from a cited URL", () => {
+    const parsed = parseCitations("See https://acme.example/pricing.", "acme.example");
+    expect(parsed[0]?.url).toBe("https://acme.example/pricing");
+  });
+});

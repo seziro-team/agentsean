@@ -6,15 +6,36 @@ const STOP = new Set(
   ),
 );
 
+// Strip a raw element and its content. The end-tag pattern allows whitespace
+// before ">" (e.g. `</script >`) — HTML parsers accept it, so a filter that
+// requires a bare ">" lets attacker script/style content survive into the
+// extracted text (CodeQL js/bad-tag-filter). If the element is never closed we
+// fall through to end-of-input so nothing after an unterminated `<script>`
+// leaks. Character classes are disjoint (`[^<]` vs. the anchored close) so the
+// match is linear and cannot backtrack quadratically (js/polynomial-redos).
+const SCRIPT_EL = /<script\b[^>]*>(?:[^<]|<(?!\/script[\s>]))*(?:<\/script\s*>|$)/gi;
+const STYLE_EL = /<style\b[^>]*>(?:[^<]|<(?!\/style[\s>]))*(?:<\/style\s*>|$)/gi;
+
+// Single-pass entity decode. A sequential chain that expands `&amp;` before
+// `&lt;`/`&gt;` double-unescapes: `&amp;lt;` would become `&lt;` and then `<`
+// (CodeQL js/double-escaping). One replace with a lookup table decodes each
+// entity exactly once.
+const ENTITY = /&(nbsp|amp|lt|gt|quot|#39);/g;
+const ENTITY_MAP: Record<string, string> = {
+  nbsp: " ",
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  "#39": "'",
+};
+
 export function stripHtml(html: string): string {
   return html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(SCRIPT_EL, " ")
+    .replace(STYLE_EL, " ")
     .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
+    .replace(ENTITY, (_, name: string) => ENTITY_MAP[name] ?? _)
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -25,13 +46,24 @@ export function wordCount(text: string): number {
   return t.split(/\s+/).filter(Boolean).length;
 }
 
+// Heading inner is a negated-close class ((?:[^<]|<(?!\/h\1))*) rather than a
+// lazy `[\s\S]*?`: the two branches are disjoint at each position, so there is
+// no backtracking on crafted input with many `<` (js/polynomial-redos). The
+// close tag tolerates attributes/whitespace before ">".
+const HTML_HEADING = /<h([1-6])[^>]*>((?:[^<]|<(?!\/h\1[\s>]))*)<\/h\1\s*>/gi;
+
 export function extractHeadings(text: string): string[] {
   const out: string[] = [];
-  for (const m of text.matchAll(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi)) {
+  for (const m of text.matchAll(HTML_HEADING)) {
     const inner = stripHtml(m[2] ?? "");
     if (inner) out.push(inner);
   }
-  for (const m of text.matchAll(/^(#{1,6})\s+(.+)$/gm)) {
+  // Separator is horizontal whitespace `[^\S\r\n]+` and the text must start
+  // with a non-space `(\S.*)`. The old `\s+(.+)` let `\s+` and `.+` both match
+  // a run of spaces, an ambiguous split that backtracks quadratically on a line
+  // of only spaces (js/polynomial-redos). Result is unchanged for real
+  // headings.
+  for (const m of text.matchAll(/^(#{1,6})[^\S\r\n]+(\S.*)$/gm)) {
     const inner = (m[2] ?? "").trim();
     if (inner) out.push(inner);
   }
@@ -82,11 +114,23 @@ export function extractQuestions(queries: QueryDaily[], headings: string[]): str
   return [...q].slice(0, 12);
 }
 
+// Matches currency, grouped thousands, percentages, and bare numbers. The
+// grouped-thousands branch ends with a negative lookahead `(?![\d,])` instead
+// of `\b` + an optional decimal that could backtrack against following digits;
+// this makes each alternative consume a maximal run once, so the whole pattern
+// is linear on adversarial input like `1,234,234,…` (js/polynomial-redos).
 const NUMBER_RE =
-  /(?:\$[\d,]+(?:\.\d+)?|\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|\b\d+(?:\.\d+)?%|\b\d{2,}(?:\.\d+)?\b)/g;
+  /\$[\d,]+(?:\.\d+)?|\b\d{1,3}(?:,\d{3})+(?:\.\d+)?(?![\d,])|\b\d+(?:\.\d+)?%|\b\d{2,}(?:\.\d+)?\b/g;
+
+// Comment inner is `(?:[^-]|-(?!->))*` — any non-hyphen, or a hyphen not
+// starting the `-->` close — which is disjoint at each position and cannot
+// backtrack, unlike the lazy `[\s\S]*?-->` that CodeQL flags as polynomial on
+// `<!--` with no terminator (js/polynomial-redos). Falls through to end-of-input
+// for an unclosed comment so trailing content is still stripped.
+const HTML_COMMENT_RE = /<!--(?:[^-]|-(?!->))*(?:-->|$)/g;
 
 export function numericClaims(text: string): string[] {
-  const cleaned = text.replace(/<!--[\s\S]*?-->/g, " ");
+  const cleaned = text.replace(HTML_COMMENT_RE, " ");
   const hits = cleaned.match(NUMBER_RE) ?? [];
   return [...new Set(hits.map((h) => h.trim()))];
 }

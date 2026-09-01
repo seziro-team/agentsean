@@ -26,6 +26,14 @@ import {
   stripSlash,
 } from "./predicates.js";
 
+// An <h1> whose first child is an <img> (alt-text-in-h1 anti-pattern). The
+// attribute run is bounded `[^>]{0,2048}` rather than `[^>]*`: an unbounded run
+// before the required ">" backtracks on a crafted `<h1 …` open tag with no ">"
+// (js/polynomial-redos). Runs on attacker-authored page HTML. Exported so the
+// linearity is regression-tested directly (see all.redos.test.ts). A real H1's
+// attribute list is far under the bound.
+export const H1_WITH_LEADING_IMG = /<h1[^>]{0,2048}>\s*<img/i;
+
 const GENERIC_ANCHORS = new Set([
   "click here",
   "read more",
@@ -2556,7 +2564,7 @@ export function detectOnp(ctx: AuditContext): FindingDraft[] {
   push(
     out,
     "ONP.ALT_TEXT_IN_H1",
-    pages.filter((p) => /<h1[^>]*>\s*<img/i.test(p.html ?? "")).map((p) => p.url),
+    pages.filter((p) => H1_WITH_LEADING_IMG.test(p.html ?? "")).map((p) => p.url),
     {},
   );
   push(

@@ -164,8 +164,15 @@ export function extractPage(
   const first1024 = html.slice(0, 1024);
   const charsetInFirst1024 = /<meta[^>]+charset/i.test(first1024);
 
+  // The marker test lives in a bounded lookahead `(?=[^>]{0,2048}…)`. The old
+  // `[^>]+\b(?:…)` backtracked one character at a time when the attribute
+  // alternation failed, giving quadratic blow-up on a long `<div …` open tag
+  // with no ">" (js/polynomial-redos). A real element's attribute list fits
+  // well under the bound. The `\b` after the tag name also fixes a latent
+  // over-match (the old form matched `<divider id=…>` because `[^>]+` ate
+  // `ider `); we only care about `div`/`app-root` root containers.
   const spaRootEmpty =
-    /<(?:div|app-root)[^>]+\b(?:id=["'](?:root|app|__next)["']|data-reactroot|ng-version)/i.test(
+    /<(?:div|app-root)\b(?=[^>]{0,2048}(?:\bid=["'](?:root|app|__next)["']|\bdata-reactroot\b|\bng-version\b))/i.test(
       html,
     ) && main.wordCount < 30;
 
@@ -237,9 +244,18 @@ function extractLinks($: CheerioAPI, pageUrl: string, origin: string): Extracted
   const out: ExtractedLink[] = [];
   $("a[href]").each((_, el) => {
     const href = $(el).attr("href")?.trim() ?? "";
-    if (!href || href.startsWith("javascript:") || href.startsWith("mailto:")) return;
+    if (!href) return;
     const abs = absolutize(href, pageUrl);
     if (!abs) return;
+    // Allowlist http(s) on the RESOLVED url rather than denylisting known-bad
+    // scheme prefixes. This is a crawler's link-intake path, so it decides
+    // which URLs enter the frontier; a `javascript:`/`data:`/`vbscript:` (or
+    // `mailto:`/`tel:`) href must never become a crawlable link, and a denylist
+    // silently misses schemes it does not enumerate (js/incomplete-url-scheme-
+    // check). Relative hrefs still pass because they resolve to the page's
+    // http(s) origin.
+    const scheme = abs.slice(0, abs.indexOf(":") + 1).toLowerCase();
+    if (scheme !== "http:" && scheme !== "https:") return;
     const rel = ($(el).attr("rel") ?? "").toLowerCase().split(/\s+/).filter(Boolean);
     const position = classifyPosition($(el));
     out.push({

@@ -41,6 +41,20 @@ export function defaultPrompts(brand: string, category: string): string[] {
 
 const URL_RE = /https?:\/\/[^\s)\]>'"]+/gi;
 
+// Strip trailing sentence punctuation from a matched URL. A while-slice avoids
+// the anchored `/[.,;]+$/` whose `+` + `$` backtracks on a URL ending in many
+// `.,;` (js/polynomial-redos); this loop touches each trailing char once.
+function trimTrailingPunct(s: string): string {
+  let end = s.length;
+  while (end > 0) {
+    const c = s.charCodeAt(end - 1);
+    // '.' 46, ',' 44, ';' 59
+    if (c === 46 || c === 44 || c === 59) end--;
+    else break;
+  }
+  return s.slice(0, end);
+}
+
 export function parseCitations(
   answer: string,
   originHost: string,
@@ -51,7 +65,7 @@ export function parseCitations(
   for (const raw of matches) {
     let url: URL;
     try {
-      url = new URL(raw.replace(/[.,;]+$/, ""));
+      url = new URL(trimTrailingPunct(raw));
     } catch {
       continue;
     }

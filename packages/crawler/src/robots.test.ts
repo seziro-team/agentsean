@@ -6,6 +6,22 @@ import {
   robotsFromFetch,
 } from "./robots.js";
 
+// ReDoS regression: robots.txt is fetched from the target site (attacker-
+// influenced), so the per-line comment strip must be linear.
+describe("parseRobotsTxt ReDoS hardening", () => {
+  it("is linear on a line of many '#'", () => {
+    const raw = "#".repeat(500_000);
+    const start = performance.now();
+    parseRobotsTxt(raw);
+    expect(performance.now() - start).toBeLessThan(1000);
+  });
+
+  it("still strips inline comments", () => {
+    const parsed = parseRobotsTxt("User-agent: *\nDisallow: /x # comment here");
+    expect(parsed.groups[0]?.rules[0]?.pattern).toBe("/x");
+  });
+});
+
 describe("robots RFC 9309 + Google group selection", () => {
   it("most-octets wins and allow wins ties", () => {
     const parsed = parseRobotsTxt(`

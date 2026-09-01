@@ -149,12 +149,15 @@ function voice(ctx: GateContext): GateCheck {
 }
 
 function internalLinks(ctx: GateContext): GateCheck {
-  const hrefs = [...ctx.draft.body.matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map(
+  // URL runs are bounded `{1,2048}`. Unbounded `[^)\s]+` / `[^"]+` before the
+  // required closing `)` / `"` backtrack quadratically when a link is never
+  // closed (js/polynomial-redos); no real URL approaches the bound.
+  const hrefs = [...ctx.draft.body.matchAll(/\]\((https?:\/\/[^)\s]{1,2048})\)/g)].map(
     (m) => m[1] ?? "",
   );
-  const htmlHrefs = [...ctx.draft.body.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(
-    (m) => m[1] ?? "",
-  );
+  const htmlHrefs = [
+    ...ctx.draft.body.matchAll(/href="(https?:\/\/[^"]{1,2048})"/g),
+  ].map((m) => m[1] ?? "");
   const all = [...new Set([...hrefs, ...htmlHrefs])];
   if (all.length < 1)
     return check(5, "INTERNAL_LINKS", false, "draft has no internal links");

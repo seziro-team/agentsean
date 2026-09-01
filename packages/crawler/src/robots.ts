@@ -38,7 +38,12 @@ export function parseRobotsTxt(
   };
 
   for (const rawLine of lines) {
-    const line = rawLine.replace(/#.*$/, "").trim();
+    // `#[^\n]*` (negated newline) instead of `#.*$`: the `$` anchor made the
+    // engine backtrack a greedy `.*` on a comment-only line, which CodeQL flags
+    // as polynomial on input like `####…` (js/polynomial-redos). A single
+    // indexOf/slice is unambiguously linear and strips the same comment tail.
+    const hash = rawLine.indexOf("#");
+    const line = (hash === -1 ? rawLine : rawLine.slice(0, hash)).trim();
     if (!line) continue;
     const colon = line.indexOf(":");
     if (colon < 1) {

@@ -140,13 +140,25 @@ function parseXml(
     text = "";
   });
 
-  // saxes xmlns attributes: capture xhtml:link hreflang on opentag via a second pass
-  const hrefLangRe =
-    /<xhtml:link[^>]*rel=["']alternate["'][^>]*hreflang=["']([^"']+)["'][^>]*href=["']([^"']+)["'][^>]*\/?>/gi;
+  // saxes xmlns attributes: capture xhtml:link hreflang on opentag via a second
+  // pass. The old single regex chained several `[^>]*` runs between attribute
+  // literals inside one tag; those adjacent unbounded quantifiers backtrack
+  // polynomially on a crafted `<xhtml:link …` (js/polynomial-redos). Instead we
+  // grab each tag body with ONE negated-">" run, then read attributes off that
+  // bounded body with simple, order-independent lookups (which also fixes the
+  // old requirement that rel/hreflang/href appear in exactly that order).
+  const linkTagRe = /<xhtml:link\b([^>]*)>/gi;
+  const relAltRe = /\brel=["']alternate["']/i;
+  const hreflangRe = /\bhreflang=["']([^"']+)["']/i;
+  const hrefRe = /\bhref=["']([^"']+)["']/i;
   let hm: RegExpExecArray | null;
   const extras: { lang: string; href: string }[] = [];
-  while ((hm = hrefLangRe.exec(xml))) {
-    extras.push({ lang: hm[1] ?? "", href: hm[2] ?? "" });
+  while ((hm = linkTagRe.exec(xml))) {
+    const body = hm[1] ?? "";
+    if (!relAltRe.test(body)) continue;
+    const lang = hreflangRe.exec(body);
+    const href = hrefRe.exec(body);
+    if (lang && href) extras.push({ lang: lang[1] ?? "", href: href[1] ?? "" });
   }
 
   try {
