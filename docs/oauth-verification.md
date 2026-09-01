@@ -66,9 +66,12 @@ contractually JobPosting/BroadcastEvent only).
 **Submitted by:** —
 **Date:** —
 
+Privacy / TOS drafts for the consent screen (serve them on the domain once it
+exists): [`web/privacy.html`](../web/privacy.html), [`web/tos.html`](../web/tos.html).
+
 Until the domain is live, the consent-screen URLs cannot be filled. Create the
 Cloud project and the draft consent screen today anyway; the queue does not
-start until Submit.
+start until Submit. BYO remains the OSS path: `sean connect google --byo`.
 
 ## BYO-project escape hatch (always)
 

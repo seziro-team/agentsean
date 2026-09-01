@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Privacy — Agent Sean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+  <header>
+    <a href="index.html">Agent Sean</a>
+    <nav>
+      <a href="install.html">Install</a>
+      <a href="telemetry.html">Telemetry</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Privacy policy</h1>
+    <p class="lead">Last updated 2026-09-02. This is the policy for the Agent Sean software and, when it exists, the hosted control plane at agentsean.com.</p>
+    <h2>Self-host</h2>
+    <p>The daemon runs on a machine you control and binds <code>127.0.0.1</code>. Page content, GSC queries, CMS credentials, and Google refresh tokens stay on that machine (OS keychain or encrypted file). We cannot see them.</p>
+    <h2>Telemetry</h2>
+    <p>Off until you consent. Never domains, URLs, queries, keys, or IPs. Honor <code>DO_NOT_TRACK=1</code>. Details: <a href="telemetry.html">telemetry</a> and the repo file TELEMETRY.md.</p>
+    <h2>Google OAuth</h2>
+    <p>If you use the first-party broker, Google shows you the consent screen. The broker is stateless: it encrypts the refresh token with a wrap key your daemon generated and redirects to loopback. The hosted origin never fetches your daemon. BYO Cloud project skips the broker entirely.</p>
+    <h2>Hosted Cloud</h2>
+    <p>If you pay for Cloud, we store account email, Stripe customer id, entitlement, envelope-encrypted secrets, and metered usage. We do <strong>not</strong> store CMS write credentials. DPA and subprocessors are in the repo (<code>docs/dpa.md</code>, <code>docs/subprocessors.md</code>). Erasure: <code>eraseTenant</code>.</p>
+    <h2>Contact</h2>
+    <p>Until <code>seanhq</code> exists, the maintainer is the owner of <a href="https://github.com/vp2722/sean">github.com/vp2722/sean</a>.</p>
+  </main>
+</body>
+</html>

@@ -10,6 +10,8 @@ describe("free stack clients", () => {
     const fetchFn: typeof fetch = async (input) => {
       const url = String(input);
       if (url.includes("GetKeywordStats")) {
+        expect(url).toContain("language=en-US");
+        expect(url).toContain("country=us");
         return json({ d: [{ Query: "seo tools", Count: 2400 }] });
       }
       if (url.includes("GetRelatedKeywords")) {

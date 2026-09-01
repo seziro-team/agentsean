@@ -36,7 +36,7 @@ export function createBingClient(opts: {
       const json = await getJson("GetKeywordStats", {
         q: query,
         country: extra?.country ?? "us",
-        language: extra?.language ?? "en",
+        language: extra?.language ?? "en-US",
       });
       return { query, volume: parseVolume(json, query), source: "bing", country: extra?.country ?? "us" };
     },
@@ -44,7 +44,7 @@ export function createBingClient(opts: {
       const json = await getJson("GetRelatedKeywords", {
         q: query,
         country: extra?.country ?? "us",
-        language: extra?.language ?? "en",
+        language: extra?.language ?? "en-US",
       });
       return parseRelated(json, query);
     },

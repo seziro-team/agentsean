@@ -12,6 +12,10 @@
 </p>
 
 <p align="center">
+  <a href="docs/assets/demo/sean-demo.mp4">46-second demo</a> — finding, diff, Revert.
+</p>
+
+<p align="center">
   <a href="LICENSE">AGPL-3.0</a> ·
   <a href="docs/install.md">Docs</a> ·
   <a href="web/recipes/index.html">Recipes</a> ·

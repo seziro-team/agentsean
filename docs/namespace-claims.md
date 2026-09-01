@@ -8,7 +8,7 @@ pair.
 | --- | --- | --- |
 | GitHub repo | `github.com/seanhq/sean` | **Parked at [`vp2722/sean`](https://github.com/vp2722/sean).** Org `seanhq` does not exist yet; creating a GitHub org requires a browser session and cannot be done with the current `repo`/`read:org` token. Transfer the repo after the org is created. |
 | GitHub org | `seanhq` | **Not created.** Do this in the GitHub UI. |
-| npm package | `agentsean` | **Name is free** (registry 404). Needs an npmjs.com login to publish / reserve. Do not publish until Phase 0 CI is green on this commit. |
+| npm package | `agentsean` | **Name is free** (registry 404 as of 2026-09-01). This machine is **not logged in** (`npm whoami` → ENEEDAUTH). Publish after `git push` CI is green. |
 | npm org | `@agentsean/*` | **Not created.** `npm org create agentsean` after login. Packages: `@agentsean/daemon`, `@agentsean/db`, `@agentsean/credentials`, `@agentsean/ee`. |
 | Domain | `agentsean.com` | **Not registered.** Needed for OAuth consent screen. |
 | Domain | `agentsean.ai` | **Not registered.** |
