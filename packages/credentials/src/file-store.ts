@@ -18,19 +18,33 @@ function chmodIfPossible(filePath: string, mode: number): void {
   }
 }
 
+function readKek(kekPath: string): Uint8Array {
+  const buf = fs.readFileSync(kekPath);
+  if (buf.length !== 32) {
+    throw new Error(`Corrupt KEK at ${kekPath}: expected 32 bytes`);
+  }
+  return new Uint8Array(buf);
+}
+
 function loadOrCreateKek(dir: string): Uint8Array {
   const kekPath = path.join(dir, KEK_FILE);
-  if (fs.existsSync(kekPath)) {
-    const buf = fs.readFileSync(kekPath);
-    if (buf.length !== 32) {
-      throw new Error(`Corrupt KEK at ${kekPath}: expected 32 bytes`);
-    }
-    return new Uint8Array(buf);
-  }
   const kek = randomBytes(32);
-  fs.writeFileSync(kekPath, kek, { mode: 0o600 });
-  chmodIfPossible(kekPath, 0o600);
-  return new Uint8Array(kek);
+  // Create the key-encryption-key with O_EXCL ("wx"): the existence check and
+  // the write are a single atomic syscall, so two racing daemons cannot both
+  // believe they are the creator and clobber each other's KEK — the loser gets
+  // EEXIST and re-reads the winner's key (js/file-system-race on the secret
+  // vault). O_EXCL also refuses to follow a pre-planted symlink at `kek`, so an
+  // attacker cannot redirect the freshly generated key to a readable location.
+  try {
+    fs.writeFileSync(kekPath, kek, { mode: 0o600, flag: "wx" });
+    chmodIfPossible(kekPath, 0o600);
+    return new Uint8Array(kek);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "EEXIST") {
+      return readKek(kekPath);
+    }
+    throw e;
+  }
 }
 
 type VaultFile = {

@@ -17,9 +17,15 @@ export function provisionHome(home: string, method: InstallMethod = "npx"): stri
       // best-effort
     }
   }
+  // Atomic create-if-absent via O_EXCL ("wx") rather than exists-then-write:
+  // the check and write are one syscall, so concurrent first-runs cannot race
+  // (js/file-system-race), and O_EXCL will not follow a symlink planted at the
+  // marker path. An EEXIST just means the marker is already there — nothing to do.
   const marker = path.join(home, "install-method");
-  if (!fs.existsSync(marker)) {
-    fs.writeFileSync(marker, method + "\n", { mode: 0o600 });
+  try {
+    fs.writeFileSync(marker, method + "\n", { mode: 0o600, flag: "wx" });
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
   }
   return home;
 }

@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { Secret } from "./secret.js";
+import { openFileStore } from "./file-store.js";
 import { openCredentialStore } from "./store.js";
 
 describe("encrypted-file credential store", () => {
@@ -21,5 +22,25 @@ describe("encrypted-file credential store", () => {
 
     await store.delete("daemon-auth-token");
     expect(await store.get("daemon-auth-token")).toBeNull();
+  });
+
+  // Regression for the KEK file-system race (js/file-system-race). The KEK is
+  // created with O_EXCL ("wx"), so a second open must reuse the existing key
+  // rather than clobber it — otherwise every previously-encrypted secret would
+  // become undecryptable. This is the observable symptom the atomic create
+  // prevents when two daemons start concurrently.
+  it("reuses an existing KEK across opens instead of regenerating it", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sean-kek-"));
+    const first = openFileStore(dir);
+    await first.set("acct", new Secret("secret-value"));
+
+    const kekBefore = fs.readFileSync(path.join(dir, "kek"));
+    const second = openFileStore(dir);
+    const kekAfter = fs.readFileSync(path.join(dir, "kek"));
+
+    // The second open did not mint a new KEK...
+    expect(kekAfter.equals(kekBefore)).toBe(true);
+    // ...so the secret written under the first is still decryptable.
+    expect((await second.get("acct"))?.unwrap()).toBe("secret-value");
   });
 });
