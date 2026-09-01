@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { sites } from "./schema.js";
 
 /** Phase 6 — keywords, ranks, provider quotes. Dual-dialect with sqlite/keywords.ts. */

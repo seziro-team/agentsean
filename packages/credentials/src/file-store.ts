@@ -42,7 +42,10 @@ function emptyVault(): VaultFile {
   return { v: 1, secrets: {} };
 }
 
-function encrypt(kek: Uint8Array, plaintext: string): { nonce: string; ciphertext: string } {
+function encrypt(
+  kek: Uint8Array,
+  plaintext: string,
+): { nonce: string; ciphertext: string } {
   const nonce = randomBytes(NONCE_LEN);
   const cipher = xchacha20poly1305(kek, nonce);
   const ciphertext = cipher.encrypt(new TextEncoder().encode(plaintext));

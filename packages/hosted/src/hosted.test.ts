@@ -65,11 +65,18 @@ describe("Phase 10 hosted tier", () => {
     for (let i = 0; i < 10; i++) {
       const origin = `https://client${i}.example`;
       origins.push(origin);
-      addTenantSite(database, { tenantId: signed.tenantId, origin, name: `Client ${i}` });
+      addTenantSite(database, {
+        tenantId: signed.tenantId,
+        origin,
+        name: `Client ${i}`,
+      });
     }
     expect(tenantSiteCount(database, signed.tenantId)).toBe(10);
     expect(() =>
-      addTenantSite(database, { tenantId: signed.tenantId, origin: "https://client-extra.example" }),
+      addTenantSite(database, {
+        tenantId: signed.tenantId,
+        origin: "https://client-extra.example",
+      }),
     ).not.toThrow();
     const extras = 40;
     for (let i = 0; i < extras - 1; i++) {
@@ -80,7 +87,10 @@ describe("Phase 10 hosted tier", () => {
     }
     expect(tenantSiteCount(database, signed.tenantId)).toBe(50);
     expect(() =>
-      addTenantSite(database, { tenantId: signed.tenantId, origin: "https://overflow.example" }),
+      addTenantSite(database, {
+        tenantId: signed.tenantId,
+        origin: "https://overflow.example",
+      }),
     ).toThrow(SiteQuotaError);
 
     reportArticleUsage(database, signed.tenantId, 2);
@@ -131,8 +141,11 @@ describe("Phase 10 hosted tier", () => {
       plan: "self_host",
     });
     const now = new Date("2026-09-01T00:00:00Z");
-    for (let i = 0; i < JOBS_PER_MIN; i++) allowTenantJob(database, signed.tenantId, now);
-    expect(() => allowTenantJob(database, signed.tenantId, now)).toThrow(NeighbourLimitError);
+    for (let i = 0; i < JOBS_PER_MIN; i++)
+      allowTenantJob(database, signed.tenantId, now);
+    expect(() => allowTenantJob(database, signed.tenantId, now)).toThrow(
+      NeighbourLimitError,
+    );
     sqlite.close();
   });
 
@@ -143,14 +156,21 @@ describe("Phase 10 hosted tier", () => {
       email: "erase@example.com",
       plan: "cloud_starter",
     });
-    completeCheckout(database, { tenantId: signed.tenantId, plan: "cloud_starter", eventId: "evt_dup" });
+    completeCheckout(database, {
+      tenantId: signed.tenantId,
+      plan: "cloud_starter",
+      eventId: "evt_dup",
+    });
     const again = applyStripeEvent(database, {
       id: "evt_dup",
       type: "checkout.session.completed",
       data: { object: { tenantId: signed.tenantId, plan: "cloud_starter" } },
     });
     expect(again.duplicate).toBe(true);
-    addTenantSite(database, { tenantId: signed.tenantId, origin: "https://one.example" });
+    addTenantSite(database, {
+      tenantId: signed.tenantId,
+      origin: "https://one.example",
+    });
     const erased = eraseTenant(database, signed.tenantId);
     expect(erased.sitesRemoved).toBe(1);
     sqlite.close();

@@ -1,6 +1,6 @@
 # OpenSEO teardown — SAM, onboarding agent, project memory & Agent Skills
 
-Repo: `/home/vp2722/seoe/reference/open-seo` (MIT, every-app/open-seo).
+Repo: `/reference/open-seo` (MIT, every-app/open-seo).
 Scope: `src/server/features/sam/**`, `src/client/features/sam/**`, `src/server/features/onboarding/**`, `src/server/features/project-context/**`, `src/client/features/ai-mcp/**`, `specs/0005`, `0006`, `0010`, all of `.agents/skills/**`, `plugins/openseo/**`, `.claude-plugin/`, `.cursor-plugin/`, `.opencode/`, `skills-lock.json`, `AGENTS.md`, `CLAUDE.md`.
 
 ---

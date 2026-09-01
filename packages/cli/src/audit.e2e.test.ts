@@ -36,9 +36,14 @@ function startSite(n: number): Promise<{ origin: string; close: () => Promise<vo
       return;
     }
     if (url.pathname === "/sitemap.xml") {
-      const locs = Array.from({ length: n }, (_, i) => `<url><loc>http://127.0.0.1:${port}/p/${i}</loc></url>`).join("");
+      const locs = Array.from(
+        { length: n },
+        (_, i) => `<url><loc>http://127.0.0.1:${port}/p/${i}</loc></url>`,
+      ).join("");
       res.writeHead(200, { "content-type": "application/xml" });
-      res.end(`<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${locs}</urlset>`);
+      res.end(
+        `<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${locs}</urlset>`,
+      );
       return;
     }
     if (url.pathname === "/") {

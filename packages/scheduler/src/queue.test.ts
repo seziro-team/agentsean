@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { openSqlite } from "@agentsean/db";
-import { BACKOFF_BASE_MS, BACKOFF_CAP_MS, MAX_ATTEMPTS, STALE_HEARTBEAT_MS } from "./backoff.js";
+import {
+  BACKOFF_BASE_MS,
+  BACKOFF_CAP_MS,
+  MAX_ATTEMPTS,
+  STALE_HEARTBEAT_MS,
+} from "./backoff.js";
 import { idempotencyKey } from "./cadence.js";
 import { createSqliteQueue } from "./sqlite-queue.js";
 import { createPgBossQueue, type PgBossLike } from "./pg-boss.js";

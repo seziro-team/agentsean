@@ -2,8 +2,8 @@
 # until the first tagged release is on GitHub.
 class Agentsean < Formula
   desc "The SEO engineer that never sleeps"
-  homepage "https://github.com/vp2722/sean"
-  url "https://github.com/vp2722/sean/archive/refs/heads/main.tar.gz"
+  homepage "https://github.com/seziro-team/agentsean"
+  url "https://github.com/seziro-team/agentsean/archive/refs/heads/main.tar.gz"
   version "2026.9.0"
   license "AGPL-3.0-only"
 

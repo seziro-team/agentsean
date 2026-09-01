@@ -2,7 +2,9 @@ import http from "node:http";
 import { describe, expect, it } from "vitest";
 import { crawlSite } from "./crawl.js";
 
-function startFixture(pageCount = 20): Promise<{ origin: string; close: () => Promise<void> }> {
+function startFixture(
+  pageCount = 20,
+): Promise<{ origin: string; close: () => Promise<void> }> {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1");
     if (url.pathname === "/robots.txt") {
@@ -11,13 +13,21 @@ function startFixture(pageCount = 20): Promise<{ origin: string; close: () => Pr
       return;
     }
     if (url.pathname === "/sitemap.xml") {
-      const locs = Array.from({ length: pageCount }, (_, i) => `<url><loc>http://127.0.0.1:${port}/p/${i}</loc></url>`).join("");
+      const locs = Array.from(
+        { length: pageCount },
+        (_, i) => `<url><loc>http://127.0.0.1:${port}/p/${i}</loc></url>`,
+      ).join("");
       res.writeHead(200, { "content-type": "application/xml" });
-      res.end(`<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${locs}</urlset>`);
+      res.end(
+        `<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${locs}</urlset>`,
+      );
       return;
     }
     if (url.pathname === "/") {
-      res.writeHead(200, { "content-type": "text/html; charset=utf-8", etag: '"home"' });
+      res.writeHead(200, {
+        "content-type": "text/html; charset=utf-8",
+        etag: '"home"',
+      });
       res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Home of the fixture site</title>
         <meta name="description" content="A fixture homepage used to exercise the Agent Sean crawler end to end.">
         <link rel="canonical" href="http://127.0.0.1:${port}/">
@@ -56,8 +66,7 @@ function startFixture(pageCount = 20): Promise<{ origin: string; close: () => Pr
       port = addr.port;
       resolve({
         origin: `http://127.0.0.1:${port}`,
-        close: () =>
-          new Promise((r, j) => server.close((e) => (e ? j(e) : r()))),
+        close: () => new Promise((r, j) => server.close((e) => (e ? j(e) : r()))),
       });
     });
   });

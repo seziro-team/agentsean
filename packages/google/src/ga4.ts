@@ -65,9 +65,15 @@ export function createGa4Client(opts: {
 }): Ga4Client {
   const adminGet = async <T>(path: string): Promise<T> => {
     const token = await opts.getToken();
-    const res = await googleFetch(opts.http, "ga4.data", "admin", `${GA4_ADMIN}/${path}`, {
-      headers: bearer(token),
-    });
+    const res = await googleFetch(
+      opts.http,
+      "ga4.data",
+      "admin",
+      `${GA4_ADMIN}/${path}`,
+      {
+        headers: bearer(token),
+      },
+    );
     if (!res.ok) {
       throw new Ga4AdminApiError(res.status, ga4AdminMessageForStatus(res.status));
     }

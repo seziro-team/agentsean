@@ -7,10 +7,19 @@ import {
   styleProfiles,
   type SqliteDatabase,
 } from "@agentsean/db";
-import { DEFAULT_STYLE, type ContentBrief, type PublishGateResult, type StyleProfile } from "./types.js";
+import {
+  DEFAULT_STYLE,
+  type ContentBrief,
+  type PublishGateResult,
+  type StyleProfile,
+} from "./types.js";
 
 export function loadStyleProfile(db: SqliteDatabase, siteId: string): StyleProfile {
-  const row = db.select().from(styleProfiles).where(eq(styleProfiles.siteId, siteId)).get();
+  const row = db
+    .select()
+    .from(styleProfiles)
+    .where(eq(styleProfiles.siteId, siteId))
+    .get();
   if (!row) return { ...DEFAULT_STYLE };
   try {
     const parsed = JSON.parse(row.voiceJson) as Partial<StyleProfile>;
@@ -32,9 +41,17 @@ export function loadStyleProfile(db: SqliteDatabase, siteId: string): StyleProfi
   }
 }
 
-export function upsertStyleProfile(db: SqliteDatabase, siteId: string, profile: StyleProfile): void {
+export function upsertStyleProfile(
+  db: SqliteDatabase,
+  siteId: string,
+  profile: StyleProfile,
+): void {
   const now = new Date().toISOString();
-  const existing = db.select().from(styleProfiles).where(eq(styleProfiles.siteId, siteId)).get();
+  const existing = db
+    .select()
+    .from(styleProfiles)
+    .where(eq(styleProfiles.siteId, siteId))
+    .get();
   const voiceJson = JSON.stringify({
     bannedPhrases: profile.bannedPhrases,
     preferredTerms: profile.preferredTerms,
@@ -58,7 +75,11 @@ export function upsertStyleProfile(db: SqliteDatabase, siteId: string, profile: 
     .run();
 }
 
-export function saveBrief(db: SqliteDatabase, siteId: string, brief: ContentBrief): string {
+export function saveBrief(
+  db: SqliteDatabase,
+  siteId: string,
+  brief: ContentBrief,
+): string {
   const id = randomUUID();
   db.insert(contentBriefs)
     .values({
@@ -133,7 +154,15 @@ export function saveDraft(
 }
 
 export function listContent(db: SqliteDatabase, siteId?: string) {
-  const briefs = db.select().from(contentBriefs).all().filter((b) => !siteId || b.siteId === siteId);
-  const drafts = db.select().from(contentDrafts).all().filter((d) => !siteId || d.siteId === siteId);
+  const briefs = db
+    .select()
+    .from(contentBriefs)
+    .all()
+    .filter((b) => !siteId || b.siteId === siteId);
+  const drafts = db
+    .select()
+    .from(contentDrafts)
+    .all()
+    .filter((d) => !siteId || d.siteId === siteId);
   return { briefs, drafts };
 }

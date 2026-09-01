@@ -1,11 +1,6 @@
 export { startDaemon, type BootOptions, type RunningDaemon } from "./boot.js";
 export { createServer, type CreateServerOptions } from "./server.js";
-export {
-  assertBindAllowed,
-  BindError,
-  isLoopbackHost,
-  allowedHosts,
-} from "./bind.js";
+export { assertBindAllowed, BindError, isLoopbackHost, allowedHosts } from "./bind.js";
 export { registerSecurity, CSRF_HEADER, TOKEN_HEADER } from "./security.js";
 export {
   DEFAULT_HOST,

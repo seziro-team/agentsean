@@ -83,13 +83,15 @@ export async function runDoctor(input: DoctorInput): Promise<DoctorReport> {
     homeWritable = false;
   }
   const homeMode = modeOf(input.home);
-  const homeModeOk = platform === "win32" || homeMode === undefined || (homeMode & 0o077) === 0;
+  const homeModeOk =
+    platform === "win32" || homeMode === undefined || (homeMode & 0o077) === 0;
   checks.push({
     id: "home",
     ok: homeWritable && homeModeOk,
     severity: homeWritable ? (homeModeOk ? "info" : "warn") : "fail",
     detail: homeWritable
-      ? `writable ${input.home}` + (homeModeOk ? "" : ` (mode ${homeMode?.toString(8)} should be 700)`)
+      ? `writable ${input.home}` +
+        (homeModeOk ? "" : ` (mode ${homeMode?.toString(8)} should be 700)`)
       : `cannot write ${input.home}`,
   });
 
@@ -146,7 +148,8 @@ export async function runDoctor(input: DoctorInput): Promise<DoctorReport> {
   const dbExists = input.dbExists ?? fs.existsSync(dbFile);
   if (dbExists) {
     const dbMode = input.dbMode ?? modeOf(dbFile);
-    const privateDb = platform === "win32" || dbMode === undefined || (dbMode & 0o077) === 0;
+    const privateDb =
+      platform === "win32" || dbMode === undefined || (dbMode & 0o077) === 0;
     checks.push({
       id: "db",
       ok: privateDb,

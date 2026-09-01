@@ -17,8 +17,7 @@ export function resolveOAuthConfig(env: NodeJS.ProcessEnv = process.env): {
     env["GOOGLE_CLIENT_ID"]?.trim() || env["SEAN_GOOGLE_CLIENT_ID"]?.trim();
   const clientSecret =
     env["GOOGLE_CLIENT_SECRET"]?.trim() || env["SEAN_GOOGLE_CLIENT_SECRET"]?.trim();
-  const byo =
-    clientId && clientSecret ? { clientId, clientSecret } : null;
+  const byo = clientId && clientSecret ? { clientId, clientSecret } : null;
   const brokerUrl = (
     env["SEAN_OAUTH_BROKER_URL"]?.trim() || DEFAULT_BROKER_URL
   ).replace(/\/$/, "");

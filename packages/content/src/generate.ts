@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { KIND_TIER, type Action } from "@agentsean/actions";
-import { generateText, taskClass, type GenerateResult, type LlmConfig } from "@agentsean/llm";
+import {
+  generateText,
+  taskClass,
+  type GenerateResult,
+  type LlmConfig,
+} from "@agentsean/llm";
 import { applyDisclosure } from "./disclosure.js";
 import type { ContentBrief, ContentDraft, StyleProfile } from "./types.js";
 
@@ -37,11 +42,19 @@ export function briefPrompt(brief: ContentBrief): string {
   );
 }
 
-function parseDraftJson(text: string): { title: string; body: string; jsonld: Record<string, unknown> | null } {
+function parseDraftJson(text: string): {
+  title: string;
+  body: string;
+  jsonld: Record<string, unknown> | null;
+} {
   const trimmed = text.trim();
   const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
   const raw = fence?.[1]?.trim() ?? trimmed;
-  const parsed = JSON.parse(raw) as { title?: unknown; body?: unknown; jsonld?: unknown };
+  const parsed = JSON.parse(raw) as {
+    title?: unknown;
+    body?: unknown;
+    jsonld?: unknown;
+  };
   if (typeof parsed.title !== "string" || typeof parsed.body !== "string") {
     throw new Error("LLM draft missing title/body");
   }

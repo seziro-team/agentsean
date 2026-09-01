@@ -27,6 +27,7 @@ describe("rewriteTitle", () => {
     const src = `<html><head><title>Old</title></head></html>`;
     const out = rewriteTitle(src, "New Title For The Page Here");
     expect(out.ok).toBe(true);
-    if (out.ok) expect(out.after).toContain("<title>New Title For The Page Here</title>");
+    if (out.ok)
+      expect(out.after).toContain("<title>New Title For The Page Here</title>");
   });
 });

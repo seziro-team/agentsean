@@ -1,0 +1,120 @@
+name: Sean made a bad change on my site
+description: A change Sean applied to your live site was wrong, harmful, or unwanted.
+title: "[incident]: "
+labels: ["incident", "priority-high", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > ## ⛔ Stop Sean first
+        >
+        > Before anything else, run:
+        >
+        > ```
+        > sean freeze
+        > ```
+        >
+        > This halts all pending and future changes immediately. Then, if you have not
+        > already, try to undo the specific change:
+        >
+        > ```
+        > sean status          # find the change ID
+        > sean revert <id>     # roll it back
+        > ```
+        >
+        > Once your site is safe, fill in the details below so we can find out why Sean made
+        > this change and stop it from happening to anyone else.
+
+  - type: textarea
+    id: what-changed
+    attributes:
+      label: What did Sean change?
+      description: >
+        Describe the change as precisely as you can — the page or resource, what it
+        looked like before, and what Sean turned it into.
+      placeholder:
+        Sean rewrote the <title> on our pricing page to a keyword-stuffed variant and
+        dropped the brand name.
+    validations:
+      required: true
+
+  - type: input
+    id: change-id
+    attributes:
+      label: Change ID
+      description: The identifier for this change from `sean status`.
+      placeholder: "chg_01H..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: revert-worked
+    attributes:
+      label: Did `sean revert` undo the change?
+      options:
+        - "Yes — revert restored the previous state"
+        - "Partially — some of it reverted, some did not"
+        - "No — revert failed or the change could not be undone"
+        - "I have not tried revert yet"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Affected URL
+      description:
+        The page or resource that was changed. Optional — omit if you would rather not
+        share it publicly.
+      placeholder: https://example.com/pricing
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Site platform
+      options:
+        - WordPress
+        - Shopify
+        - Git
+        - Cloudflare edge
+        - Webflow
+        - Ghost
+        - Wix
+        - BigCommerce
+        - Headless / custom
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How much did this hurt?
+      options:
+        - "Critical — took down the page, broke the site, or caused a visible outage"
+        - "High — damaged SEO, removed important content, or was publicly wrong"
+        - "Medium — incorrect but low-impact, caught before real harm"
+        - "Low — cosmetic or easily reverted, reporting so it gets fixed"
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: "`sean doctor --json` output"
+      description: >
+        Optional but very helpful. Run `sean doctor --json` and paste the output. Redact
+        tokens, secrets, and any domain you would rather not share.
+      render: json
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have run `sean freeze` to stop further changes.
+          required: true
+        - label:
+            I have not included any credentials, API keys, or secrets in this report.
+          required: true

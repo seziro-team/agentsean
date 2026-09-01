@@ -13,7 +13,11 @@ import {
 import { createGa4Client, googleOrganicFilter, type Ga4Client } from "./ga4.js";
 import { queryCruxWithFallback } from "./crux.js";
 import { runPsi } from "./psi.js";
-import { fetchIncidents, seedCuratedChangepoints, upsertIncidents } from "./incidents.js";
+import {
+  fetchIncidents,
+  seedCuratedChangepoints,
+  upsertIncidents,
+} from "./incidents.js";
 import { reconcileSite, type ResidualRow } from "./reconcile.js";
 import {
   persistCrux,
@@ -24,12 +28,7 @@ import {
   persistInspection,
   persistPsi,
 } from "./persist.js";
-import {
-  loadApiKey,
-  loadByoClient,
-  loadGrant,
-  validAccessToken,
-} from "./tokens.js";
+import { loadApiKey, loadByoClient, loadGrant, validAccessToken } from "./tokens.js";
 import { brokerRefreshAccessToken } from "./oauth-broker.js";
 import { resolveOAuthConfig } from "./oauth-config.js";
 import { randomWrapKey } from "./pkce.js";
@@ -141,7 +140,9 @@ export async function syncGoogle(deps: SyncDeps): Promise<SyncResult> {
           if (result) persistInspection(deps.db, deps.siteId, url, result);
         } catch (err) {
           if (err instanceof QuotaExceededError) break;
-          errors.push(`inspect ${url}: ${err instanceof Error ? err.message : String(err)}`);
+          errors.push(
+            `inspect ${url}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
     }
@@ -316,7 +317,14 @@ async function syncGa4(
   for (const row of landing.rows) {
     const date = ga4Date(row.dimensionValues[0] ?? "");
     const page = row.dimensionValues[1] ?? "/";
-    persistGa4Landing(db, siteId, date, page, row.metricValues[0] ?? 0, row.metricValues[1] ?? 0);
+    persistGa4Landing(
+      db,
+      siteId,
+      date,
+      page,
+      row.metricValues[0] ?? 0,
+      row.metricValues[1] ?? 0,
+    );
   }
   return n;
 }

@@ -28,7 +28,9 @@ export class LlmCredentialLeakError extends Error {
 
 export function assertNoSecrets(text: string): void {
   if (WRITE_SECRET_RE.test(text)) {
-    throw new LlmCredentialLeakError("prompt or system contains a credential-shaped token");
+    throw new LlmCredentialLeakError(
+      "prompt or system contains a credential-shaped token",
+    );
   }
 }
 
@@ -208,7 +210,8 @@ async function googleGenerate(
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
     usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
   };
-  const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
+  const text =
+    json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
   const inputTokens = json.usageMetadata?.promptTokenCount ?? 0;
   const outputTokens = json.usageMetadata?.candidatesTokenCount ?? 0;
   return {

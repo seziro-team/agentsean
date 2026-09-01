@@ -1129,5 +1129,5 @@ All accessed **2026-09-01** unless otherwise noted.
 - Difference-in-differences with sample selection (bias when selecting on the outcome) — 2024 arXiv literature, referenced in the Ahrefs-study critique `[2024]`
 
 **Computation**
-- MDE and time-to-significance tables in §6.3 computed by the author (two-sided α=0.05, power=0.80, z=2.802); script at `/tmp/claude-1000/-home-vp2722-seoe/4911f4ca-31de-4720-8fa6-0f77468cd773/scratchpad/power.py`. CV values are calibration estimates, not measured across a corpus.
+- MDE and time-to-significance tables in §6.3 computed by the author (two-sided α=0.05, power=0.80, z=2.802); script at `power.py`. CV values are calibration estimates, not measured across a corpus.
 

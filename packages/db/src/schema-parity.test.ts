@@ -19,8 +19,7 @@ import {
 
 type Dialect = "sqlite" | "pg";
 
-const sortStrings = (values: string[]) =>
-  values.toSorted((a, b) => a.localeCompare(b));
+const sortStrings = (values: string[]) => values.toSorted((a, b) => a.localeCompare(b));
 
 function tablesFrom(mod: Record<string, unknown>) {
   const out = new Map<string, Table>();
@@ -99,9 +98,7 @@ function foreignKeys(table: Table, dialect: Dialect): string[] {
       const ref = fk.reference();
       const cols = sortStrings(ref.columns.map((c) => c.name)).join(",");
       const refTable = getTableName(ref.foreignTable);
-      const refCols = sortStrings(ref.foreignColumns.map((c) => c.name)).join(
-        ",",
-      );
+      const refCols = sortStrings(ref.foreignColumns.map((c) => c.name)).join(",");
       return `${cols}->${refTable}.${refCols} onDelete=${fk.onDelete ?? "none"}`;
     }),
   );
@@ -166,9 +163,7 @@ describe("schema parity", () => {
   });
 
   it("defines only known tables", () => {
-    expect(sortStrings([...sqliteTables.keys()])).toEqual(
-      sortStrings([...ALL_TABLES]),
-    );
+    expect(sortStrings([...sqliteTables.keys()])).toEqual(sortStrings([...ALL_TABLES]));
   });
 
   it("defines the same set of tables on both backends", () => {
@@ -196,9 +191,7 @@ describe("schema parity", () => {
         );
       });
       it("has matching foreign keys (incl. onDelete)", () => {
-        expect(foreignKeys(pgTable, "pg")).toEqual(
-          foreignKeys(sqliteTable, "sqlite"),
-        );
+        expect(foreignKeys(pgTable, "pg")).toEqual(foreignKeys(sqliteTable, "sqlite"));
       });
     });
   }

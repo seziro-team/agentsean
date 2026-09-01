@@ -15,11 +15,7 @@ export async function statusCommand(opts: {
   const home = opts.home ?? defaultSeanHome();
   const info = readPid(home);
   if (!info || !isPidAlive(info.pid)) {
-    emitError(
-      opts.json,
-      { command: "status", running: false },
-      "Sean is not running.",
-    );
+    emitError(opts.json, { command: "status", running: false }, "Sean is not running.");
     return 1;
   }
 

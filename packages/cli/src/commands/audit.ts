@@ -2,11 +2,7 @@ import { openSqlite } from "@agentsean/db";
 import { crawlSite, persistCrawl, persistFindings } from "@agentsean/crawler";
 import { buildReport, flattenForDb } from "@agentsean/analyzers";
 import { loadAuditExtras } from "@agentsean/google";
-import {
-  defaultSeanHome,
-  dbPath,
-  ensureSeanHome,
-} from "@agentsean/daemon";
+import { defaultSeanHome, dbPath, ensureSeanHome } from "@agentsean/daemon";
 import { emit, emitError } from "../output.js";
 
 export async function auditCommand(opts: {
@@ -105,7 +101,13 @@ function formatHuman(p: {
   elapsedMs: number;
   score: { value: number; band: string; version: string; notes: string[] };
   findingCount: number;
-  findings: { id: string; severity: string; priority: number; affected: number; title: string }[];
+  findings: {
+    id: string;
+    severity: string;
+    priority: number;
+    affected: number;
+    title: string;
+  }[];
 }): string {
   const lines = [
     `Sean audit  ${p.url}`,

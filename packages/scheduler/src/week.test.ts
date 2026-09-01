@@ -1,7 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
-import { openSqlite, actions, entitySightings, findings, pages, sites } from "@agentsean/db";
+import {
+  openSqlite,
+  actions,
+  entitySightings,
+  findings,
+  pages,
+  sites,
+} from "@agentsean/db";
 import {
   executeAction,
   KIND_TIER,
@@ -79,7 +86,13 @@ function mockAdapter(applied: string[]): SiteAdapter {
   let body = 'export const metadata = { title: "x" };\n';
   return {
     kind: "git",
-    capabilities: { kind: "git", reads: true, writes: true, pullRequests: true, rollback: true },
+    capabilities: {
+      kind: "git",
+      reads: true,
+      writes: true,
+      pullRequests: true,
+      rollback: true,
+    },
     async read() {
       return { targetRef: "app/page.tsx", body, contentType: "text/plain" };
     },
@@ -203,9 +216,7 @@ describe("unattended week", () => {
     expect(counts.measure).toBe(7);
     expect(counts.surfaces).toBe(1);
     expect(applied.length).toBe(1);
-    expect(
-      applied.every((k) => KIND_TIER[k as ActionKind] <= 2),
-    ).toBe(true);
+    expect(applied.every((k) => KIND_TIER[k as ActionKind] <= 2)).toBe(true);
 
     db.insert(actions)
       .values({
@@ -222,11 +233,7 @@ describe("unattended week", () => {
         createdAt: now.toISOString(),
       })
       .run();
-    const queuedT3 = db
-      .select()
-      .from(actions)
-      .where(eq(actions.tier, "T3"))
-      .all();
+    const queuedT3 = db.select().from(actions).where(eq(actions.tier, "T3")).all();
     expect(queuedT3.every((r) => r.state === "queued" && !r.appliedAt)).toBe(true);
 
     sqlite.close();

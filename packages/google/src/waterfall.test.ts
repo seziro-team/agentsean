@@ -19,8 +19,12 @@ describe("GA4↔GSC waterfall", () => {
     expect(w.euProperty).toBe(true);
     expect(w.euInvisibleShare).toBeGreaterThanOrEqual(0.4);
     expect(w.notes).toMatch(/residual/i);
-    expect(w.steps.some((s) => s.code === "GSC_ANONYMIZED_QUERY" && s.applies)).toBe(true);
-    expect(w.steps.some((s) => s.code === "GA4_CONSENT_DENIED" && s.applies)).toBe(true);
+    expect(w.steps.some((s) => s.code === "GSC_ANONYMIZED_QUERY" && s.applies)).toBe(
+      true,
+    );
+    expect(w.steps.some((s) => s.code === "GA4_CONSENT_DENIED" && s.applies)).toBe(
+      true,
+    );
   });
 
   it("defaults anonymized share to the Ahrefs 46.8% when query rows are missing", () => {

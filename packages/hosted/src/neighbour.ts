@@ -33,7 +33,12 @@ function bump(
     .all()
     .find((r) => r.windowStart === windowStart);
   if (!row) {
-    const initial = { jobs: 0, crawlPages: 0, concurrent: 0, [field]: Math.max(0, delta) };
+    const initial = {
+      jobs: 0,
+      crawlPages: 0,
+      concurrent: 0,
+      [field]: Math.max(0, delta),
+    };
     db.insert(quotaWindows)
       .values({
         id: randomUUID(),
@@ -54,7 +59,11 @@ function bump(
   return next;
 }
 
-export function allowTenantJob(db: SqliteDatabase, tenantId: string, now = new Date()): boolean {
+export function allowTenantJob(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): boolean {
   const n = bump(db, tenantId, minuteBucket(now), "jobs", 1);
   if (n > JOBS_PER_MIN) {
     bump(db, tenantId, minuteBucket(now), "jobs", -1);
@@ -72,12 +81,18 @@ export function allowTenantCrawlPages(
   const n = bump(db, tenantId, dayBucket(now), "crawlPages", pages);
   if (n > CRAWL_PAGES_PER_DAY) {
     bump(db, tenantId, dayBucket(now), "crawlPages", -pages);
-    throw new NeighbourLimitError(`Tenant crawl cap is ${CRAWL_PAGES_PER_DAY} pages/day.`);
+    throw new NeighbourLimitError(
+      `Tenant crawl cap is ${CRAWL_PAGES_PER_DAY} pages/day.`,
+    );
   }
   return true;
 }
 
-export function acquireConcurrency(db: SqliteDatabase, tenantId: string, now = new Date()): void {
+export function acquireConcurrency(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): void {
   const n = bump(db, tenantId, dayBucket(now), "concurrent", 1);
   if (n > CONCURRENT_JOBS) {
     bump(db, tenantId, dayBucket(now), "concurrent", -1);
@@ -85,6 +100,10 @@ export function acquireConcurrency(db: SqliteDatabase, tenantId: string, now = n
   }
 }
 
-export function releaseConcurrency(db: SqliteDatabase, tenantId: string, now = new Date()): void {
+export function releaseConcurrency(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): void {
   bump(db, tenantId, dayBucket(now), "concurrent", -1);
 }

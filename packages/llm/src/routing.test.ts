@@ -19,7 +19,9 @@ describe("model routing", () => {
 
 describe("D4: LLM never holds write credentials", () => {
   it("refuses prompts that look like secrets", () => {
-    expect(() => assertNoSecrets("here is a client_secret=abc")).toThrow(LlmCredentialLeakError);
+    expect(() => assertNoSecrets("here is a client_secret=abc")).toThrow(
+      LlmCredentialLeakError,
+    );
     expect(() => assertNoSecrets("rewrite this title tag")).not.toThrow();
   });
 
@@ -43,7 +45,11 @@ describe("D4: LLM never holds write credentials", () => {
           };
         },
       },
-      { class: "mid", system: "You emit JSON actions.", prompt: "Refresh the about page." },
+      {
+        class: "mid",
+        system: "You emit JSON actions.",
+        prompt: "Refresh the about page.",
+      },
     );
     expect(out.text).toBe("ok");
     expect(seen.join(" ")).not.toMatch(/sk-ant-SECRET/);

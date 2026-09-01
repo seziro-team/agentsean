@@ -53,7 +53,9 @@ export async function serviceCommand(opts: {
       }
       const { createInterface } = await import("node:readline/promises");
       const rl = createInterface({ input: process.stdin, output: process.stdout });
-      const answer = await rl.question(`This will write:\n${plan.summary}\n\nType yes to continue: `);
+      const answer = await rl.question(
+        `This will write:\n${plan.summary}\n\nType yes to continue: `,
+      );
       rl.close();
       if (answer.trim().toLowerCase() !== "yes") {
         emit(opts.json, { ok: true, command: "service", aborted: true }, "Aborted.");

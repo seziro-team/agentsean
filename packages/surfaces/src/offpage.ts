@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
-import { inbound404s, mentions, outreachDrafts, type SqliteDatabase } from "@agentsean/db";
+import {
+  inbound404s,
+  mentions,
+  outreachDrafts,
+  type SqliteDatabase,
+} from "@agentsean/db";
 
 export type MentionInput = {
   url: string;
@@ -9,7 +14,11 @@ export type MentionInput = {
   kind?: "unlinked" | "inbound_404" | "prospect" | undefined;
 };
 
-export function scoreProspect(opts: { linked: boolean; domainRating?: number | undefined; branded: boolean }): number {
+export function scoreProspect(opts: {
+  linked: boolean;
+  domainRating?: number | undefined;
+  branded: boolean;
+}): number {
   const mention = opts.branded ? 0.68 : 0.2;
   const dr = Math.min(1, (opts.domainRating ?? 20) / 100) * 0.3;
   const unlinkBonus = opts.linked ? 0 : 0.25;
@@ -49,7 +58,8 @@ export function discoverMentions(opts: {
 export function findInbound404s(
   crawled: Array<{ url: string; statusCode: number | null; inlinks: string[] }>,
 ): Array<{ sourceUrl: string; targetUrl: string; status: number | null }> {
-  const out: Array<{ sourceUrl: string; targetUrl: string; status: number | null }> = [];
+  const out: Array<{ sourceUrl: string; targetUrl: string; status: number | null }> =
+    [];
   for (const p of crawled) {
     if (p.statusCode !== 404 && p.statusCode !== 410) continue;
     for (const src of p.inlinks) {
@@ -59,7 +69,12 @@ export function findInbound404s(
   return out;
 }
 
-export function saveMentions(db: SqliteDatabase, siteId: string, rows: MentionInput[], now = new Date()): number {
+export function saveMentions(
+  db: SqliteDatabase,
+  siteId: string,
+  rows: MentionInput[],
+  now = new Date(),
+): number {
   let n = 0;
   const ts = now.toISOString();
   for (const row of rows) {
@@ -117,7 +132,12 @@ export function saveInbound404s(
   return rows.length;
 }
 
-export function draftOutreach(db: SqliteDatabase, siteId: string, mentionId: string, now = new Date()): string {
+export function draftOutreach(
+  db: SqliteDatabase,
+  siteId: string,
+  mentionId: string,
+  now = new Date(),
+): string {
   const mention = db.select().from(mentions).where(eq(mentions.id, mentionId)).get();
   const id = randomUUID();
   const brand = "your brand";
@@ -137,11 +157,15 @@ export function draftOutreach(db: SqliteDatabase, siteId: string, mentionId: str
 }
 
 export function refuseUnauthedSend(): never {
-  throw new Error("Outreach send is T3 permanently. Per-message approval is required. No auto-send setting exists.");
+  throw new Error(
+    "Outreach send is T3 permanently. Per-message approval is required. No auto-send setting exists.",
+  );
 }
 
 export function refuseDisavowWithoutManualAction(): never {
-  throw new Error("Disavow is locked unless a Search Console manual action exists. GSC has no disavow API.");
+  throw new Error(
+    "Disavow is locked unless a Search Console manual action exists. GSC has no disavow API.",
+  );
 }
 
 export function listMentions(db: SqliteDatabase, siteId: string) {
@@ -149,7 +173,11 @@ export function listMentions(db: SqliteDatabase, siteId: string) {
 }
 
 export function listOutreach(db: SqliteDatabase, siteId: string) {
-  return db.select().from(outreachDrafts).where(eq(outreachDrafts.siteId, siteId)).all();
+  return db
+    .select()
+    .from(outreachDrafts)
+    .where(eq(outreachDrafts.siteId, siteId))
+    .all();
 }
 
 export function listInbound404s(db: SqliteDatabase, siteId: string) {

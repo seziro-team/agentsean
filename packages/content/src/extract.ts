@@ -48,7 +48,9 @@ export function extractEntities(text: string, extra: string[] = []): string[] {
     if (STOP.has(lower)) continue;
     counts.set(lower, (counts.get(lower) ?? 0) + 1);
   }
-  const phrases = [...plain.matchAll(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})\b/g)].map((m) => m[1] ?? "");
+  const phrases = [...plain.matchAll(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})\b/g)].map(
+    (m) => m[1] ?? "",
+  );
   for (const p of phrases) {
     if (p.split(" ").length < 2) continue;
     const lower = p.toLowerCase();
@@ -67,7 +69,10 @@ export function extractEntities(text: string, extra: string[] = []): string[] {
 export function extractQuestions(queries: QueryDaily[], headings: string[]): string[] {
   const q = new Set<string>();
   for (const row of queries) {
-    if (/\b(who|what|when|where|why|how|should|can)\b/i.test(row.query) || row.query.includes("?")) {
+    if (
+      /\b(who|what|when|where|why|how|should|can)\b/i.test(row.query) ||
+      row.query.includes("?")
+    ) {
       q.add(row.query.trim());
     }
   }

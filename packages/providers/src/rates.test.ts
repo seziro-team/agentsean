@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DFS_RATES, freeEstimate, keywordsDataTasks, paidEstimate, roundUsd } from "./rates.js";
+import {
+  DFS_RATES,
+  freeEstimate,
+  keywordsDataTasks,
+  paidEstimate,
+  roundUsd,
+} from "./rates.js";
 
 describe("provider rates", () => {
   it("quotes DataForSEO SERP at $0.60/1k before the call", () => {

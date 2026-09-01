@@ -78,7 +78,9 @@ export function readFile(filePath: string): string {
   return fs.readFileSync(filePath, "utf8");
 }
 
-export function parseGithubRemote(remote: string): { owner: string; repo: string } | null {
+export function parseGithubRemote(
+  remote: string,
+): { owner: string; repo: string } | null {
   const ssh = /^git@github\.com:([^/]+)\/(.+?)(?:\.git)?$/.exec(remote);
   if (ssh) return { owner: ssh[1]!, repo: ssh[2]! };
   const https = /^https:\/\/github\.com\/([^/]+)\/(.+?)(?:\.git)?$/.exec(remote);

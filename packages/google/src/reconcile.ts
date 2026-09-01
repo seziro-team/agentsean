@@ -20,7 +20,10 @@ export type ResidualRow = {
  * consent mode drops GA4, GSC de-bots server-side. The residual is the
  * explicit gap, not a bug. Annotate dates that overlap Google updates.
  */
-export function computeResidual(gscClicks: number, ga4OrganicSessions: number): ResidualRow {
+export function computeResidual(
+  gscClicks: number,
+  ga4OrganicSessions: number,
+): ResidualRow {
   const residual = ga4OrganicSessions - gscClicks;
   const denom = Math.max(gscClicks, ga4OrganicSessions, 1);
   return {
@@ -37,14 +40,12 @@ export function computeResidual(gscClicks: number, ga4OrganicSessions: number): 
 function residualNote(gsc: number, ga4: number): string {
   if (gsc === 0 && ga4 === 0) return "both series empty";
   if (ga4 === 0) return "GA4 organic sessions are zero — check tracking / consent mode";
-  if (gsc === 0) return "GSC clicks are zero — property may be unverified or still lagging";
+  if (gsc === 0)
+    return "GSC clicks are zero — property may be unverified or still lagging";
   return "residual = GA4 Google-organic sessions − GSC clicks (expected; not a data bug)";
 }
 
-export function reconcileSite(
-  db: SqliteDatabase,
-  siteId: string,
-): ResidualRow[] {
+export function reconcileSite(db: SqliteDatabase, siteId: string): ResidualRow[] {
   const gsc = db.select().from(gscDaily).where(eq(gscDaily.siteId, siteId)).all();
   const ga4 = db.select().from(ga4Daily).where(eq(ga4Daily.siteId, siteId)).all();
   const gscByDate = new Map<string, number>();
@@ -80,7 +81,12 @@ function persistResidual(db: SqliteDatabase, siteId: string, row: ResidualRow): 
   const existing = db
     .select()
     .from(gscGa4Reconciliation)
-    .where(and(eq(gscGa4Reconciliation.siteId, siteId), eq(gscGa4Reconciliation.date, row.date)))
+    .where(
+      and(
+        eq(gscGa4Reconciliation.siteId, siteId),
+        eq(gscGa4Reconciliation.date, row.date),
+      ),
+    )
     .get();
   const values = {
     gscClicks: row.gscClicks,

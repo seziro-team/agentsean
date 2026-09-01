@@ -61,7 +61,9 @@ describe("analyzeCrawl", () => {
       const ids = new Set(findings.map((f) => f.ruleId));
       expect(ids.has("ONP.TITLE_MISSING")).toBe(true);
       expect(ids.has("ONP.H1_MISSING")).toBe(true);
-      expect(ids.has("RESP.4XX_INTERNAL") || ids.has("LINK.BROKEN_INTERNAL")).toBe(true);
+      expect(ids.has("RESP.4XX_INTERNAL") || ids.has("LINK.BROKEN_INTERNAL")).toBe(
+        true,
+      );
       expect(score.version).toMatch(/^ss-/);
       expect(findings[0]?.priority).toBeGreaterThan(0);
     } finally {

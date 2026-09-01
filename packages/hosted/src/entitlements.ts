@@ -35,7 +35,10 @@ export function hasFeature(plan: Plan, feature: EntitlementFeature): boolean {
   }
 }
 
-export function assertEntitlement(planId: PlanId | string, feature: EntitlementFeature): void {
+export function assertEntitlement(
+  planId: PlanId | string,
+  feature: EntitlementFeature,
+): void {
   if (!isHostedMode()) return;
   const plan = planOf(planId);
   if (hasFeature(plan, feature)) return;

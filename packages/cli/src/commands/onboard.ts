@@ -122,7 +122,9 @@ export async function onboardCommand(opts: {
       next: ["sean service install", "sean connect google", "sean doctor"],
     },
     [
-      url ? `Sean is on ${url} (${cms}).` : "Sean is provisioned. Pass a URL to crawl now, or open the dashboard.",
+      url
+        ? `Sean is on ${url} (${cms}).`
+        : "Sean is provisioned. Pass a URL to crawl now, or open the dashboard.",
       `Dashboard: ${dashboard}`,
       enableTelemetry
         ? `Telemetry on. Preview: ${JSON.stringify(preview)}`

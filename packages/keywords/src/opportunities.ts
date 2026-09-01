@@ -13,7 +13,14 @@ export function aggregateQueries(rows: QueryDaily[]): Array<{
 }> {
   const map = new Map<
     string,
-    { query: string; clicks: number; impressions: number; position: number; n: number; page: string | null }
+    {
+      query: string;
+      clicks: number;
+      impressions: number;
+      position: number;
+      n: number;
+      page: string | null;
+    }
   >();
   for (const r of rows) {
     const cur = map.get(r.query) ?? {
@@ -44,7 +51,9 @@ export function aggregateQueries(rows: QueryDaily[]): Array<{
 
 export function strikingDistance(rows: QueryDaily[]): Opportunity[] {
   return aggregateQueries(rows)
-    .filter((r) => r.position !== null && r.position >= STRIKE_LO && r.position <= STRIKE_HI)
+    .filter(
+      (r) => r.position !== null && r.position >= STRIKE_LO && r.position <= STRIKE_HI,
+    )
     .toSorted((a, b) => b.clicks - a.clicks)
     .map((r) => ({
       query: r.query,
@@ -76,7 +85,10 @@ export function demandOpportunities(rows: QueryDaily[]): Opportunity[] {
     }));
 }
 
-export function expansionOpportunities(related: KeywordRow[], known: Set<string>): Opportunity[] {
+export function expansionOpportunities(
+  related: KeywordRow[],
+  known: Set<string>,
+): Opportunity[] {
   return related
     .filter((r) => !known.has(r.query.toLowerCase()))
     .map((r) => ({

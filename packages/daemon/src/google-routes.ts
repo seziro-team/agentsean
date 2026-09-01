@@ -2,7 +2,14 @@ import { randomUUID } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import type { SqliteDatabase } from "@agentsean/db";
-import { googleChangepoints, gscConnections, ga4Connections, gscGa4Reconciliation, reconciliationWaterfall, sites } from "@agentsean/db";
+import {
+  googleChangepoints,
+  gscConnections,
+  ga4Connections,
+  gscGa4Reconciliation,
+  reconciliationWaterfall,
+  sites,
+} from "@agentsean/db";
 import type { CredentialStore } from "@agentsean/credentials";
 import {
   bindProperties,
@@ -58,7 +65,10 @@ function ensureSite(db: SqliteDatabase, origin: string): string {
   return id;
 }
 
-export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOptions): void {
+export function registerGoogleRoutes(
+  app: FastifyInstance,
+  opts: GoogleRouteOptions,
+): void {
   const html = connectPageHtml();
 
   app.get("/connect", async (_req, reply) => {
@@ -69,10 +79,18 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
     const grant = await loadGrant(opts.store);
     const site = opts.db.select().from(sites).all()[0];
     const gsc = site
-      ? opts.db.select().from(gscConnections).where(eq(gscConnections.siteId, site.id)).get()
+      ? opts.db
+          .select()
+          .from(gscConnections)
+          .where(eq(gscConnections.siteId, site.id))
+          .get()
       : undefined;
     const ga4 = site
-      ? opts.db.select().from(ga4Connections).where(eq(ga4Connections.siteId, site.id)).get()
+      ? opts.db
+          .select()
+          .from(ga4Connections)
+          .where(eq(ga4Connections.siteId, site.id))
+          .get()
       : undefined;
     return {
       connected: Boolean(grant),
@@ -120,7 +138,12 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
   });
 
   app.get("/oauth/callback", async (req, reply) => {
-    const q = req.query as { code?: string; state?: string; payload?: string; error?: string };
+    const q = req.query as {
+      code?: string;
+      state?: string;
+      payload?: string;
+      error?: string;
+    };
     if (q.error) {
       return reply.redirect(`/connect?error=${encodeURIComponent(q.error)}`);
     }
@@ -149,7 +172,9 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
         siteId: site?.id,
       });
     } catch (err) {
-      return reply.code(400).send({ error: err instanceof Error ? err.message : String(err) });
+      return reply
+        .code(400)
+        .send({ error: err instanceof Error ? err.message : String(err) });
     }
   });
 
@@ -237,7 +262,9 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
         };
       }
     } catch (err) {
-      return reply.code(400).send({ error: err instanceof Error ? err.message : String(err) });
+      return reply
+        .code(400)
+        .send({ error: err instanceof Error ? err.message : String(err) });
     }
   });
 
@@ -263,7 +290,9 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
       });
       return { ok: true, ...result, residualRows: result.residualRows.slice(-14) };
     } catch (err) {
-      return reply.code(400).send({ error: err instanceof Error ? err.message : String(err) });
+      return reply
+        .code(400)
+        .send({ error: err instanceof Error ? err.message : String(err) });
     }
   });
 

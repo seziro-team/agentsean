@@ -82,8 +82,11 @@ export function isInternalUrl(url: string, origin: string): boolean {
   try {
     const u = new URL(url);
     const o = new URL(origin);
-    return u.hostname === o.hostname || u.hostname === `www.${o.hostname}` ||
-      o.hostname === `www.${u.hostname}`;
+    return (
+      u.hostname === o.hostname ||
+      u.hostname === `www.${o.hostname}` ||
+      o.hostname === `www.${u.hostname}`
+    );
   } catch {
     return false;
   }
@@ -101,9 +104,10 @@ export function pathOf(url: string): string {
 export function templateKey(url: string): string {
   try {
     const u = new URL(url);
-    const segs = u.pathname.split("/").filter(Boolean).map((s) =>
-      /^\d+$/.test(s) || /^[0-9a-f-]{8,}$/i.test(s) ? ":id" : s,
-    );
+    const segs = u.pathname
+      .split("/")
+      .filter(Boolean)
+      .map((s) => (/^\d+$/.test(s) || /^[0-9a-f-]{8,}$/i.test(s) ? ":id" : s));
     return `${segs.length}:${segs.join("/")}`;
   } catch {
     return "0:";

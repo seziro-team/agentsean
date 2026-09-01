@@ -14,10 +14,18 @@ import { DFS_RATES, keywordsDataTasks, paidEstimate } from "./rates.js";
 const DFS_BASE = "https://api.dataforseo.com";
 
 export type DataForSeoClient = {
-  searchVolume: (queries: string[], locationCode?: number) => Promise<{ rows: VolumeRow[]; actualUsd: number }>;
+  searchVolume: (
+    queries: string[],
+    locationCode?: number,
+  ) => Promise<{ rows: VolumeRow[]; actualUsd: number }>;
   related: (seed: string) => Promise<{ rows: KeywordRow[]; actualUsd: number }>;
-  serp: (query: string, locationCode?: number) => Promise<{ result: SerpResult; actualUsd: number }>;
-  backlinks: (target: string) => Promise<{ overview: BacklinkOverview; actualUsd: number }>;
+  serp: (
+    query: string,
+    locationCode?: number,
+  ) => Promise<{ result: SerpResult; actualUsd: number }>;
+  backlinks: (
+    target: string,
+  ) => Promise<{ overview: BacklinkOverview; actualUsd: number }>;
 };
 
 /**
@@ -76,9 +84,10 @@ export function createDataForSeoClient(opts: {
       return { rows, actualUsd: env.cost ?? 0 };
     },
     async related(seed) {
-      const env = await post("/v3/keywords_data/google_ads/keywords_for_keywords/live", [
-        { keywords: [seed], location_code: 2840, language_code: "en" },
-      ]);
+      const env = await post(
+        "/v3/keywords_data/google_ads/keywords_for_keywords/live",
+        [{ keywords: [seed], location_code: 2840, language_code: "en" }],
+      );
       const rows: KeywordRow[] = [];
       for (const item of taskItems(env)) {
         const rec = asRecord(item);
@@ -117,7 +126,9 @@ export function createDataForSeoClient(opts: {
             rank: num(rec["rank_group"] ?? rec["rank_absolute"]) ?? items.length + 1,
             url,
             title: String(rec["title"] ?? ""),
-            ...(typeof rec["description"] === "string" ? { snippet: rec["description"] } : {}),
+            ...(typeof rec["description"] === "string"
+              ? { snippet: rec["description"] }
+              : {}),
           });
         }
         if (type === "people_also_ask" && Array.isArray(rec["items"])) {
@@ -147,7 +158,9 @@ export function createDataForSeoClient(opts: {
       };
     },
     async backlinks(target) {
-      const env = await post("/v3/backlinks/summary/live", [{ target, include_subdomains: true }]);
+      const env = await post("/v3/backlinks/summary/live", [
+        { target, include_subdomains: true },
+      ]);
       const rec = asRecord(taskItems(env)[0]) ?? {};
       return {
         overview: {
@@ -210,7 +223,9 @@ export function createDataForSeoSerp(client: DataForSeoClient): SerpCapability {
   };
 }
 
-export function createDataForSeoBacklinks(client: DataForSeoClient): BacklinksCapability {
+export function createDataForSeoBacklinks(
+  client: DataForSeoClient,
+): BacklinksCapability {
   return {
     id: "dataforseo",
     available: true,
@@ -285,11 +300,14 @@ function serpItems(env: DfsEnvelope): unknown[] {
 }
 
 function asRecord(v: unknown): Record<string, unknown> | null {
-  return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
+  return v && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : null;
 }
 
 function num(v: unknown): number | null {
   if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) return Number(v);
+  if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v)))
+    return Number(v);
   return null;
 }

@@ -78,14 +78,21 @@ describe("git adapter", () => {
       apiBase: "http://127.0.0.1:9",
       fetch: (async (_url, init) => {
         prs.push(JSON.parse(String(init?.body ?? "{}")));
-        return new Response(JSON.stringify({ html_url: "https://github.com/acme/demo/pull/1" }), {
-          status: 201,
-        });
+        return new Response(
+          JSON.stringify({ html_url: "https://github.com/acme/demo/pull/1" }),
+          {
+            status: 201,
+          },
+        );
       }) as typeof fetch,
     });
-    execFileSync("git", ["remote", "add", "origin", "https://github.com/acme/demo.git"], {
-      cwd: dir,
-    });
+    execFileSync(
+      "git",
+      ["remote", "add", "origin", "https://github.com/acme/demo.git"],
+      {
+        cwd: dir,
+      },
+    );
 
     const action = {
       id: randomUUID(),

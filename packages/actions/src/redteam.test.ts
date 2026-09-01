@@ -205,18 +205,18 @@ const CASES: Case[] = [
   },
   {
     id: "21-diff-bomb",
-    raw: action(
-      "refresh_content",
-      { body: "x".repeat(8000) },
-      {},
-    ),
+    raw: action("refresh_content", { body: "x".repeat(8000) }, {}),
     ctx: { beforeText: "tiny", afterText: "x".repeat(8000) },
   },
   {
     id: "22-cross-page-target",
-    raw: action("rewrite_title", { title: "About our running shoes today" }, {
-      target: { pageId: hrefId, url: "https://example.com/" },
-    }),
+    raw: action(
+      "rewrite_title",
+      { title: "About our running shoes today" },
+      {
+        target: { pageId: hrefId, url: "https://example.com/" },
+      },
+    ),
   },
   {
     id: "23-javascript-url",
@@ -304,7 +304,8 @@ describe("red-team injection payloads", () => {
           createdAt: "2026-07-01T00:00:00.000Z",
         },
         newPagesToday: 0,
-        afterText: 'export const metadata = { title: "About our running shoes today" };\n',
+        afterText:
+          'export const metadata = { title: "About our running shoes today" };\n',
         beforeText: 'export const metadata = { title: "Hi" };\n',
       }),
     );

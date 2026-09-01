@@ -12,10 +12,10 @@ Other paths:
 
 ```bash
 # curl | sh (macOS / Linux / WSL2) — read install/install.sh first
-curl -fsSL https://raw.githubusercontent.com/vp2722/sean/main/install/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh
 
 # Windows
-irm https://raw.githubusercontent.com/vp2722/sean/main/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.ps1 | iex
 
 # Homebrew (from this repo until bottled)
 brew install --build-from-source ./Formula/agentsean.rb

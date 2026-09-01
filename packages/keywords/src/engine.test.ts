@@ -70,7 +70,9 @@ describe("keywords engine", () => {
 
     expect(result.paidUpgrade).toBe(false);
     expect(result.strikingDistance.some((r) => r.query === "seo tools")).toBe(true);
-    expect(result.opportunities.some((r) => r.kind === "expansion" && r.source === "bing")).toBe(true);
+    expect(
+      result.opportunities.some((r) => r.kind === "expansion" && r.source === "bing"),
+    ).toBe(true);
     expect(result.clusters.length).toBeGreaterThan(0);
     expect(result.embeddingsModel).toBe("local_hash");
     expect(result.ranks).toEqual([]);
@@ -110,8 +112,18 @@ describe("keywords engine", () => {
               result: [
                 {
                   items: [
-                    { type: "organic", rank_group: 4, url: "https://example.com/tools", title: "Tools" },
-                    { type: "organic", rank_group: 1, url: "https://other.test/", title: "Other" },
+                    {
+                      type: "organic",
+                      rank_group: 4,
+                      url: "https://example.com/tools",
+                      title: "Tools",
+                    },
+                    {
+                      type: "organic",
+                      rank_group: 1,
+                      url: "https://other.test/",
+                      title: "Other",
+                    },
                   ],
                 },
               ],

@@ -7,7 +7,13 @@ export function createGscKeywords(rows: KeywordRow[]): KeywordsCapability {
     id: "gsc",
     demand(): ProviderCall<KeywordRow[]> {
       return {
-        estimate: freeEstimate("gsc", "keywords", "search_analytics", rows.length, "GSC query demand"),
+        estimate: freeEstimate(
+          "gsc",
+          "keywords",
+          "search_analytics",
+          rows.length,
+          "GSC query demand",
+        ),
         async run() {
           return rows.map((r) => ({ ...r, source: r.source || "gsc" }));
         },
@@ -15,11 +21,16 @@ export function createGscKeywords(rows: KeywordRow[]): KeywordsCapability {
     },
     related(seed: string): ProviderCall<KeywordRow[]> {
       const needle = seed.toLowerCase();
-      const hits = rows.filter((r) => r.query.toLowerCase().includes(needle) && r.query.toLowerCase() !== needle);
+      const hits = rows.filter(
+        (r) =>
+          r.query.toLowerCase().includes(needle) && r.query.toLowerCase() !== needle,
+      );
       return {
         estimate: freeEstimate("gsc", "keywords", "related_from_demand", hits.length),
         async run() {
-          return hits.map((r) => Object.assign({}, r, { source: "gsc", relatedTo: seed }));
+          return hits.map((r) =>
+            Object.assign({}, r, { source: "gsc", relatedTo: seed }),
+          );
         },
       };
     },

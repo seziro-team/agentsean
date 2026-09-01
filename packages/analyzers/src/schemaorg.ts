@@ -178,7 +178,13 @@ function validateNode(node: unknown, acc: JsonLdIssue[] = []): JsonLdIssue[] {
         });
       }
     }
-    for (const key of ["datePublished", "dateModified", "startDate", "endDate", "datePosted"]) {
+    for (const key of [
+      "datePublished",
+      "dateModified",
+      "startDate",
+      "endDate",
+      "datePosted",
+    ]) {
       const v = obj[key];
       if (typeof v === "string" && !isIsoDate(v)) {
         acc.push({
@@ -205,7 +211,9 @@ function validateNode(node: unknown, acc: JsonLdIssue[] = []): JsonLdIssue[] {
 }
 
 function isIsoDate(v: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?$/.test(v);
+  return /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?$/.test(
+    v,
+  );
 }
 
 export function flattenTypes(node: unknown, acc: string[] = []): string[] {

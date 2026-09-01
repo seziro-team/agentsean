@@ -52,9 +52,8 @@ export function mcpResponse(opts: {
   }
   const hasMeta = meta != null && Object.keys(meta).length > 0;
   if (opts.structuredContent) {
-    result.structuredContent = hasMeta && meta
-      ? { ...opts.structuredContent, meta }
-      : opts.structuredContent;
+    result.structuredContent =
+      hasMeta && meta ? { ...opts.structuredContent, meta } : opts.structuredContent;
   } else if (hasMeta && meta) {
     result.structuredContent = { meta };
   }

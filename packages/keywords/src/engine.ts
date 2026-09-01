@@ -80,7 +80,9 @@ export async function runKeywordsJob(
     queries: track,
     stack: opts.stack,
     now,
-    ...(opts.dailyBudgetUsd !== undefined ? { dailyBudgetUsd: opts.dailyBudgetUsd } : {}),
+    ...(opts.dailyBudgetUsd !== undefined
+      ? { dailyBudgetUsd: opts.dailyBudgetUsd }
+      : {}),
   });
   quotes.push(...ranks.quotes);
   if (!ranks.skipped) saveRanks(db, opts.siteId, ranks.ranks, now);

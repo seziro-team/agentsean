@@ -1,0 +1,70 @@
+name: Feature request
+description: Propose a new capability or a change to how Sean works.
+title: "[feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please search open issues and
+        [Discussions](https://github.com/seziro-team/agentsean/discussions) to see if this
+        has already been raised. Framing the problem clearly is more useful than proposing a
+        specific implementation.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: >
+        Describe the underlying need, not just the feature. What are you trying to
+        accomplish, and where does Sean get in the way today?
+      placeholder:
+        I run Sean across a dozen client sites and cannot tell at a glance which ones
+        have pending changes awaiting approval.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What you would like Sean to do. Be as concrete as you can.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description:
+        Other approaches, workarounds, or existing tools you have tried or thought
+        about.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area does this touch?
+      options:
+        - Crawler
+        - Analyzers
+        - Actions / validator
+        - Adapters
+        - Content engine
+        - Keywords
+        - Measurement
+        - Daemon / dashboard
+        - CLI
+        - Hosted
+        - Docs
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Confirmation
+      options:
+        - label:
+            I have searched existing issues and Discussions and did not find this
+            already proposed.
+          required: true

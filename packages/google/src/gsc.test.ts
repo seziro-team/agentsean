@@ -20,7 +20,16 @@ describe("GSC client", () => {
         calls.push(JSON.parse(String(init?.body)));
         const body = JSON.parse(String(init?.body)) as { startRow?: number };
         const start = body.startRow ?? 0;
-        const rows = start === 0 ? Array.from({ length: 25000 }, () => ({ keys: ["q"], clicks: 1, impressions: 2, ctr: 0.5, position: 3 })) : [{ keys: ["z"], clicks: 1, impressions: 1, ctr: 1, position: 1 }];
+        const rows =
+          start === 0
+            ? Array.from({ length: 25000 }, () => ({
+                keys: ["q"],
+                clicks: 1,
+                impressions: 2,
+                ctr: 0.5,
+                position: 3,
+              }))
+            : [{ keys: ["z"], clicks: 1, impressions: 1, ctr: 1, position: 1 }];
         return new Response(JSON.stringify({ rows }), {
           status: 200,
           headers: { "content-type": "application/json" },

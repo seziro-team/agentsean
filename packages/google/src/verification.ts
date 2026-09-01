@@ -4,11 +4,7 @@ import { bearer, googleFetch, type GoogleHttp } from "./http.js";
 const BASE = "https://www.googleapis.com/siteVerification/v1";
 
 export type VerificationMethod =
-  | "META"
-  | "FILE"
-  | "ANALYTICS"
-  | "TAG_MANAGER"
-  | "DNS_TXT";
+  "META" | "FILE" | "ANALYTICS" | "TAG_MANAGER" | "DNS_TXT";
 
 export type VerificationToken = {
   method: VerificationMethod;
@@ -69,12 +65,15 @@ export function createSiteVerificationClient(opts: {
     },
 
     async insert(identifier, method, type = "SITE") {
-      await request(`${BASE}/webResource?verificationMethod=${encodeURIComponent(method)}`, {
-        method: "POST",
-        body: {
-          site: { type, identifier },
+      await request(
+        `${BASE}/webResource?verificationMethod=${encodeURIComponent(method)}`,
+        {
+          method: "POST",
+          body: {
+            site: { type, identifier },
+          },
         },
-      });
+      );
     },
   };
 }

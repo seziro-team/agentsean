@@ -3,7 +3,13 @@ import { aiRuns, findings, pages, sites, type SqliteDatabase } from "@agentsean/
 import { listClusters, listKeywords, listRanks } from "@agentsean/keywords";
 import { listClaims, sitePowerBrief, monthlyClicksForSite } from "@agentsean/measure";
 import { AEO_REFUSALS, listInbound404s, listMentions } from "@agentsean/surfaces";
-import { CAPABILITIES, DFS_RATES, freeEstimate, paidEstimate, keywordsDataTasks } from "@agentsean/providers";
+import {
+  CAPABILITIES,
+  DFS_RATES,
+  freeEstimate,
+  paidEstimate,
+  keywordsDataTasks,
+} from "@agentsean/providers";
 import { mcpResponse, type CallToolResult } from "./formatters.js";
 import { formatMcpTable } from "./table.js";
 
@@ -16,7 +22,8 @@ export type McpTool = {
 export const MCP_TOOLS: McpTool[] = [
   {
     name: "keyword_opportunities",
-    description: "Keyword opportunities from GSC demand, striking distance, and free expansion. Zero paid keys required.",
+    description:
+      "Keyword opportunities from GSC demand, striking distance, and free expansion. Zero paid keys required.",
     inputSchema: {
       type: "object",
       properties: { origin: { type: "string" } },
@@ -24,7 +31,8 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "keyword_clusters",
-    description: "Semantic-then-SERP keyword clusters (cosine ≈ 0.78, then ≥3 shared top-10 URLs when a licensed SERP is configured).",
+    description:
+      "Semantic-then-SERP keyword clusters (cosine ≈ 0.78, then ≥3 shared top-10 URLs when a licensed SERP is configured).",
     inputSchema: {
       type: "object",
       properties: { origin: { type: "string" } },
@@ -40,7 +48,8 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "rank_snapshots",
-    description: "Weekly licensed rank snapshots. Empty unless a DataForSEO key is configured — Sean never scrapes Google.",
+    description:
+      "Weekly licensed rank snapshots. Empty unless a DataForSEO key is configured — Sean never scrapes Google.",
     inputSchema: {
       type: "object",
       properties: { origin: { type: "string" } },
@@ -48,11 +57,15 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "estimate_provider_cost",
-    description: "Return the DataForSEO cost estimate for a capability *before* any call. Free stack is $0.",
+    description:
+      "Return the DataForSEO cost estimate for a capability *before* any call. Free stack is $0.",
     inputSchema: {
       type: "object",
       properties: {
-        capability: { type: "string", enum: ["serp", "keywords", "backlinks", "volume"] },
+        capability: {
+          type: "string",
+          enum: ["serp", "keywords", "backlinks", "volume"],
+        },
         units: { type: "number" },
         paid: { type: "boolean" },
       },
@@ -69,7 +82,8 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "list_claims",
-    description: "Every applied change with its evidence tier. Sean will not claim causation it cannot support.",
+    description:
+      "Every applied change with its evidence tier. Sean will not claim causation it cannot support.",
     inputSchema: {
       type: "object",
       properties: { origin: { type: "string" } },
@@ -77,7 +91,8 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "estimate_mde",
-    description: "Minimum detectable effect at this site's traffic. Small sites are told most changes land in tier E.",
+    description:
+      "Minimum detectable effect at this site's traffic. Small sites are told most changes land in tier E.",
     inputSchema: {
       type: "object",
       properties: { origin: { type: "string" } },
@@ -85,12 +100,14 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: "ai_citation_share",
-    description: "AI citation share from the prompt panel and/or Bing Webmaster AI Performance CSV. Schema and llms.txt are not sold as AEO levers.",
+    description:
+      "AI citation share from the prompt panel and/or Bing Webmaster AI Performance CSV. Schema and llms.txt are not sold as AEO levers.",
     inputSchema: { type: "object", properties: { origin: { type: "string" } } },
   },
   {
     name: "brand_mentions",
-    description: "Unlinked brand mentions and inbound-404 recovery. Outreach send is T3.",
+    description:
+      "Unlinked brand mentions and inbound-404 recovery. Outreach send is T3.",
     inputSchema: { type: "object", properties: { origin: { type: "string" } } },
   },
 ];
@@ -135,13 +152,21 @@ export async function callTool(
 
 function siteOf(ctx: ToolContext, args: Record<string, unknown>) {
   const origin = typeof args["origin"] === "string" ? args["origin"] : undefined;
-  if (origin) return ctx.db.select().from(sites).where(eq(sites.origin, origin)).get() ?? null;
+  if (origin)
+    return ctx.db.select().from(sites).where(eq(sites.origin, origin)).get() ?? null;
   return ctx.db.select().from(sites).all()[0] ?? null;
 }
 
-function keywordOpportunities(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function keywordOpportunities(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site. Run sean audit first.", structuredContent: { opportunities: [] } });
+  if (!site)
+    return mcpResponse({
+      text: "No site. Run sean audit first.",
+      structuredContent: { opportunities: [] },
+    });
   const rows = listKeywords(ctx.db, site.id);
   const text = formatMcpTable(rows, [
     { header: "query", value: (r) => r.query },
@@ -156,9 +181,13 @@ function keywordOpportunities(ctx: ToolContext, args: Record<string, unknown>): 
   });
 }
 
-function keywordClustersTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function keywordClustersTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { clusters: [] } });
+  if (!site)
+    return mcpResponse({ text: "No site.", structuredContent: { clusters: [] } });
   const rows = listClusters(ctx.db, site.id);
   const text = formatMcpTable(rows, [
     { header: "label", value: (r) => r.label },
@@ -171,9 +200,16 @@ function keywordClustersTool(ctx: ToolContext, args: Record<string, unknown>): C
   });
 }
 
-function strikingDistanceTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function strikingDistanceTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { strikingDistance: [] } });
+  if (!site)
+    return mcpResponse({
+      text: "No site.",
+      structuredContent: { strikingDistance: [] },
+    });
   const rows = listKeywords(ctx.db, site.id).filter(
     (r) => r.position !== null && r.position >= 8 && r.position <= 20,
   );
@@ -184,11 +220,18 @@ function strikingDistanceTool(ctx: ToolContext, args: Record<string, unknown>): 
   ]);
   return mcpResponse({
     text: rows.length ? text : "No striking-distance queries.",
-    structuredContent: { origin: site.origin, strikingDistance: rows, metric: "clicks" },
+    structuredContent: {
+      origin: site.origin,
+      strikingDistance: rows,
+      metric: "clicks",
+    },
   });
 }
 
-function rankSnapshotsTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function rankSnapshotsTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
   if (!site) return mcpResponse({ text: "No site.", structuredContent: { ranks: [] } });
   const rows = listRanks(ctx.db, site.id);
@@ -250,9 +293,13 @@ function estimateCost(args: Record<string, unknown>): CallToolResult {
   });
 }
 
-function listFindingsTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function listFindingsTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { findings: [] } });
+  if (!site)
+    return mcpResponse({ text: "No site.", structuredContent: { findings: [] } });
   const rows = ctx.db.select().from(findings).where(eq(findings.siteId, site.id)).all();
   const text = formatMcpTable(rows, [
     { header: "rule", value: (r) => r.ruleId },
@@ -266,9 +313,13 @@ function listFindingsTool(ctx: ToolContext, args: Record<string, unknown>): Call
   });
 }
 
-function listClaimsTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function listClaimsTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { claims: [] } });
+  if (!site)
+    return mcpResponse({ text: "No site.", structuredContent: { claims: [] } });
   const rows = listClaims(ctx.db, site.id);
   const text = formatMcpTable(rows, [
     { header: "tier", value: (r) => r.evidenceTier },
@@ -281,11 +332,19 @@ function listClaimsTool(ctx: ToolContext, args: Record<string, unknown>): CallTo
   });
 }
 
-function estimateMdeTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function estimateMdeTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { power: null } });
+  if (!site)
+    return mcpResponse({ text: "No site.", structuredContent: { power: null } });
   const monthly = monthlyClicksForSite(ctx.db, site.id);
-  const pageCount = ctx.db.select().from(pages).where(eq(pages.siteId, site.id)).all().length;
+  const pageCount = ctx.db
+    .select()
+    .from(pages)
+    .where(eq(pages.siteId, site.id))
+    .all().length;
   const power = sitePowerBrief({ monthlyClicks: monthly, pageCount });
   return mcpResponse({
     text: power.message,
@@ -293,9 +352,16 @@ function estimateMdeTool(ctx: ToolContext, args: Record<string, unknown>): CallT
   });
 }
 
-function aiCitationShareTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function aiCitationShareTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site. Run sean audit first.", structuredContent: { citationShare: 0 } });
+  if (!site)
+    return mcpResponse({
+      text: "No site. Run sean audit first.",
+      structuredContent: { citationShare: 0 },
+    });
   const runs = ctx.db.select().from(aiRuns).where(eq(aiRuns.siteId, site.id)).all();
   const latest = runs.toSorted((a, b) => b.ranAt.localeCompare(a.ranAt))[0];
   if (!latest) {
@@ -324,9 +390,13 @@ function aiCitationShareTool(ctx: ToolContext, args: Record<string, unknown>): C
   });
 }
 
-function brandMentionsTool(ctx: ToolContext, args: Record<string, unknown>): CallToolResult {
+function brandMentionsTool(
+  ctx: ToolContext,
+  args: Record<string, unknown>,
+): CallToolResult {
   const site = siteOf(ctx, args);
-  if (!site) return mcpResponse({ text: "No site.", structuredContent: { mentions: [] } });
+  if (!site)
+    return mcpResponse({ text: "No site.", structuredContent: { mentions: [] } });
   const rows = listMentions(ctx.db, site.id);
   const broken = listInbound404s(ctx.db, site.id);
   const text = rows.length

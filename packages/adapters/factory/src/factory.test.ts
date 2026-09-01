@@ -4,7 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
-import { KIND_TIER, htmlTitle, patchHtmlTitle, type Action, type AppliedChange } from "@agentsean/actions";
+import {
+  KIND_TIER,
+  htmlTitle,
+  patchHtmlTitle,
+  type Action,
+  type AppliedChange,
+} from "@agentsean/actions";
 import { createGitAdapter } from "@agentsean/adapter-git";
 import { createWordpressAdapter } from "@agentsean/adapter-wordpress";
 import { createShopifyAdapter, refuseThemeFileWrite } from "@agentsean/adapter-shopify";
@@ -33,7 +39,18 @@ function titleAction(url: string): Action {
   };
 }
 
-function asChange(action: Action, applied: { targetRef: string; before: string; after: string; summary: string; commitSha?: string; branch?: string; prUrl?: string }): AppliedChange {
+function asChange(
+  action: Action,
+  applied: {
+    targetRef: string;
+    before: string;
+    after: string;
+    summary: string;
+    commitSha?: string;
+    branch?: string;
+    prUrl?: string;
+  },
+): AppliedChange {
   const change: AppliedChange = {
     id: randomUUID(),
     actionId: action.id,
@@ -51,18 +68,27 @@ function asChange(action: Action, applied: { targetRef: string; before: string; 
 
 describe("Phase 8 four-platform title-tag exit", () => {
   it("WordPress: apply, verify by re-fetching live HTML, rollback", async () => {
-    const live = { html: "<html><head><title>Old</title></head><body>WP</body></html>" };
+    const live = {
+      html: "<html><head><title>Old</title></head><body>WP</body></html>",
+    };
     const stored = { title: "Old" };
     const fetchFn = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      if (url.includes("/wp-json/sean/v1/seo") && (!init?.method || init.method === "GET")) {
-        return new Response(JSON.stringify({ title: stored.title, html: live.html }), { status: 200 });
+      if (
+        url.includes("/wp-json/sean/v1/seo") &&
+        (!init?.method || init.method === "GET")
+      ) {
+        return new Response(JSON.stringify({ title: stored.title, html: live.html }), {
+          status: 200,
+        });
       }
       if (url.includes("/wp-json/sean/v1/seo") && init?.method === "POST") {
         const body = JSON.parse(String(init.body)) as { title: string };
         stored.title = body.title;
         live.html = patchHtmlTitle(live.html, body.title);
-        return new Response(JSON.stringify({ ok: true, after: body.title }), { status: 200 });
+        return new Response(JSON.stringify({ ok: true, after: body.title }), {
+          status: 200,
+        });
       }
       if (url.includes("/wp-json/sean/v1/rollback/")) {
         stored.title = "Old";
@@ -96,11 +122,18 @@ describe("Phase 8 four-platform title-tag exit", () => {
     const fetchFn = (async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.includes("/graphql.json")) {
-        const body = JSON.parse(String(init?.body ?? "{}")) as { query: string; variables?: { input?: { seo?: { title?: string } } } };
+        const body = JSON.parse(String(init?.body ?? "{}")) as {
+          query: string;
+          variables?: { input?: { seo?: { title?: string } } };
+        };
         expect(body.query).not.toMatch(/themeFiles/i);
-        if (body.variables?.input?.seo?.title) seo.title = body.variables.input.seo.title;
+        if (body.variables?.input?.seo?.title)
+          seo.title = body.variables.input.seo.title;
         live.html = patchHtmlTitle(live.html, seo.title);
-        return new Response(JSON.stringify({ data: { productUpdate: { product: { seo } } } }), { status: 200 });
+        return new Response(
+          JSON.stringify({ data: { productUpdate: { product: { seo } } } }),
+          { status: 200 },
+        );
       }
       return new Response(live.html, { status: 200 });
     }) as typeof fetch;
@@ -135,9 +168,13 @@ describe("Phase 8 four-platform title-tag exit", () => {
     );
     execFileSync("git", ["init", "-b", "main"], { cwd: dir });
     execFileSync("git", ["add", "-A"], { cwd: dir });
-    execFileSync("git", ["-c", "user.email=t@t.test", "-c", "user.name=t", "commit", "-m", "init"], {
-      cwd: dir,
-    });
+    execFileSync(
+      "git",
+      ["-c", "user.email=t@t.test", "-c", "user.name=t", "commit", "-m", "init"],
+      {
+        cwd: dir,
+      },
+    );
     const adapter = createGitAdapter({ repoPath: dir, skipPush: true });
     const action = titleAction("https://example.com/");
     const applied = await adapter.apply(action);
@@ -149,8 +186,10 @@ describe("Phase 8 four-platform title-tag exit", () => {
   });
 
   it("Squarespace behind Cloudflare edge: overlay, verify live HTML, rollback, never cloak", async () => {
-    const originHtml = "<html><head><title>Old Squarespace</title></head><body>SQ</body></html>";
-    const fetchFn = (async () => new Response(originHtml, { status: 200 })) as typeof fetch;
+    const originHtml =
+      "<html><head><title>Old Squarespace</title></head><body>SQ</body></html>";
+    const fetchFn = (async () =>
+      new Response(originHtml, { status: 200 })) as typeof fetch;
     const adapter = createCloudflareAdapter({
       origin: "https://site.squarespace.com",
       fetch: fetchFn,
@@ -166,10 +205,18 @@ describe("Phase 8 four-platform title-tag exit", () => {
   });
 
   it("factory constructs the four exit platforms", () => {
-    expect(createSiteAdapter("wordpress", { origin: "https://x.com", username: "u", appPassword: "p" }).kind).toBe(
-      "wordpress",
+    expect(
+      createSiteAdapter("wordpress", {
+        origin: "https://x.com",
+        username: "u",
+        appPassword: "p",
+      }).kind,
+    ).toBe("wordpress");
+    expect(
+      createSiteAdapter("shopify", { shop: "acme", accessToken: "shpat" }).kind,
+    ).toBe("shopify");
+    expect(createSiteAdapter("cloudflare", { origin: "https://x.com" }).kind).toBe(
+      "cloudflare",
     );
-    expect(createSiteAdapter("shopify", { shop: "acme", accessToken: "shpat" }).kind).toBe("shopify");
-    expect(createSiteAdapter("cloudflare", { origin: "https://x.com" }).kind).toBe("cloudflare");
   });
 });

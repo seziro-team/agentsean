@@ -34,12 +34,22 @@ export function createCloudflareAdapter(opts: CloudflareAdapterOptions): SiteAda
   const adapter: SiteAdapter = {
     kind: "cloudflare",
     capabilities(): AdapterCapabilities {
-      return { kind: "cloudflare", reads: true, writes: true, pullRequests: false, rollback: true };
+      return {
+        kind: "cloudflare",
+        reads: true,
+        writes: true,
+        pullRequests: false,
+        rollback: true,
+      };
     },
     async read(target: ActionTarget): Promise<AdapterRead> {
       const res = await fetchFn(target.url);
       const html = await res.text();
-      return { targetRef: target.url, body: rewriteHtml(html, overlayFor(target.url, overlays)), contentType: "text/html" };
+      return {
+        targetRef: target.url,
+        body: rewriteHtml(html, overlayFor(target.url, overlays)),
+        contentType: "text/html",
+      };
     },
     async dryRun(action: Action): Promise<AdapterDryRun> {
       const title = requireTitle(action.payload);
@@ -69,11 +79,18 @@ export function createCloudflareAdapter(opts: CloudflareAdapterOptions): SiteAda
     async verify(change: AppliedChange): Promise<AdapterVerifyResult> {
       const expected = htmlTitle(change.after);
       if (!expected) return { ok: false, detail: "no title in after snapshot" };
-      const live = await verifyLiveTitle(change.targetRef, expected, async (url, init) => {
-        const res = await fetchFn(url, init);
-        const html = rewriteHtml(await res.text(), overlayFor(String(url), overlays));
-        return new Response(html, { status: 200, headers: { "content-type": "text/html" } });
-      });
+      const live = await verifyLiveTitle(
+        change.targetRef,
+        expected,
+        async (url, init) => {
+          const res = await fetchFn(url, init);
+          const html = rewriteHtml(await res.text(), overlayFor(String(url), overlays));
+          return new Response(html, {
+            status: 200,
+            headers: { "content-type": "text/html" },
+          });
+        },
+      );
       return { ok: live.ok, detail: live.detail };
     },
     async rollback(change: AppliedChange): Promise<AdapterApplyResult> {

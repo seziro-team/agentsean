@@ -1,6 +1,6 @@
 # OpenSEO teardown — MCP server, tools, and agent-facing auth
 
-Scope: `/home/vp2722/seoe/reference/open-seo/src/server/mcp/**` (63 files, ~13.0k LOC incl. tests), plus its
+Scope: `/reference/open-seo/src/server/mcp/**` (63 files, ~13.0k LOC incl. tests), plus its
 wiring in `src/server.ts`, `src/lib/oauth-resource.ts`, `src/lib/auth-api-key.ts`, and its second consumer
 `src/server/features/sam/samChatTools.ts`.
 

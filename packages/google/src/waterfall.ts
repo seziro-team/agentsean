@@ -75,7 +75,12 @@ export function buildWaterfall(input: WaterfallInput): WaterfallResult {
   const steps: WaterfallStep[] = DISCREPANCY_CAUSES.map((cause) => {
     switch (cause.code) {
       case "GSC_ANONYMIZED_QUERY":
-        return step(cause, true, anonymized, `Query view covers ${pct(1 - anonymized)} of clicks.`);
+        return step(
+          cause,
+          true,
+          anonymized,
+          `Query view covers ${pct(1 - anonymized)} of clicks.`,
+        );
       case "GA4_CONSENT_DENIED":
         return step(
           cause,
@@ -95,13 +100,22 @@ export function buildWaterfall(input: WaterfallInput): WaterfallResult {
             : "Window shorter than 7 days — timezone skew can dominate a single day.",
         );
       case "GA4_SAMPLING":
-        return step(cause, Boolean(input.sampled), null, input.sampled ? "Sampled GA4 number — do not report without a warning." : "No sampling flag.");
+        return step(
+          cause,
+          Boolean(input.sampled),
+          null,
+          input.sampled
+            ? "Sampled GA4 number — do not report without a warning."
+            : "No sampling flag.",
+        );
       case "GA4_THRESHOLDING":
         return step(
           cause,
           Boolean(input.thresholded),
           null,
-          input.thresholded ? "Thresholded GA4 number — hard gate." : "No thresholding flag.",
+          input.thresholded
+            ? "Thresholded GA4 number — hard gate."
+            : "No thresholding flag.",
         );
       default:
         return step(cause, cause.alwaysPresent, null, cause.notes);
@@ -160,9 +174,17 @@ export function waterfallFromSite(
   windowEnd: string,
 ): WaterfallResult {
   const gsc = db.select().from(gscDaily).where(eq(gscDaily.siteId, siteId)).all();
-  const queries = db.select().from(gscQueryDaily).where(eq(gscQueryDaily.siteId, siteId)).all();
+  const queries = db
+    .select()
+    .from(gscQueryDaily)
+    .where(eq(gscQueryDaily.siteId, siteId))
+    .all();
   const ga4 = db.select().from(ga4Daily).where(eq(ga4Daily.siteId, siteId)).all();
-  const conn = db.select().from(ga4Connections).where(eq(ga4Connections.siteId, siteId)).get();
+  const conn = db
+    .select()
+    .from(ga4Connections)
+    .where(eq(ga4Connections.siteId, siteId))
+    .get();
 
   let gscClicks = 0;
   for (const row of gsc) {

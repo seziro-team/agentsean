@@ -11,7 +11,10 @@ export type LlmTrace = {
 };
 
 /** Langfuse is hosted-tier only. Self-host is a no-op. */
-export async function traceLlm(event: LlmTrace, env: NodeJS.ProcessEnv = process.env): Promise<void> {
+export async function traceLlm(
+  event: LlmTrace,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<void> {
   if (!isHostedMode(env) || !isEeBuild(env)) return;
   await eeTraceLlm(event);
 }

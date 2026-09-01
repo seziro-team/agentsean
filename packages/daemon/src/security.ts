@@ -40,10 +40,7 @@ function readToken(req: FastifyRequest): string | undefined {
   return undefined;
 }
 
-export function registerSecurity(
-  app: FastifyInstance,
-  options: SecurityOptions,
-): void {
+export function registerSecurity(app: FastifyInstance, options: SecurityOptions): void {
   const portOf = () => options.getPort?.() ?? options.port;
 
   app.addHook("onRequest", async (req: FastifyRequest, reply: FastifyReply) => {

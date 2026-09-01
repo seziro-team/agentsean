@@ -1,6 +1,11 @@
 import { isPlanId, PLANS, type PlanId } from "./plans.js";
 import { addTenantSite, createTenant, getTenant, listTenantSites } from "./tenants.js";
-import { applyStripeEvent, fakeStripe, type StripeEvent, type StripeLike } from "./billing.js";
+import {
+  applyStripeEvent,
+  fakeStripe,
+  type StripeEvent,
+  type StripeLike,
+} from "./billing.js";
 import { tenantCostVisibility } from "./cost.js";
 import { hostedOauthRedirectUri } from "./oauth.js";
 import type { SqliteDatabase } from "@agentsean/db";
@@ -22,10 +27,20 @@ export async function signupTenant(
   },
 ): Promise<SignupResult> {
   if (opts.plan === "self_host") {
-    const tenant = createTenant(db, { name: opts.name, email: opts.email, plan: "self_host", now: opts.now });
+    const tenant = createTenant(db, {
+      name: opts.name,
+      email: opts.email,
+      plan: "self_host",
+      now: opts.now,
+    });
     return { tenantId: tenant.id, plan: "self_host", checkoutUrl: "" };
   }
-  const tenant = createTenant(db, { name: opts.name, email: opts.email, plan: opts.plan, now: opts.now });
+  const tenant = createTenant(db, {
+    name: opts.name,
+    email: opts.email,
+    plan: opts.plan,
+    now: opts.now,
+  });
   const stripe = opts.stripe ?? fakeStripe();
   const session = await stripe.createCheckoutSession({
     tenantId: tenant.id,
@@ -39,7 +54,12 @@ export async function signupTenant(
 /** Simulate (or apply) the paid webhook so the tenant can add sites. */
 export function completeCheckout(
   db: SqliteDatabase,
-  opts: { tenantId: string; plan: PlanId; eventId?: string | undefined; now?: Date | undefined },
+  opts: {
+    tenantId: string;
+    plan: PlanId;
+    eventId?: string | undefined;
+    now?: Date | undefined;
+  },
 ): void {
   const event: StripeEvent = {
     id: opts.eventId ?? `evt_${opts.tenantId}`,

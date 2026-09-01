@@ -8,7 +8,10 @@ import { PRIORITY_FORMULA } from "./priority.js";
 import { isIndexable } from "./detectors/predicates.js";
 import type { AuditContext, AuditReport, PrioritizedFinding } from "./types.js";
 
-export function analyzeCrawl(crawl: CrawlResult, extra?: Omit<AuditContext, "crawl">): {
+export function analyzeCrawl(
+  crawl: CrawlResult,
+  extra?: Omit<AuditContext, "crawl">,
+): {
   findings: PrioritizedFinding[];
   score: ReturnType<typeof computeSiteScore>;
 } {
@@ -46,7 +49,11 @@ export function buildReport(
   };
 }
 
-export function findingFingerprint(siteId: string, ruleId: string, url: string | null): string {
+export function findingFingerprint(
+  siteId: string,
+  ruleId: string,
+  url: string | null,
+): string {
   return createHash("sha256")
     .update(`${siteId}|${ruleId}|${url ?? "*"}`)
     .digest("hex")
@@ -89,7 +96,12 @@ export function flattenForDb(
       autonomyTier: f.autonomyTier,
       title: f.title,
       explanation: f.explanation,
-      evidence: { ...asObj(f.evidence), urls: f.urls, priority: f.priority, count: f.urls.length },
+      evidence: {
+        ...asObj(f.evidence),
+        urls: f.urls,
+        priority: f.priority,
+        count: f.urls.length,
+      },
       fingerprint: findingFingerprint(siteId, f.ruleId, null),
     });
   }

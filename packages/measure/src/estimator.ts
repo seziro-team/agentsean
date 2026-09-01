@@ -25,7 +25,10 @@ function sumClicks(rows: PageSeries[], field: "preClicks" | "postClicks"): numbe
  * log(post_T / pre_T) − log(post_C / pre_C).
  * Continuity correction of 0.5 so zeros do not explode.
  */
-export function logRatioOfRatios(treatment: PageSeries[], control: PageSeries[]): number {
+export function logRatioOfRatios(
+  treatment: PageSeries[],
+  control: PageSeries[],
+): number {
   const preT = sumClicks(treatment, "preClicks") + 0.5;
   const postT = sumClicks(treatment, "postClicks") + 0.5;
   const preC = sumClicks(control, "preClicks") + 0.5;
@@ -49,14 +52,21 @@ function resample(rows: PageSeries[], rng: () => number): PageSeries[] {
 
 function quantile(sorted: number[], q: number): number {
   if (sorted.length === 0) return 0;
-  const i = Math.min(sorted.length - 1, Math.max(0, Math.floor(q * (sorted.length - 1))));
+  const i = Math.min(
+    sorted.length - 1,
+    Math.max(0, Math.floor(q * (sorted.length - 1))),
+  );
   return sorted[i]!;
 }
 
 export function estimateLift(
   treatment: PageSeries[],
   control: PageSeries[],
-  opts?: { nBoot?: number | undefined; seed?: number | undefined; ciLevel?: number | undefined },
+  opts?: {
+    nBoot?: number | undefined;
+    seed?: number | undefined;
+    ciLevel?: number | undefined;
+  },
 ): Estimate {
   const nBoot = opts?.nBoot ?? DEFAULT_BOOT;
   const ciLevel = opts?.ciLevel ?? DEFAULT_CI_LEVEL;
@@ -64,7 +74,14 @@ export function estimateLift(
   const pointLog = logRatioOfRatios(treatment, control);
   const lift = relativeLift(pointLog);
   if (treatment.length === 0 || control.length === 0) {
-    return { lift, ciLow: lift, ciHigh: lift, ciLevel, probPositive: lift > 0 ? 1 : 0, nBoot: 0 };
+    return {
+      lift,
+      ciLow: lift,
+      ciHigh: lift,
+      ciLevel,
+      probPositive: lift > 0 ? 1 : 0,
+      nBoot: 0,
+    };
   }
   const rng = mulberry32(seed);
   const samples: number[] = [];

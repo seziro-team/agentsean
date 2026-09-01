@@ -4,7 +4,10 @@ import type { DifficultyModel, QueryDaily } from "./types.js";
  * Per-site difficulty from the user's own GSC top-10 labels — not a vendor score.
  * Label 0 (easy) if avg position ≤ 10, 1 (hard) if avg position ≥ 20.
  */
-export function trainDifficulty(rows: QueryDaily[], brandTerms: string[] = []): DifficultyModel {
+export function trainDifficulty(
+  rows: QueryDaily[],
+  brandTerms: string[] = [],
+): DifficultyModel {
   const agg = aggregate(rows);
   const samples: Array<{ x: number[]; y: number }> = [];
   for (const row of agg.values()) {
@@ -35,17 +38,33 @@ export function trainDifficulty(rows: QueryDaily[], brandTerms: string[] = []): 
   };
 }
 
-export function features(query: string, impressions: number, brandTerms: string[]): number[] {
+export function features(
+  query: string,
+  impressions: number,
+  brandTerms: string[],
+): number[] {
   const words = query.trim().split(/\s+/).filter(Boolean);
   const hasDigit = /\d/.test(query) ? 1 : 0;
-  const brand = brandTerms.some((t) => query.toLowerCase().includes(t.toLowerCase())) ? 1 : 0;
+  const brand = brandTerms.some((t) => query.toLowerCase().includes(t.toLowerCase()))
+    ? 1
+    : 0;
   return [1, words.length, query.length, hasDigit, Math.log1p(impressions), brand];
 }
 
-function aggregate(rows: QueryDaily[]): Map<string, { query: string; impressions: number; position: number | null }> {
-  const map = new Map<string, { query: string; impressions: number; position: number; n: number }>();
+function aggregate(
+  rows: QueryDaily[],
+): Map<string, { query: string; impressions: number; position: number | null }> {
+  const map = new Map<
+    string,
+    { query: string; impressions: number; position: number; n: number }
+  >();
   for (const r of rows) {
-    const cur = map.get(r.query) ?? { query: r.query, impressions: 0, position: 0, n: 0 };
+    const cur = map.get(r.query) ?? {
+      query: r.query,
+      impressions: 0,
+      position: 0,
+      n: 0,
+    };
     cur.impressions += r.impressions;
     if (r.position !== null) {
       cur.position += r.position;
@@ -53,14 +72,24 @@ function aggregate(rows: QueryDaily[]): Map<string, { query: string; impressions
     }
     map.set(r.query, cur);
   }
-  const out = new Map<string, { query: string; impressions: number; position: number | null }>();
+  const out = new Map<
+    string,
+    { query: string; impressions: number; position: number | null }
+  >();
   for (const [q, v] of map) {
-    out.set(q, { query: q, impressions: v.impressions, position: v.n ? v.position / v.n : null });
+    out.set(q, {
+      query: q,
+      impressions: v.impressions,
+      position: v.n ? v.position / v.n : null,
+    });
   }
   return out;
 }
 
-function fitLogistic(samples: Array<{ x: number[]; y: number }>, iters: number): number[] {
+function fitLogistic(
+  samples: Array<{ x: number[]; y: number }>,
+  iters: number,
+): number[] {
   const dim = samples[0]?.x.length ?? 1;
   const w = Array.from({ length: dim }, () => 0);
   const lr = 0.05;
@@ -71,7 +100,8 @@ function fitLogistic(samples: Array<{ x: number[]; y: number }>, iters: number):
       const err = p - s.y;
       for (let j = 0; j < dim; j++) g[j] = (g[j] ?? 0) + err * (s.x[j] ?? 0);
     }
-    for (let j = 0; j < dim; j++) w[j] = (w[j] ?? 0) - (lr * (g[j] ?? 0)) / samples.length;
+    for (let j = 0; j < dim; j++)
+      w[j] = (w[j] ?? 0) - (lr * (g[j] ?? 0)) / samples.length;
   }
   return w;
 }

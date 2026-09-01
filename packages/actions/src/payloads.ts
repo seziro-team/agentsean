@@ -27,7 +27,12 @@ function expectKeys(obj: Record<string, unknown>, allowed: string[]): string | n
   return null;
 }
 
-function str(obj: Record<string, unknown>, key: string, min: number, max: number): string {
+function str(
+  obj: Record<string, unknown>,
+  key: string,
+  min: number,
+  max: number,
+): string {
   const v = obj[key];
   if (typeof v !== "string") throw new Error(`${key} must be a string`);
   if (v.length < min || v.length > max) {
@@ -38,7 +43,8 @@ function str(obj: Record<string, unknown>, key: string, min: number, max: number
 
 function uuid(obj: Record<string, unknown>, key: string): string {
   const v = obj[key];
-  if (typeof v !== "string" || !UUID_RE.test(v)) throw new Error(`${key} must be a uuid`);
+  if (typeof v !== "string" || !UUID_RE.test(v))
+    throw new Error(`${key} must be a uuid`);
   return v;
 }
 
@@ -78,14 +84,24 @@ function parsePayload(kind: ActionKind, raw: unknown): ActionPayload {
     case "rewrite_alt_text": {
       const err = expectKeys(raw, ["selector", "alt"]);
       if (err) throw new Error(err);
-      return { selector: str(raw, "selector", 1, 200), alt: str(raw, "alt", 1, ALT_MAX) };
+      return {
+        selector: str(raw, "selector", 1, 200),
+        alt: str(raw, "alt", 1, ALT_MAX),
+      };
     }
     case "fix_heading":
     case "add_h1": {
       const err = expectKeys(raw, ["level", "text"]);
       if (err) throw new Error(err);
       const level = raw["level"];
-      if (level !== 1 && level !== 2 && level !== 3 && level !== 4 && level !== 5 && level !== 6) {
+      if (
+        level !== 1 &&
+        level !== 2 &&
+        level !== 3 &&
+        level !== 4 &&
+        level !== 5 &&
+        level !== 6
+      ) {
         throw new Error("level must be 1-6");
       }
       return { level, text: str(raw, "text", 1, 200) };
@@ -148,10 +164,17 @@ function parsePayload(kind: ActionKind, raw: unknown): ActionPayload {
       return { content: str(raw, "content", 1, 200) };
     }
     case "add_redirect": {
-      const err = expectKeys(raw, ["fromPageId", "fromUrl", "toPageId", "toUrl", "status"]);
+      const err = expectKeys(raw, [
+        "fromPageId",
+        "fromUrl",
+        "toPageId",
+        "toUrl",
+        "status",
+      ]);
       if (err) throw new Error(err);
       const status = raw["status"];
-      if (status !== 301 && status !== 410) throw new Error("status must be 301 or 410");
+      if (status !== 301 && status !== 410)
+        throw new Error("status must be 301 or 410");
       return {
         fromPageId: uuid(raw, "fromPageId"),
         fromUrl: absHttpUrl(raw, "fromUrl"),
@@ -191,7 +214,12 @@ function parsePayload(kind: ActionKind, raw: unknown): ActionPayload {
       if (typeof width !== "number" || typeof height !== "number") {
         throw new Error("width/height must be numbers");
       }
-      if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) {
+      if (
+        !Number.isInteger(width) ||
+        !Number.isInteger(height) ||
+        width < 1 ||
+        height < 1
+      ) {
         throw new Error("width/height must be positive integers");
       }
       return { selector: str(raw, "selector", 1, 200), width, height };
@@ -253,7 +281,8 @@ function parseImpact(raw: unknown): Impact {
   if (!isPlainObject(raw)) throw new Error("estimatedImpact must be an object");
   const extra = expectKeys(raw, ["metric", "estimate", "confidence"]);
   if (extra) throw new Error(extra);
-  if (raw["metric"] !== "clicks") throw new Error("estimatedImpact.metric must be clicks");
+  if (raw["metric"] !== "clicks")
+    throw new Error("estimatedImpact.metric must be clicks");
   const estimate = raw["estimate"];
   const confidence = raw["confidence"];
   if (typeof estimate !== "number" || !Number.isFinite(estimate) || estimate < 0) {
@@ -285,7 +314,9 @@ const ACTION_KEYS = [
 ];
 
 /** Closed-schema parse. Unknown keys, open enums, and free-string URLs fail. */
-export function parseAction(raw: unknown): { ok: true; action: Action } | { ok: false; error: string } {
+export function parseAction(
+  raw: unknown,
+): { ok: true; action: Action } | { ok: false; error: string } {
   try {
     if (!isPlainObject(raw)) return { ok: false, error: "action must be an object" };
     const extra = expectKeys(raw, ACTION_KEYS);
@@ -309,7 +340,10 @@ export function parseAction(raw: unknown): { ok: true; action: Action } | { ok: 
       return { ok: false, error: "rationale must have 1-12 bullets" };
     }
     const findingIds = raw["findingIds"];
-    if (!Array.isArray(findingIds) || findingIds.some((id) => typeof id !== "string" || !UUID_RE.test(id))) {
+    if (
+      !Array.isArray(findingIds) ||
+      findingIds.some((id) => typeof id !== "string" || !UUID_RE.test(id))
+    ) {
       return { ok: false, error: "findingIds must be uuid[]" };
     }
     const action: Action = {

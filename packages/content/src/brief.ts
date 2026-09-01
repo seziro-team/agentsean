@@ -7,17 +7,17 @@ import {
   factsFromText,
   wordCount,
 } from "./extract.js";
-import type {
-  BriefLink,
-  ContentBrief,
-  ContentCandidate,
-  QueryDaily,
-} from "./types.js";
+import type { BriefLink, ContentBrief, ContentCandidate, QueryDaily } from "./types.js";
 
 export type BuildBriefInput = {
   candidate: ContentCandidate;
   queries: QueryDaily[];
-  sitePages: Array<{ id: string; url: string; title: string | null; h1: string | null }>;
+  sitePages: Array<{
+    id: string;
+    url: string;
+    title: string | null;
+    h1: string | null;
+  }>;
   competitorOutline?: string[] | undefined;
   googleUpdateNote?: string | null | undefined;
 };

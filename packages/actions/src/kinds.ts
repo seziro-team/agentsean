@@ -127,7 +127,9 @@ export const TWO_KEY_KINDS: ReadonlySet<ActionKind> = new Set([
 
 export const NEW_PAGE_KINDS: ReadonlySet<ActionKind> = new Set(["create_page"]);
 
-export const CONTENT_REFRESH_KINDS: ReadonlySet<ActionKind> = new Set(["refresh_content"]);
+export const CONTENT_REFRESH_KINDS: ReadonlySet<ActionKind> = new Set([
+  "refresh_content",
+]);
 
 export const CONTENT_GEN_KINDS: ReadonlySet<ActionKind> = new Set([
   "refresh_content",

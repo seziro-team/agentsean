@@ -36,7 +36,11 @@ export async function probeOrigin(
     const host = u.hostname;
     const alt = host.startsWith("www.") ? host.slice(4) : `www.${host}`;
     const altUrl = `${u.protocol}//${alt}/`;
-    const a = await fetchUrl(`${origin}/`, { agent, timeoutMs: 8_000, maxRedirects: 0 });
+    const a = await fetchUrl(`${origin}/`, {
+      agent,
+      timeoutMs: 8_000,
+      maxRedirects: 0,
+    });
     const b = await fetchUrl(altUrl, { agent, timeoutMs: 8_000, maxRedirects: 0 });
     const a200 = a.statusCode === 200;
     const b200 = b.statusCode === 200;
@@ -62,7 +66,11 @@ export async function probeOrigin(
   try {
     const slug = randomBytes(16).toString("hex");
     randomSoft404Url = `${origin}/${slug}`;
-    const res = await fetchUrl(randomSoft404Url, { agent, timeoutMs: 8_000, maxRedirects: 0 });
+    const res = await fetchUrl(randomSoft404Url, {
+      agent,
+      timeoutMs: 8_000,
+      maxRedirects: 0,
+    });
     randomSoft404 = res.statusCode === 200;
     if (randomSoft404 && res.decoded.length) {
       randomSoft404Hash = contentHash(res.decoded);
@@ -71,12 +79,14 @@ export async function probeOrigin(
     randomSoft404 = false;
   }
 
-  const cert = https ? await readCert(u.hostname, Number(u.port || 443)) : {
-    certValidTo: null,
-    certDaysRemaining: null,
-    certError: null,
-    alpn: null,
-  };
+  const cert = https
+    ? await readCert(u.hostname, Number(u.port || 443))
+    : {
+        certValidTo: null,
+        certDaysRemaining: null,
+        certError: null,
+        alpn: null,
+      };
 
   return {
     https,

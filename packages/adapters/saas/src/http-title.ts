@@ -14,7 +14,11 @@ import {
   type SiteAdapter,
 } from "@agentsean/actions";
 
-export type HttpTitleWriter = (url: string, title: string, before: string) => Promise<void>;
+export type HttpTitleWriter = (
+  url: string,
+  title: string,
+  before: string,
+) => Promise<void>;
 
 export function createHttpTitleAdapter(opts: {
   kind: string;
@@ -25,11 +29,21 @@ export function createHttpTitleAdapter(opts: {
   const adapter: SiteAdapter = {
     kind: opts.kind,
     capabilities(): AdapterCapabilities {
-      return { kind: opts.kind, reads: true, writes: true, pullRequests: false, rollback: true };
+      return {
+        kind: opts.kind,
+        reads: true,
+        writes: true,
+        pullRequests: false,
+        rollback: true,
+      };
     },
     async read(target: ActionTarget): Promise<AdapterRead> {
       const res = await fetchFn(target.url);
-      return { targetRef: target.url, body: await res.text(), contentType: "text/html" };
+      return {
+        targetRef: target.url,
+        body: await res.text(),
+        contentType: "text/html",
+      };
     },
     async dryRun(action: Action): Promise<AdapterDryRun> {
       const title = requireTitle(action.payload);

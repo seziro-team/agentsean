@@ -28,7 +28,11 @@ import {
   previewPayload,
   TELEMETRY_EVENTS,
 } from "@agentsean/launch";
-import { DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING, listContent } from "@agentsean/content";
+import {
+  DEFAULT_EVIDENCE_TIER,
+  EVIDENCE_MEANING,
+  listContent,
+} from "@agentsean/content";
 import {
   analyzeExperiment,
   getExperiment,
@@ -88,7 +92,12 @@ import {
   signApproval,
 } from "@agentsean/actions";
 import { crawlSite, persistCrawl, persistFindings } from "@agentsean/crawler";
-import { buildReport, flattenForDb, SITE_SCORE_FORMULA, SITE_SCORE_VERSION } from "@agentsean/analyzers";
+import {
+  buildReport,
+  flattenForDb,
+  SITE_SCORE_FORMULA,
+  SITE_SCORE_VERSION,
+} from "@agentsean/analyzers";
 import {
   brandTermsFromOrigin,
   computeGscInsights,
@@ -136,7 +145,10 @@ function parseScore(raw: string | null): {
   }
 }
 
-export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRouteOptions): void {
+export function registerDashboardRoutes(
+  app: FastifyInstance,
+  opts: DashboardRouteOptions,
+): void {
   const queue = opts.queue ?? createSqliteQueue(opts.db);
 
   app.get("/api/events", (req, reply) => {
@@ -179,15 +191,30 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return { origin: null, score: null, findings: {}, thisWeek: { applied: 0, queued: 0, reverted: 0 }, costUsd: 0 };
+    if (!site)
+      return {
+        origin: null,
+        score: null,
+        findings: {},
+        thisWeek: { applied: 0, queued: 0, reverted: 0 },
+        costUsd: 0,
+      };
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-    const findingRows = opts.db.select().from(findings).where(eq(findings.siteId, site.id)).all();
+    const findingRows = opts.db
+      .select()
+      .from(findings)
+      .where(eq(findings.siteId, site.id))
+      .all();
     const bySev: Record<string, number> = {};
     for (const row of findingRows) {
       if (row.status !== "open") continue;
       bySev[row.severity] = (bySev[row.severity] ?? 0) + 1;
     }
-    const changeRows = opts.db.select().from(changes).where(eq(changes.siteId, site.id)).all();
+    const changeRows = opts.db
+      .select()
+      .from(changes)
+      .where(eq(changes.siteId, site.id))
+      .all();
     const thisWeek = {
       applied: changeRows.filter((c) => c.appliedAt >= weekAgo).length,
       queued: opts.db
@@ -196,7 +223,8 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
         .where(eq(actions.siteId, site.id))
         .all()
         .filter((a) => a.state === "queued").length,
-      reverted: changeRows.filter((c) => c.revertedAt && c.revertedAt >= weekAgo).length,
+      reverted: changeRows.filter((c) => c.revertedAt && c.revertedAt >= weekAgo)
+        .length,
     };
     const costUsd = opts.db
       .select()
@@ -225,11 +253,16 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
   });
 
   app.post("/api/onboard", async (req, reply) => {
-    const body = (req.body ?? {}) as { url?: string; maxPages?: number; render?: boolean };
+    const body = (req.body ?? {}) as {
+      url?: string;
+      maxPages?: number;
+      render?: boolean;
+    };
     let startUrl: string;
     try {
       const u = new URL(body.url ?? "");
-      if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("protocol");
+      if (u.protocol !== "http:" && u.protocol !== "https:")
+        throw new Error("protocol");
       startUrl = u.href;
     } catch {
       return reply.code(400).send({ error: "invalid_url" });
@@ -303,7 +336,9 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     });
     const page = hits.slice(0, limit);
     const extra = hits[limit];
-    const nextCursor = extra ? `${page[page.length - 1]?.firstDetectedAt},${page[page.length - 1]?.id}` : null;
+    const nextCursor = extra
+      ? `${page[page.length - 1]?.firstDetectedAt},${page[page.length - 1]?.id}`
+      : null;
     return { findings: page, nextCursor };
   });
 
@@ -340,17 +375,36 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
           .all()
           .filter((c) => c.id !== id)
           .toSorted((a, b) => (a.startedAt < b.startedAt ? 1 : -1))[0];
-    const curSnaps = opts.db.select().from(pageSnapshots).where(eq(pageSnapshots.crawlId, id)).all();
+    const curSnaps = opts.db
+      .select()
+      .from(pageSnapshots)
+      .where(eq(pageSnapshots.crawlId, id))
+      .all();
     const othSnaps = other
-      ? opts.db.select().from(pageSnapshots).where(eq(pageSnapshots.crawlId, other.id)).all()
+      ? opts.db
+          .select()
+          .from(pageSnapshots)
+          .where(eq(pageSnapshots.crawlId, other.id))
+          .all()
       : [];
-    const pageRows = opts.db.select().from(pages).where(eq(pages.siteId, current.siteId)).all();
+    const pageRows = opts.db
+      .select()
+      .from(pages)
+      .where(eq(pages.siteId, current.siteId))
+      .all();
     const urlOf = new Map(pageRows.map((p) => [p.id, p]));
-    const cur = new Map<string, { hash: string | null; status: number | null; firstSeenAt: string }>();
+    const cur = new Map<
+      string,
+      { hash: string | null; status: number | null; firstSeenAt: string }
+    >();
     for (const s of curSnaps) {
       const p = urlOf.get(s.pageId);
       if (!p) continue;
-      cur.set(p.url, { hash: s.contentHash, status: s.statusCode, firstSeenAt: p.firstSeenAt });
+      cur.set(p.url, {
+        hash: s.contentHash,
+        status: s.statusCode,
+        firstSeenAt: p.firstSeenAt,
+      });
     }
     const prev = new Map<string, { hash: string | null; status: number | null }>();
     for (const s of othSnaps) {
@@ -390,17 +444,26 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
 
   app.get("/api/approvals", (req) => {
     const q = req.query as { siteId?: string };
-    const rows = opts.db.select().from(actions).all().filter((a) => {
-      if (q.siteId && a.siteId !== q.siteId) return false;
-      return (a.tier === "T3" || a.tier === "3") && (a.state === "queued" || a.state === "proposed");
-    });
+    const rows = opts.db
+      .select()
+      .from(actions)
+      .all()
+      .filter((a) => {
+        if (q.siteId && a.siteId !== q.siteId) return false;
+        return (
+          (a.tier === "T3" || a.tier === "3") &&
+          (a.state === "queued" || a.state === "proposed")
+        );
+      });
     const out = rows.map((row) => {
       const action = actionFromRow(row);
       const payload = action?.payload ?? {};
       const title = "title" in payload ? String(payload.title) : "";
       const meta = "metaDescription" in payload ? String(payload.metaDescription) : "";
       const json =
-        "json" in payload ? JSON.stringify((payload as { json: unknown }).json, null, 2) : "";
+        "json" in payload
+          ? JSON.stringify((payload as { json: unknown }).json, null, 2)
+          : "";
       const before = row.targetRef;
       return {
         id: row.id,
@@ -485,7 +548,10 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
         contentRefreshPerDay: BLAST.contentRefreshPerDay,
         overridable: false,
       },
-      evidence: { default: DEFAULT_EVIDENCE_TIER, meaning: EVIDENCE_MEANING[DEFAULT_EVIDENCE_TIER] },
+      evidence: {
+        default: DEFAULT_EVIDENCE_TIER,
+        meaning: EVIDENCE_MEANING[DEFAULT_EVIDENCE_TIER],
+      },
       briefs: listed.briefs.map((b) => ({
         id: b.id,
         kind: b.kind,
@@ -517,9 +583,21 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    const pagesDaily = opts.db.select().from(gscPageDaily).where(eq(gscPageDaily.siteId, site.id)).all();
-    const queries = opts.db.select().from(gscQueryDaily).where(eq(gscQueryDaily.siteId, site.id)).all();
-    const days = opts.db.select().from(gscDaily).where(eq(gscDaily.siteId, site.id)).all();
+    const pagesDaily = opts.db
+      .select()
+      .from(gscPageDaily)
+      .where(eq(gscPageDaily.siteId, site.id))
+      .all();
+    const queries = opts.db
+      .select()
+      .from(gscQueryDaily)
+      .where(eq(gscQueryDaily.siteId, site.id))
+      .all();
+    const days = opts.db
+      .select()
+      .from(gscDaily)
+      .where(eq(gscDaily.siteId, site.id))
+      .all();
     return computeGscInsights({
       pages: pagesDaily.map((p) => ({
         date: p.date,
@@ -535,7 +613,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
         impressions: r.impressions,
         position: r.position,
       })),
-      days: days.map((d) => ({ date: d.date, clicks: d.clicks, impressions: d.impressions })),
+      days: days.map((d) => ({
+        date: d.date,
+        clicks: d.clicks,
+        impressions: d.impressions,
+      })),
       brandTerms: brandTermsFromOrigin(site.origin),
     });
   });
@@ -608,7 +690,17 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       openpagerank: Boolean(keys.openpagerank),
       paidUpgrade: Boolean(keys.dataforseo),
       neverScrapesGoogle: true,
-      free: ["gsc", "bing_webmaster", "autocomplete", "openpagerank", "psi", "crux", "wayback", "jina", "wikidata"],
+      free: [
+        "gsc",
+        "bing_webmaster",
+        "autocomplete",
+        "openpagerank",
+        "psi",
+        "crux",
+        "wayback",
+        "jina",
+        "wikidata",
+      ],
     };
   });
 
@@ -630,7 +722,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     }
     const runs = opts.db.select().from(aiRuns).where(eq(aiRuns.siteId, site.id)).all();
     const latest = runs.toSorted((a, b) => b.ranAt.localeCompare(a.ranAt))[0];
-    const bingRows = opts.db.select().from(bingAiRows).where(eq(bingAiRows.siteId, site.id)).all();
+    const bingRows = opts.db
+      .select()
+      .from(bingAiRows)
+      .where(eq(bingAiRows.siteId, site.id))
+      .all();
     return {
       engines: latest ? [latest.engine] : [],
       citationShare: latest?.citationShare ?? 0,
@@ -695,7 +791,8 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    if (!body.locationId || !body.kind) return reply.code(400).send({ error: "missing_write" });
+    if (!body.locationId || !body.kind)
+      return reply.code(400).send({ error: "missing_write" });
     try {
       const applied = await applyGbpEdit(opts.db, site.id, {
         locationId: body.locationId,
@@ -706,7 +803,9 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       return { ok: true, id: applied.id };
     } catch (err) {
       if (err instanceof GbpNotApprovedError) {
-        return reply.code(409).send({ error: "gbp_not_approved", message: err.message });
+        return reply
+          .code(409)
+          .send({ error: "gbp_not_approved", message: err.message });
       }
       if (err instanceof GbpQuotaError) {
         return reply.code(429).send({ error: "gbp_quota", message: err.message });
@@ -747,7 +846,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    const stored = opts.db.select().from(verticalProfiles).where(eq(verticalProfiles.siteId, site.id)).get();
+    const stored = opts.db
+      .select()
+      .from(verticalProfiles)
+      .where(eq(verticalProfiles.siteId, site.id))
+      .get();
     const detected = stored
       ? {
           preset: stored.preset as VerticalPreset,
@@ -758,7 +861,9 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       : runVerticalDetect(opts.db, site.id);
     let answers: Record<string, string> = {};
     try {
-      answers = stored?.answersJson ? (JSON.parse(stored.answersJson) as Record<string, string>) : {};
+      answers = stored?.answersJson
+        ? (JSON.parse(stored.answersJson) as Record<string, string>)
+        : {};
     } catch {
       answers = {};
     }
@@ -771,14 +876,22 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
   });
 
   app.post("/api/vertical", (req, reply) => {
-    const body = (req.body ?? {}) as { siteId?: string; answers?: Record<string, string> };
+    const body = (req.body ?? {}) as {
+      siteId?: string;
+      answers?: Record<string, string>;
+    };
     const site = body.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
     const detected = saveOnboardingAnswers(opts.db, site.id, body.answers ?? {});
     opts.bus.emit("overview");
-    return { ok: true, ...detected, questions: ONBOARDING_QUESTIONS, rules: verticalRules(detected.preset) };
+    return {
+      ok: true,
+      ...detected,
+      questions: ONBOARDING_QUESTIONS,
+      rules: verticalRules(detected.preset),
+    };
   });
 
   app.get("/api/claims", (req, reply) => {
@@ -872,7 +985,12 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       exp.postStart,
       exp.plannedEnd,
     );
-    const result = analyzeExperiment(opts.db, { experimentId: exp.id, now, treatment, control });
+    const result = analyzeExperiment(opts.db, {
+      experimentId: exp.id,
+      now,
+      treatment,
+      control,
+    });
     opts.bus.emit("overview");
     return result;
   });
@@ -883,7 +1001,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    const pageCount = opts.db.select().from(pages).where(eq(pages.siteId, site.id)).all().length;
+    const pageCount = opts.db
+      .select()
+      .from(pages)
+      .where(eq(pages.siteId, site.id))
+      .all().length;
     return sitePowerBrief({
       monthlyClicks: monthlyClicksForSite(opts.db, site.id),
       pageCount,
@@ -938,7 +1060,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
       : opts.db.select().from(sites).all()[0];
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    const overview = opts.db.select().from(findings).where(eq(findings.siteId, site.id)).all();
+    const overview = opts.db
+      .select()
+      .from(findings)
+      .where(eq(findings.siteId, site.id))
+      .all();
     const score = parseScore(getSetting(opts.db, `score:${site.id}`));
     const payload = {
       origin: site.origin,
@@ -953,7 +1079,9 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     const payloadJson = JSON.stringify(payload);
     const hash = createHash("sha256").update(payloadJson).digest("hex");
     const white = getSetting(opts.db, "whiteLabel") === "1";
-    const title = white ? `${site.origin} SEO snapshot` : `Agent Sean snapshot — ${site.origin}`;
+    const title = white
+      ? `${site.origin} SEO snapshot`
+      : `Agent Sean snapshot — ${site.origin}`;
     const bodyHtml = `<html><body><h1>${title}</h1><pre>${payloadJson}</pre></body></html>`;
     const id = randomUUID();
     opts.db
@@ -979,7 +1107,10 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     if (!row) return reply.code(404).send({ error: "unknown_report" });
     const pdf = textToPdf(row.title, row.payloadJson);
     reply.header("content-type", "application/pdf");
-    reply.header("content-disposition", `attachment; filename="sean-${id.slice(0, 8)}.pdf"`);
+    reply.header(
+      "content-disposition",
+      `attachment; filename="sean-${id.slice(0, 8)}.pdf"`,
+    );
     return reply.send(pdf);
   });
 
@@ -1048,10 +1179,14 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     if (typeof body.whiteLabel === "boolean") {
       setSetting(opts.db, "whiteLabel", body.whiteLabel ? "1" : "0");
     }
-    if (typeof body.rankCadence === "string") setSetting(opts.db, "rankCadence", body.rankCadence);
-    if (typeof body.notifications === "string") setSetting(opts.db, "notifications", body.notifications);
-    if (typeof body.llmProvider === "string") setSetting(opts.db, "llmProvider", body.llmProvider);
-    if (typeof body.aiDisclosure === "string") setSetting(opts.db, "aiDisclosure", body.aiDisclosure);
+    if (typeof body.rankCadence === "string")
+      setSetting(opts.db, "rankCadence", body.rankCadence);
+    if (typeof body.notifications === "string")
+      setSetting(opts.db, "notifications", body.notifications);
+    if (typeof body.llmProvider === "string")
+      setSetting(opts.db, "llmProvider", body.llmProvider);
+    if (typeof body.aiDisclosure === "string")
+      setSetting(opts.db, "aiDisclosure", body.aiDisclosure);
     if (typeof body.telemetryEnabled === "boolean") {
       consentTelemetry(opts.seanHome, body.telemetryEnabled, "dashboard");
     }
@@ -1104,6 +1239,8 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
 
   app.get("/api/jobs", (req) => {
     const q = req.query as { siteId?: string };
-    return queue.list(q.siteId ? { siteId: q.siteId } : undefined).then((jobs) => ({ jobs }));
+    return queue
+      .list(q.siteId ? { siteId: q.siteId } : undefined)
+      .then((jobs) => ({ jobs }));
   });
 }

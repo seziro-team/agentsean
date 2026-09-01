@@ -26,10 +26,20 @@ export type GscInsights = {
   metric: "clicks";
   impressionsContaminated: boolean;
   strikingDistance: Array<{ page: string; clicks: number; position: number }>;
-  decay: { previousClicks: number; currentClicks: number; delta: number; deltaPct: number | null };
+  decay: {
+    previousClicks: number;
+    currentClicks: number;
+    delta: number;
+    deltaPct: number | null;
+  };
   cannibalization: Array<{ query: string; pages: string[] }>;
   cannibalizationNote: string;
-  ctrOutliers: Array<{ query: string; clicks: number; impressions: number; ctr: number }>;
+  ctrOutliers: Array<{
+    query: string;
+    clicks: number;
+    impressions: number;
+    ctr: number;
+  }>;
   brand: { brandClicks: number; nonBrandClicks: number; brandShare: number | null };
 };
 

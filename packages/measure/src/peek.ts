@@ -11,7 +11,11 @@ export function analysisDateReached(plannedEnd: string, now: Date): boolean {
   return now.toISOString().slice(0, 10) >= plannedEnd;
 }
 
-export function guardPeeking(plannedEnd: string, now: Date, peekingBlocked = true): PeekDecision {
+export function guardPeeking(
+  plannedEnd: string,
+  now: Date,
+  peekingBlocked = true,
+): PeekDecision {
   if (analysisDateReached(plannedEnd, now)) {
     return { allowed: true, provisional: false };
   }
@@ -32,6 +36,8 @@ export function guardPeeking(plannedEnd: string, now: Date, peekingBlocked = tru
 export class PlannedEndImmutableError extends Error {
   override readonly name = "PlannedEndImmutableError";
   constructor() {
-    super("planned_end is immutable once the experiment is running. Extending a running test manufactures false positives.");
+    super(
+      "planned_end is immutable once the experiment is running. Extending a running test manufactures false positives.",
+    );
   }
 }

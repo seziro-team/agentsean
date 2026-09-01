@@ -199,7 +199,9 @@ describe("content engine exit", () => {
       .from(contentDrafts)
       .where(eq(contentDrafts.siteId, siteId))
       .all();
-    expect(published.some((d) => d.state === "published" && d.evidenceTier === "E")).toBe(true);
+    expect(
+      published.some((d) => d.state === "published" && d.evidenceTier === "E"),
+    ).toBe(true);
     const applied = db
       .select()
       .from(actions)

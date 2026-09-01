@@ -17,7 +17,13 @@ export function unavailableSerp(): SerpCapability {
     available: false,
     serp(): ProviderCall<SerpResult> {
       return {
-        estimate: freeEstimate("none", "serp", "unavailable", 0, "no licensed SERP provider"),
+        estimate: freeEstimate(
+          "none",
+          "serp",
+          "unavailable",
+          0,
+          "no licensed SERP provider",
+        ),
         async run(): Promise<SerpResult> {
           throw new ProviderRefusedError(
             "no_licensed_serp",
@@ -34,7 +40,13 @@ export function unavailableVolume(): VolumeCapability {
     id: "none",
     volume(): ProviderCall<VolumeRow[]> {
       return {
-        estimate: freeEstimate("none", "volume", "unavailable", 0, "no volume provider"),
+        estimate: freeEstimate(
+          "none",
+          "volume",
+          "unavailable",
+          0,
+          "no volume provider",
+        ),
         async run() {
           return [];
         },
@@ -61,7 +73,11 @@ export function unavailableBacklinks(): BacklinksCapability {
   };
 }
 
-export function emptyKeywords(): { id: string; demand: () => ProviderCall<KeywordRow[]>; related: (seed: string) => ProviderCall<KeywordRow[]> } {
+export function emptyKeywords(): {
+  id: string;
+  demand: () => ProviderCall<KeywordRow[]>;
+  related: (seed: string) => ProviderCall<KeywordRow[]>;
+} {
   return {
     id: "none",
     demand() {

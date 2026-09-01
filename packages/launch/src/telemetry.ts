@@ -103,7 +103,9 @@ export function isTelemetryEnabled(
   return loadTelemetryConfig(home).enabled;
 }
 
-export function previewPayload(partial: Partial<TelemetryPayload> = {}): TelemetryPayload {
+export function previewPayload(
+  partial: Partial<TelemetryPayload> = {},
+): TelemetryPayload {
   const payload: TelemetryPayload = {
     event: partial.event ?? "first_run",
     version: VERSION,

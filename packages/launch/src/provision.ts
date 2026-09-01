@@ -52,10 +52,14 @@ export function isOnboarded(home: string): boolean {
 }
 
 export function markOnboarded(home: string): void {
-  fs.writeFileSync(onboardedPath(home), new Date().toISOString() + "\n", { mode: 0o600 });
+  fs.writeFileSync(onboardedPath(home), new Date().toISOString() + "\n", {
+    mode: 0o600,
+  });
 }
 
-export function hasPostinstallScripts(scripts: Record<string, string> | undefined): boolean {
+export function hasPostinstallScripts(
+  scripts: Record<string, string> | undefined,
+): boolean {
   if (!scripts) return false;
   return Boolean(scripts["preinstall"] || scripts["install"] || scripts["postinstall"]);
 }

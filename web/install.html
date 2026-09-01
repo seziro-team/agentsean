@@ -19,7 +19,7 @@
     <h1>Install</h1>
     <p class="lead">Provisions on first run, not on npm install. npm 12 disables postinstall scripts.</p>
     <pre class="install">npx agentsean</pre>
-    <pre class="install">curl -fsSL https://raw.githubusercontent.com/vp2722/sean/main/install/install.sh | sh</pre>
+    <pre class="install">curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh</pre>
     <pre class="install">SEAN_AUTH_TOKEN="$(openssl rand -base64 32)" docker compose up</pre>
     <p>Then: <code>sean doctor</code>. To survive reboot: <code>sean service install</code> — it prints the files it will write. That command is never a side effect of npm.</p>
     <p>Node ≥ 22.19. Chromium is downloaded lazily on first JS render.</p>

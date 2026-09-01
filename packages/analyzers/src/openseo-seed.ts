@@ -75,8 +75,7 @@ export const OPENSEO_COPY: Record<string, OpenSeoDescriptor> = {
     title: "Duplicate title",
     explanation:
       "Multiple pages share the same title tag. Search engines use titles to differentiate pages; duplicates make pages compete with each other.",
-    howToFix:
-      "Write a unique title for each page describing its specific content.",
+    howToFix: "Write a unique title for each page describing its specific content.",
   },
   "ONP.META_DESC_DUPLICATE": {
     title: "Duplicate meta description",
@@ -106,8 +105,7 @@ export const OPENSEO_COPY: Record<string, OpenSeoDescriptor> = {
   },
   "ONP.H1_MULTIPLE": {
     title: "Multiple H1 headings",
-    explanation:
-      "The page has more than one H1, which dilutes the main-topic signal.",
+    explanation: "The page has more than one H1, which dilutes the main-topic signal.",
     howToFix: "Keep one H1 for the page's main heading and demote the others.",
   },
   "RESP.REDIRECT_CHAIN": {
@@ -178,7 +176,8 @@ export const OPENSEO_COPY: Record<string, OpenSeoDescriptor> = {
   },
   "ONP.H_NON_SEQUENTIAL": {
     title: "Heading levels skip",
-    explanation: "The heading hierarchy skips levels (e.g. an H4 directly after an H2).",
+    explanation:
+      "The heading hierarchy skips levels (e.g. an H4 directly after an H2).",
     howToFix: "Adjust heading levels so they descend one step at a time.",
   },
   "RESP.SLOW_TTFB": {

@@ -20,7 +20,12 @@ describe("power / MDE", () => {
   });
 
   it("needs ~18% lift for a 200-page 2,000 click/month split over 56 days", () => {
-    const mde = splitMde({ monthlyClicks: 2000, pageCount: 200, windowDays: 56, pagesPerArm: 100 });
+    const mde = splitMde({
+      monthlyClicks: 2000,
+      pageCount: 200,
+      windowDays: 56,
+      pagesPerArm: 100,
+    });
     expect(mde).toBeGreaterThanOrEqual(0.16);
     expect(mde).toBeLessThanOrEqual(0.22);
   });

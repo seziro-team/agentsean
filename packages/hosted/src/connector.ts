@@ -55,12 +55,23 @@ export function createConnectorPairing(
 
 export function activateConnector(db: SqliteDatabase, token: string): boolean {
   const hash = createHash("sha256").update(token).digest("hex");
-  const row = db.select().from(connectorPairings).all().find((r) => r.tokenHash === hash);
+  const row = db
+    .select()
+    .from(connectorPairings)
+    .all()
+    .find((r) => r.tokenHash === hash);
   if (!row) return false;
-  db.update(connectorPairings).set({ status: "active" }).where(eq(connectorPairings.id, row.id)).run();
+  db.update(connectorPairings)
+    .set({ status: "active" })
+    .where(eq(connectorPairings.id, row.id))
+    .run();
   return true;
 }
 
 export function listConnectors(db: SqliteDatabase, tenantId: string) {
-  return db.select().from(connectorPairings).where(eq(connectorPairings.tenantId, tenantId)).all();
+  return db
+    .select()
+    .from(connectorPairings)
+    .where(eq(connectorPairings.tenantId, tenantId))
+    .all();
 }

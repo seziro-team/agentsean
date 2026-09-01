@@ -11,9 +11,7 @@ export function generateToken(): Secret {
   return new Secret(randomBytes(32).toString("base64url"));
 }
 
-export async function loadOrCreateToken(
-  store: CredentialStore,
-): Promise<Secret> {
+export async function loadOrCreateToken(store: CredentialStore): Promise<Secret> {
   const env = envAuthToken();
   if (env) {
     assertTokenStrength(env);

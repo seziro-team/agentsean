@@ -18,7 +18,10 @@ export type HostedRouteOptions = {
   db: SqliteDatabase;
 };
 
-export function registerHostedRoutes(app: FastifyInstance, opts: HostedRouteOptions): void {
+export function registerHostedRoutes(
+  app: FastifyInstance,
+  opts: HostedRouteOptions,
+): void {
   app.get("/api/billing", () => {
     const tenant = opts.db.select().from(tenants).all()[0];
     if (!tenant) {
@@ -56,7 +59,11 @@ export function registerHostedRoutes(app: FastifyInstance, opts: HostedRouteOpti
   });
 
   app.post("/api/billing/sites", (req, reply) => {
-    const body = (req.body ?? {}) as { tenantId?: string; origin?: string; name?: string };
+    const body = (req.body ?? {}) as {
+      tenantId?: string;
+      origin?: string;
+      name?: string;
+    };
     const tenant = body.tenantId
       ? opts.db.select().from(tenants).where(eq(tenants.id, body.tenantId)).get()
       : opts.db.select().from(tenants).all()[0];
@@ -69,7 +76,9 @@ export function registerHostedRoutes(app: FastifyInstance, opts: HostedRouteOpti
       const added = addTenantSite(opts.db, addOpts);
       return { ok: true, ...added };
     } catch (err) {
-      return reply.code(409).send({ error: err instanceof Error ? err.message : "quota" });
+      return reply
+        .code(409)
+        .send({ error: err instanceof Error ? err.message : "quota" });
     }
   });
 
@@ -85,13 +94,20 @@ export function registerHostedRoutes(app: FastifyInstance, opts: HostedRouteOpti
 
   app.post("/api/billing/webhook", async (req, reply) => {
     const secret = process.env["STRIPE_WEBHOOK_SECRET"]?.trim();
-    const raw = typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {});
-    const sig = typeof req.headers["stripe-signature"] === "string" ? req.headers["stripe-signature"] : "";
+    const raw =
+      typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {});
+    const sig =
+      typeof req.headers["stripe-signature"] === "string"
+        ? req.headers["stripe-signature"]
+        : "";
     if (secret && !stripeSignatureValid(raw, sig, secret)) {
       return reply.code(400).send({ error: "bad_signature" });
     }
-    const event = (typeof req.body === "object" && req.body ? req.body : JSON.parse(raw)) as StripeEvent;
-    if (!event?.id || !event.type) return reply.code(400).send({ error: "invalid_event" });
+    const event = (
+      typeof req.body === "object" && req.body ? req.body : JSON.parse(raw)
+    ) as StripeEvent;
+    if (!event?.id || !event.type)
+      return reply.code(400).send({ error: "invalid_event" });
     const result = applyStripeEvent(opts.db, event);
     return { ok: true, ...result };
   });

@@ -11,7 +11,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "fix-title-tags-wordpress",
     title: "Fix title tags on WordPress",
-    summary: "Sean writes unique titles through the companion plugin, verifies live HTML, and stores a revert snapshot.",
+    summary:
+      "Sean writes unique titles through the companion plugin, verifies live HTML, and stores a revert snapshot.",
     cms: ["wordpress"],
     href: "/recipes/fix-title-tags-wordpress.html",
     steps: [
@@ -24,7 +25,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "fix-orphaned-pages-shopify",
     title: "Fix orphaned pages on a Shopify store",
-    summary: "Internal-link Actions go to metafields. Theme writes are refused — Shopify write_themes stays denied.",
+    summary:
+      "Internal-link Actions go to metafields. Theme writes are refused — Shopify write_themes stays denied.",
     cms: ["shopify"],
     href: "/recipes/fix-orphaned-pages-shopify.html",
     steps: [
@@ -37,7 +39,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "git-pr-title-tags-nextjs",
     title: "Open a Git PR for Next.js title tags",
-    summary: "The git adapter writes a reviewable diff against the customer's source of truth.",
+    summary:
+      "The git adapter writes a reviewable diff against the customer's source of truth.",
     cms: ["git"],
     href: "/recipes/git-pr-title-tags-nextjs.html",
     steps: [
@@ -49,7 +52,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "refresh-decaying-content",
     title: "Refresh a decaying page",
-    summary: "Daily, Sean picks a page whose GSC clicks are falling, rewrites it, runs PublishGate, and publishes. 2 refreshes/day, not overridable.",
+    summary:
+      "Daily, Sean picks a page whose GSC clicks are falling, rewrites it, runs PublishGate, and publishes. 2 refreshes/day, not overridable.",
     cms: ["wordpress", "git", "shopify"],
     href: "/recipes/refresh-decaying-content.html",
     steps: [
@@ -62,7 +66,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "faq-schema-from-gsc",
     title: "FAQ schema from Search Console queries",
-    summary: "Schema is a check, not an AEO lever. Sean will not sell llms.txt, word count, or FAQ schema as AI-citation tactics.",
+    summary:
+      "Schema is a check, not an AEO lever. Sean will not sell llms.txt, word count, or FAQ schema as AI-citation tactics.",
     cms: ["wordpress", "git"],
     href: "/recipes/faq-schema-from-gsc.html",
     steps: [
@@ -86,7 +91,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "gbp-local-pack",
     title: "Keep a Google Business Profile inside quota",
-    summary: "10 edits/min, 300 QPM, and 0 QPM until the location is approved. Sean will not generate reviews (T4).",
+    summary:
+      "10 edits/min, 300 QPM, and 0 QPM until the location is approved. Sean will not generate reviews (T4).",
     cms: ["other"],
     href: "/recipes/gbp-local-pack.html",
     steps: [
@@ -98,7 +104,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "ai-citation-share",
     title: "Measure AI citation share",
-    summary: "~$1.11/run across ~20 prompts × 2 engines. Training crawlers ≠ citation crawlers. Schema and llms.txt are not sold as levers.",
+    summary:
+      "~$1.11/run across ~20 prompts × 2 engines. Training crawlers ≠ citation crawlers. Schema and llms.txt are not sold as levers.",
     cms: ["other"],
     href: "/recipes/ai-citation-share.html",
     steps: [
@@ -110,7 +117,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "brand-mentions-outreach",
     title: "Mention-first outreach",
-    summary: "Find unlinked brand mentions. Sending email is T3 two-key. Sean does not buy links.",
+    summary:
+      "Find unlinked brand mentions. Sending email is T3 two-key. Sean does not buy links.",
     cms: ["other"],
     href: "/recipes/brand-mentions-outreach.html",
     steps: [
@@ -146,10 +154,15 @@ export const RECIPES: Recipe[] = [
   {
     id: "freeze-writes",
     title: "Freeze every write",
-    summary: "sean freeze writes HALT and survives restart. The kill switch is the product.",
+    summary:
+      "sean freeze writes HALT and survives restart. The kill switch is the product.",
     cms: ["other"],
     href: "/recipes/freeze-writes.html",
-    steps: ["sean freeze", "Confirm the dashboard banner.", "sean unfreeze when ready."],
+    steps: [
+      "sean freeze",
+      "Confirm the dashboard banner.",
+      "sean unfreeze when ready.",
+    ],
   },
   {
     id: "observe-then-apply",
@@ -178,7 +191,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "evidence-tier-report",
     title: "Report with an evidence tier",
-    summary: "Causation only at tier A. Small sites mostly land in E — applied, not measurable.",
+    summary:
+      "Causation only at tier A. Small sites mostly land in E — applied, not measurable.",
     cms: ["other"],
     href: "/recipes/evidence-tier-report.html",
     steps: [
@@ -190,7 +204,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "connect-google-byo",
     title: "Bring your own Google Cloud project",
-    summary: "The hosted broker never talks to this machine. --byo publishes to Production on your project.",
+    summary:
+      "The hosted broker never talks to this machine. --byo publishes to Production on your project.",
     cms: ["other"],
     href: "/recipes/connect-google-byo.html",
     steps: [
@@ -202,7 +217,8 @@ export const RECIPES: Recipe[] = [
   {
     id: "agency-ten-sites",
     title: "Run ten client sites on Agency",
-    summary: "Cloud Agency is $249/mo for 25–50 sites. Hosted never stores CMS write credentials.",
+    summary:
+      "Cloud Agency is $249/mo for 25–50 sites. Hosted never stores CMS write credentials.",
     cms: ["other"],
     href: "/recipes/agency-ten-sites.html",
     steps: [

@@ -56,7 +56,8 @@ function ctx(over: Partial<ValidationContext> = {}): ValidationContext {
     twoKeyApprovals: [],
     halted: false,
     beforeText: 'export const metadata = { title: "Hi" };\n',
-    afterText: 'export const metadata = { title: "Welcome to Example Products Home" };\n',
+    afterText:
+      'export const metadata = { title: "Welcome to Example Products Home" };\n',
     runId: "run-1",
     approvalKey: KEY,
     ...over,
@@ -93,7 +94,8 @@ describe("content rate limits", () => {
     };
     const blocked = validateAction(action, ctx({ contentRefreshToday: 2 }));
     expect(blocked.ok).toBe(false);
-    if (!blocked.ok) expect(blocked.vetoes.some((v) => v.code === "RATE_LIMIT")).toBe(true);
+    if (!blocked.ok)
+      expect(blocked.vetoes.some((v) => v.code === "RATE_LIMIT")).toBe(true);
   });
 });
 
@@ -119,7 +121,8 @@ describe("validator", () => {
       ctx(),
     );
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.vetoes.some((v) => v.code === "TARGET_BINDING")).toBe(true);
+    if (!result.ok)
+      expect(result.vetoes.some((v) => v.code === "TARGET_BINDING")).toBe(true);
   });
 
   it("queues writes during the observe period", () => {
@@ -128,7 +131,8 @@ describe("validator", () => {
       ctx({ now: new Date("2026-07-02T00:00:00.000Z") }),
     );
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.vetoes.some((v) => v.code === "OBSERVE_PERIOD")).toBe(true);
+    if (!result.ok)
+      expect(result.vetoes.some((v) => v.code === "OBSERVE_PERIOD")).toBe(true);
   });
 });
 

@@ -12,7 +12,10 @@ type JsonRpc = {
 };
 
 export function handleMcpMessage(_ctx: ToolContext, msg: JsonRpc): JsonRpc | null {
-  if (msg.method === "notifications/initialized" || msg.method === "notifications/cancelled") {
+  if (
+    msg.method === "notifications/initialized" ||
+    msg.method === "notifications/cancelled"
+  ) {
     return null;
   }
   const id = msg.id ?? null;
@@ -59,16 +62,26 @@ export function handleMcpMessage(_ctx: ToolContext, msg: JsonRpc): JsonRpc | nul
   };
 }
 
-export async function handleMcpMessageAsync(ctx: ToolContext, msg: JsonRpc): Promise<JsonRpc | null> {
+export async function handleMcpMessageAsync(
+  ctx: ToolContext,
+  msg: JsonRpc,
+): Promise<JsonRpc | null> {
   if (msg.method === "tools/call") {
-    const params = (msg.params ?? {}) as { name?: string; arguments?: Record<string, unknown> };
+    const params = (msg.params ?? {}) as {
+      name?: string;
+      arguments?: Record<string, unknown>;
+    };
     const result = await callTool(ctx, params.name ?? "", params.arguments ?? {});
     return { jsonrpc: "2.0", id: msg.id ?? null, result };
   }
   return handleMcpMessage(ctx, msg);
 }
 
-export async function serveStdio(ctx: ToolContext, stdin = process.stdin, stdout = process.stdout): Promise<void> {
+export async function serveStdio(
+  ctx: ToolContext,
+  stdin = process.stdin,
+  stdout = process.stdout,
+): Promise<void> {
   stdin.setEncoding("utf8");
   let buf = "";
   const write = (msg: JsonRpc) => {
@@ -85,7 +98,11 @@ export async function serveStdio(ctx: ToolContext, stdin = process.stdin, stdout
       try {
         parsed = JSON.parse(line) as JsonRpc;
       } catch {
-        write({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
+        write({
+          jsonrpc: "2.0",
+          id: null,
+          error: { code: -32700, message: "Parse error" },
+        });
         continue;
       }
       const reply = await handleMcpMessageAsync(ctx, parsed);

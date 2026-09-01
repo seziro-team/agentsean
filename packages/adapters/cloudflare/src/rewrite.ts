@@ -23,7 +23,10 @@ export function rewriteHtml(html: string, overlay: Overlay | undefined): string 
         `<meta name="description" content="${overlay.metaDescription}">`,
       );
     } else if (/<head[^>]*>/i.test(out)) {
-      out = out.replace(/<head[^>]*>/i, (h) => `${h}<meta name="description" content="${overlay.metaDescription}">`);
+      out = out.replace(
+        /<head[^>]*>/i,
+        (h) => `${h}<meta name="description" content="${overlay.metaDescription}">`,
+      );
     }
   }
   return out;

@@ -16,7 +16,12 @@ export async function wikidataSearch(
   const res = await fetchFn(url, { headers: { accept: "application/json" } });
   if (!res.ok) throw new Error(`Wikidata HTTP ${res.status}`);
   const json = (await res.json()) as {
-    search?: Array<{ id: string; label?: string; description?: string; concepturi?: string }>;
+    search?: Array<{
+      id: string;
+      label?: string;
+      description?: string;
+      concepturi?: string;
+    }>;
   };
   return (json.search ?? []).map((hit) => {
     const row: EntityHit = { id: hit.id, label: hit.label ?? hit.id };

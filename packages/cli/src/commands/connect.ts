@@ -21,16 +21,24 @@ import {
   refuseDeadProvider,
 } from "@agentsean/providers";
 import { startCommand } from "./start.js";
-import { isCmsWriteKind, isHostedMode, refuseHostedCmsCredential } from "@agentsean/hosted";
+import {
+  isCmsWriteKind,
+  isHostedMode,
+  refuseHostedCmsCredential,
+} from "@agentsean/hosted";
 import { emit, emitError } from "../output.js";
 
 function openBrowser(url: string): void {
   if (process.env["SEAN_NO_BROWSER"] === "1") return;
   const plat = process.platform;
   try {
-    if (plat === "darwin") spawn("open", [url], { stdio: "ignore", detached: true }).unref();
+    if (plat === "darwin")
+      spawn("open", [url], { stdio: "ignore", detached: true }).unref();
     else if (plat === "win32") {
-      spawn("cmd", ["/c", "start", "", url], { stdio: "ignore", detached: true }).unref();
+      spawn("cmd", ["/c", "start", "", url], {
+        stdio: "ignore",
+        detached: true,
+      }).unref();
     } else {
       spawn("xdg-open", [url], { stdio: "ignore", detached: true }).unref();
     }
@@ -139,7 +147,10 @@ export async function connectCommand(opts: {
         );
         return 2;
       }
-      const config: Record<string, unknown> = { origin: opts.target ?? site.origin, token: opts.apiKey };
+      const config: Record<string, unknown> = {
+        origin: opts.target ?? site.origin,
+        token: opts.apiKey,
+      };
       if (provider === "wordpress") {
         const [username, ...rest] = opts.apiKey.split(":");
         config["username"] = username ?? "";
@@ -195,7 +206,11 @@ export async function connectCommand(opts: {
 
   const info = readPid(home);
   if (!info || !isPidAlive(info.pid)) {
-    emitError(opts.json, { command: "connect", error: "not_running" }, "Sean is not running.");
+    emitError(
+      opts.json,
+      { command: "connect", error: "not_running" },
+      "Sean is not running.",
+    );
     return 1;
   }
 

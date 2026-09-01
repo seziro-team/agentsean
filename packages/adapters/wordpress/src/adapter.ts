@@ -40,13 +40,22 @@ export function createWordpressAdapter(opts: WordpressAdapterOptions): SiteAdapt
   const adapter: SiteAdapter = {
     kind: "wordpress",
     capabilities(): AdapterCapabilities {
-      return { kind: "wordpress", reads: true, writes: true, pullRequests: false, rollback: true };
+      return {
+        kind: "wordpress",
+        reads: true,
+        writes: true,
+        pullRequests: false,
+        rollback: true,
+      };
     },
     async read(target: ActionTarget): Promise<AdapterRead> {
-      const res = await api(`/wp-json/sean/v1/seo?url=${encodeURIComponent(target.url)}`);
+      const res = await api(
+        `/wp-json/sean/v1/seo?url=${encodeURIComponent(target.url)}`,
+      );
       if (!res.ok) throw new Error(`wordpress read ${res.status}`);
       const body = (await res.json()) as { title?: string; html?: string };
-      const html = body.html ?? `<html><head><title>${body.title ?? ""}</title></head></html>`;
+      const html =
+        body.html ?? `<html><head><title>${body.title ?? ""}</title></head></html>`;
       return { targetRef: target.url, body: html, contentType: "text/html" };
     },
     async dryRun(action: Action): Promise<AdapterDryRun> {
@@ -70,7 +79,8 @@ export function createWordpressAdapter(opts: WordpressAdapterOptions): SiteAdapt
           changeId: action.id,
         }),
       });
-      if (!res.ok) throw new Error(`wordpress apply ${res.status}: ${await res.text()}`);
+      if (!res.ok)
+        throw new Error(`wordpress apply ${res.status}: ${await res.text()}`);
       const after = patchHtmlTitle(beforeRead.body, title);
       return {
         targetRef: action.target.url,
@@ -87,13 +97,20 @@ export function createWordpressAdapter(opts: WordpressAdapterOptions): SiteAdapt
     },
     async rollback(change: AppliedChange): Promise<AdapterApplyResult> {
       const previous = htmlTitle(change.before);
-      const res = await api(`/wp-json/sean/v1/rollback/${encodeURIComponent(change.actionId)}`, {
-        method: "POST",
-      });
+      const res = await api(
+        `/wp-json/sean/v1/rollback/${encodeURIComponent(change.actionId)}`,
+        {
+          method: "POST",
+        },
+      );
       if (!res.ok && previous) {
         await api("/wp-json/sean/v1/seo", {
           method: "POST",
-          body: JSON.stringify({ url: change.targetRef, title: previous, changeId: `revert-${change.id}` }),
+          body: JSON.stringify({
+            url: change.targetRef,
+            title: previous,
+            changeId: `revert-${change.id}`,
+          }),
         });
       }
       return {

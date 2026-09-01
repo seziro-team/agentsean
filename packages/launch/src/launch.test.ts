@@ -3,7 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { assertTokenStrength, TokenStrengthError, MIN_TOKEN_LENGTH } from "./token-strength.js";
+import {
+  assertTokenStrength,
+  TokenStrengthError,
+  MIN_TOKEN_LENGTH,
+} from "./token-strength.js";
 import {
   consentTelemetry,
   dntHonored,
@@ -16,7 +20,12 @@ import { ONBOARD_QUESTIONS, parseCms, parseSiteUrl, SERVICE_HINT } from "./onboa
 import { runDoctor } from "./doctor.js";
 import { planService } from "./service.js";
 import { RECIPES, recipeById } from "./recipes.js";
-import { hasPostinstallScripts, provisionHome, isOnboarded, markOnboarded } from "./provision.js";
+import {
+  hasPostinstallScripts,
+  provisionHome,
+  isOnboarded,
+  markOnboarded,
+} from "./provision.js";
 import { checkUpdate } from "./update.js";
 import { INSTALL_FLAGS, planInstall } from "./install.js";
 import { OPENSEO_CREDIT, POSITIONING, recipePage, recipesIndex } from "./site.js";
@@ -29,7 +38,9 @@ function tmp(): string {
 describe("token strength", () => {
   it("rejects short and low-entropy tokens", () => {
     expect(() => assertTokenStrength("a")).toThrow(TokenStrengthError);
-    expect(() => assertTokenStrength("a".repeat(MIN_TOKEN_LENGTH))).toThrow(TokenStrengthError);
+    expect(() => assertTokenStrength("a".repeat(MIN_TOKEN_LENGTH))).toThrow(
+      TokenStrengthError,
+    );
     expect(() => assertTokenStrength("abcdefghijklmnopqrstuvwxyz012345")).not.toThrow();
   });
 });
@@ -60,7 +71,12 @@ describe("onboard", () => {
   it("asks a handful of questions and does not treat service install as onboarding", () => {
     expect(ONBOARD_QUESTIONS.length).toBeGreaterThanOrEqual(4);
     expect(ONBOARD_QUESTIONS.length).toBeLessThanOrEqual(6);
-    expect(ONBOARD_QUESTIONS.map((q) => q.id)).toEqual(["url", "cms", "google", "telemetry"]);
+    expect(ONBOARD_QUESTIONS.map((q) => q.id)).toEqual([
+      "url",
+      "cms",
+      "google",
+      "telemetry",
+    ]);
     expect(parseCms("WordPress")).toBe("wordpress");
     expect(parseSiteUrl("https://example.com/blog")).toBe("https://example.com");
     expect(parseSiteUrl("not-a-url")).toBeUndefined();
@@ -135,8 +151,12 @@ describe("recipes and docs copy", () => {
   it("ships first-party recipes and the OpenSEO credit", () => {
     expect(RECIPES.length).toBeGreaterThanOrEqual(12);
     expect(recipeById("city-service-pages-refused")?.title).toMatch(/refused/i);
-    expect(recipeById("fix-orphaned-pages-shopify")?.summary).toMatch(/Theme writes are refused/);
-    expect(POSITIONING).toBe("Every SEO tool tells you what's wrong. Agent Sean fixes it.");
+    expect(recipeById("fix-orphaned-pages-shopify")?.summary).toMatch(
+      /Theme writes are refused/,
+    );
+    expect(POSITIONING).toBe(
+      "Every SEO tool tells you what's wrong. Agent Sean fixes it.",
+    );
     expect(OPENSEO_CREDIT).toMatch(/not a fork of OpenSEO/);
     const html = recipesIndex();
     for (const r of RECIPES) {
@@ -155,7 +175,9 @@ describe("provision and install", () => {
     markOnboarded(home);
     expect(isOnboarded(home)).toBe(true);
     expect(hasPostinstallScripts({ start: "node dist/bin.js" })).toBe(false);
-    expect(hasPostinstallScripts({ postinstall: "node scripts/fetch-chrome.js" })).toBe(true);
+    expect(hasPostinstallScripts({ postinstall: "node scripts/fetch-chrome.js" })).toBe(
+      true,
+    );
     expect(INSTALL_FLAGS).toContain("--no-onboard");
     const plan = planInstall({
       prefix: "/tmp/sean",
@@ -175,7 +197,14 @@ describe("checked-in installers and docs site", () => {
 
   it("install.sh matches the flag surface and never uses postinstall", () => {
     const sh = fs.readFileSync(path.join(root, "install/install.sh"), "utf8");
-    for (const flag of ["--no-onboard", "--version=", "--prefix=", "--channel=", "--from-source=", "--dry-run"]) {
+    for (const flag of [
+      "--no-onboard",
+      "--version=",
+      "--prefix=",
+      "--channel=",
+      "--from-source=",
+      "--dry-run",
+    ]) {
       expect(sh).toContain(flag);
     }
     expect(sh).toMatch(/npm v12/);

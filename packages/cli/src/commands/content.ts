@@ -40,7 +40,8 @@ export async function contentCommand(opts: {
     const token = await loadOrCreateToken(store);
     const llm = await loadLlmConfig({ store });
     const cfg = loadGitConnection(db, site.id);
-    const repoPath = opts.repo ?? (typeof cfg?.["repoPath"] === "string" ? cfg["repoPath"] : null);
+    const repoPath =
+      opts.repo ?? (typeof cfg?.["repoPath"] === "string" ? cfg["repoPath"] : null);
     const adapter = repoPath
       ? createGitAdapter({
           repoPath,

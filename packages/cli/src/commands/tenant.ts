@@ -16,7 +16,11 @@ export async function tenantCommand(opts: {
       ? db.select().from(tenants).where(eq(tenants.id, opts.target)).get()
       : db.select().from(tenants).all()[0];
     if (!row) {
-      emitError(opts.json, { command: "tenant", error: "unknown_tenant" }, "No tenant. Run sean signup <plan>.");
+      emitError(
+        opts.json,
+        { command: "tenant", error: "unknown_tenant" },
+        "No tenant. Run sean signup <plan>.",
+      );
       return 2;
     }
     const status = hostedStatus(db, row.id);

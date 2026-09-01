@@ -1,0 +1,68 @@
+name: Request a CMS / platform adapter
+description: Ask for support for a content platform Sean cannot yet publish to.
+title: "[adapter]: "
+labels: ["adapter-request", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sean writes changes back to your site through an adapter. To add support for a new
+        platform we need to know how that platform lets programs read and write content. The
+        more of this you can fill in, the faster an adapter can be scoped.
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform name
+      description: The product or CMS you want an adapter for.
+      placeholder: "Craft CMS / Squarespace / Contentful / Sanity"
+    validations:
+      required: true
+
+  - type: input
+    id: docs-url
+    attributes:
+      label: Write API documentation URL
+      description: >
+        A link to the platform's API docs for creating and updating content. An adapter
+        is only feasible if there is a programmatic way to write pages, posts, metadata,
+        or redirects.
+      placeholder: https://example.com/docs/api/content
+    validations:
+      required: true
+
+  - type: dropdown
+    id: auth
+    attributes:
+      label: How does its API authenticate?
+      description: Pick the closest match; add detail below if it is a mix.
+      options:
+        - API key or token
+        - OAuth 2.0
+        - Basic auth (username / password or app password)
+        - JWT / session
+        - Other or unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: auth-detail
+    attributes:
+      label: Auth and API notes
+      description: >
+        Anything relevant about scopes, rate limits, sandbox environments, or quirks
+        that would affect an adapter. Do not paste real credentials.
+
+  - type: dropdown
+    id: can-test
+    attributes:
+      label: Can you test an adapter against a real store or site?
+      description:
+        Adapters are far easier to land when a maintainer or the requester can validate
+        against a live instance.
+      options:
+        - "Yes — I can test against a real site I control"
+        - "Yes — I can provide a sandbox or staging instance"
+        - "No — I can only describe the platform"
+    validations:
+      required: true

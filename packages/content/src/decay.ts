@@ -5,14 +5,22 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export function decayingPages(
   rows: PageDaily[],
   now: Date,
-  opts?: { minPrevious?: number | undefined; minDropPct?: number | undefined; windowDays?: number | undefined },
+  opts?: {
+    minPrevious?: number | undefined;
+    minDropPct?: number | undefined;
+    windowDays?: number | undefined;
+  },
 ): DecayingPage[] {
   const windowDays = opts?.windowDays ?? 28;
   const minPrevious = opts?.minPrevious ?? 10;
   const minDropPct = opts?.minDropPct ?? 0.2;
   const today = now.toISOString().slice(0, 10);
-  const currentStart = new Date(now.getTime() - windowDays * DAY_MS).toISOString().slice(0, 10);
-  const previousStart = new Date(now.getTime() - 2 * windowDays * DAY_MS).toISOString().slice(0, 10);
+  const currentStart = new Date(now.getTime() - windowDays * DAY_MS)
+    .toISOString()
+    .slice(0, 10);
+  const previousStart = new Date(now.getTime() - 2 * windowDays * DAY_MS)
+    .toISOString()
+    .slice(0, 10);
 
   const current = new Map<string, number>();
   const previous = new Map<string, number>();

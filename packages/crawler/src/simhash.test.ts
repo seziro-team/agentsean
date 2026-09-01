@@ -13,6 +13,12 @@ describe("simhash", () => {
     const b = simhash64("the quick brown fox jumps over the lazy dog tonight");
     const c = simhash64("completely different document about quantum chromodynamics");
     expect(hamming64(a, b)).toBeLessThan(hamming64(a, c));
-    expect(nearDuplicate(simhashHex("aaaa bbbb cccc dddd eeee ffff"), simhashHex("zzzz yyyy xxxx wwww vvvv uuuu"), 3)).toBe(false);
+    expect(
+      nearDuplicate(
+        simhashHex("aaaa bbbb cccc dddd eeee ffff"),
+        simhashHex("zzzz yyyy xxxx wwww vvvv uuuu"),
+        3,
+      ),
+    ).toBe(false);
   });
 });

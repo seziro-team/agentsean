@@ -3,7 +3,12 @@ import { pages } from "@agentsean/db";
 import { eq } from "drizzle-orm";
 import { UNDERPOWERED_MDE } from "./ladder.js";
 import { splitMde, prePostMde, DEFAULT_WINDOW_DAYS } from "./power.js";
-import { insertExperiment, seedDataAnomalies, setExperimentStatus, type StoredExperiment } from "./persist.js";
+import {
+  insertExperiment,
+  seedDataAnomalies,
+  setExperimentStatus,
+  type StoredExperiment,
+} from "./persist.js";
 import type { ExperimentSpec } from "./types.js";
 
 export type RegisterResult = {
@@ -20,7 +25,10 @@ function dayDiff(start: string, end: string): number {
   return Math.max(1, Math.round((b - a) / 86_400_000) + 1);
 }
 
-export function monthlyClicksFromMap(preClicks: Record<string, number> | undefined, windowDays: number): number {
+export function monthlyClicksFromMap(
+  preClicks: Record<string, number> | undefined,
+  windowDays: number,
+): number {
   if (!preClicks) return 0;
   let sum = 0;
   for (const v of Object.values(preClicks)) sum += v;
@@ -38,7 +46,9 @@ export function registerExperiment(
 ): RegisterResult {
   seedDataAnomalies(db);
   if (spec.unit === ("url" as string)) {
-    throw new Error("Experiment unit cannot be 'url'. The unit of causal claim is the cohort.");
+    throw new Error(
+      "Experiment unit cannot be 'url'. The unit of causal claim is the cohort.",
+    );
   }
   const windowDays = dayDiff(spec.postStart, spec.plannedEnd);
   const pageCount = Math.max(
@@ -46,7 +56,10 @@ export function registerExperiment(
     db.select().from(pages).where(eq(pages.siteId, spec.siteId)).all().length,
     2,
   );
-  const monthly = monthlyClicksFromMap(spec.preClicks, dayDiff(spec.preStart, spec.preEnd));
+  const monthly = monthlyClicksFromMap(
+    spec.preClicks,
+    dayDiff(spec.preStart, spec.preEnd),
+  );
   const plannedMde =
     spec.design === "uncontrolled"
       ? prePostMde(windowDays)
@@ -93,7 +106,10 @@ export function registerExperiment(
   };
 }
 
-export function startExperiment(db: SqliteDatabase, registered: RegisterResult): RegisterResult {
+export function startExperiment(
+  db: SqliteDatabase,
+  registered: RegisterResult,
+): RegisterResult {
   if (registered.status === "refused") return registered;
   setExperimentStatus(db, registered.experiment.id, "running");
   return {

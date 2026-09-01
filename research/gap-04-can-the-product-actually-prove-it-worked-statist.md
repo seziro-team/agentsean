@@ -43,7 +43,7 @@ dow_t    = 1.09 weekdays / 0.78 weekends
 
 Estimator for split designs: **click-weighted arm-level log ratio-of-ratios**, `log(post_T/pre_T) − log(post_C/pre_C)`, with standard errors from a **page-level bootstrap** (this is the estimator class SearchPilot and SplitSignal are in — it is materially more powerful than the naive per-page mean-of-log-ratios, which wastes power on zero-click tail pages). Power = P(reject) at α = 0.05, one-sided, target 80%.
 
-Scripts: `/tmp/claude-1000/-home-vp2722-seoe/4911f4ca-31de-4720-8fa6-0f77468cd773/scratchpad/{power,p2,p3,p4,p5,p6}.py`
+Scripts: `{power,p2,p3,p4,p5,p6}.py`
 
 > Caveat: `rho=0.85, sd=0.12` is a modelling assumption, not a measured constant. Sensitivity: halving the shock sd (0.06) roughly halves the pre/post MDE; the split-test MDEs are almost unchanged because the shared shock cancels by construction. **This asymmetry is itself the headline result.**
 
@@ -702,4 +702,4 @@ All accessed **2026-09-01** unless noted.
 - SearchAtlas — "Dangers of SEO split testing: cloaking & canonical risks" (documented failure: canonical treated as hint, both variants indexed) — https://searchatlas.com/blog/dangers-seo-split-testing-cloaking-canonical-risks-2026/ *(competitor blog)*
 - Alli AI 2026 reviews (limited public proof points; 60–90 days before conclusions) — https://www.fonzy.ai/ai-seo-tools/alli-ai , https://tiny-tool.com/alli-ai-review/ *(affiliate-leaning review sites — low evidentiary weight, used only to characterise absence of published methodology)*
 
-**Own analysis:** Monte-Carlo power simulations, scripts at `/tmp/claude-1000/-home-vp2722-seoe/4911f4ca-31de-4720-8fa6-0f77468cd773/scratchpad/power.py`, `p2.py`, `p3.py`, `p4.py`, `p5.py`, `p6.py` (2026-09-01). All MDE, null-false-positive, and peeking figures in §1 are from these and depend on the stated data-generating assumptions.
+**Own analysis:** Monte-Carlo power simulations, scripts at `power.py`, `p2.py`, `p3.py`, `p4.py`, `p5.py`, `p6.py` (2026-09-01). All MDE, null-false-positive, and peeking figures in §1 are from these and depend on the stated data-generating assumptions.

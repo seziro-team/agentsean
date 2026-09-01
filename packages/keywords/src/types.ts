@@ -1,4 +1,9 @@
-import type { CostEstimate, KeywordRow, ProviderStack, SerpResult } from "@agentsean/providers";
+import type {
+  CostEstimate,
+  KeywordRow,
+  ProviderStack,
+  SerpResult,
+} from "@agentsean/providers";
 
 export type QueryDaily = {
   date: string;

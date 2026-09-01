@@ -8,7 +8,10 @@ export type LangfuseEvent = {
 };
 
 /** Self-hosted Langfuse on the hosted tier only. No-op without LANGFUSE_HOST. */
-export async function traceLlm(event: LangfuseEvent, env: NodeJS.ProcessEnv = process.env): Promise<void> {
+export async function traceLlm(
+  event: LangfuseEvent,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<void> {
   const host = env["LANGFUSE_HOST"]?.trim();
   if (!host) return;
   const publicKey = env["LANGFUSE_PUBLIC_KEY"]?.trim();

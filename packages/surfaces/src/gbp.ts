@@ -63,7 +63,11 @@ export async function applyGbpEdit(
   write: GbpWrite,
   now = new Date(),
 ): Promise<{ id: string }> {
-  const loc = db.select().from(gbpLocations).where(eq(gbpLocations.id, write.locationId)).get();
+  const loc = db
+    .select()
+    .from(gbpLocations)
+    .where(eq(gbpLocations.id, write.locationId))
+    .get();
   if (!loc || loc.approvalStatus !== "approved") {
     throw new GbpNotApprovedError(
       "GBP write APIs start at 0 QPM until Google approves Basic API Access and the profile is verified 60+ days.",
@@ -77,8 +81,13 @@ export async function applyGbpEdit(
     .where(eq(gbpEdits.locationId, write.locationId))
     .all()
     .filter((e) => e.appliedAt >= windowStart);
-  if (recentForProfile.length >= GBP_EDITS_PER_MIN || !allowGbpEdit(write.locationId, now.getTime())) {
-    throw new GbpQuotaError(`GBP cap is ${GBP_EDITS_PER_MIN} edits/min per profile and is not increasable.`);
+  if (
+    recentForProfile.length >= GBP_EDITS_PER_MIN ||
+    !allowGbpEdit(write.locationId, now.getTime())
+  ) {
+    throw new GbpQuotaError(
+      `GBP cap is ${GBP_EDITS_PER_MIN} edits/min per profile and is not increasable.`,
+    );
   }
   const recentAll = db
     .select()
@@ -86,9 +95,14 @@ export async function applyGbpEdit(
     .all()
     .filter((e) => e.appliedAt >= windowStart);
   if (recentAll.length >= GBP_QPM) {
-    throw new GbpQuotaError(`GBP API cap is ${GBP_QPM} QPM and starts at 0 until Google approves Basic API Access.`);
+    throw new GbpQuotaError(
+      `GBP API cap is ${GBP_QPM} QPM and starts at 0 until Google approves Basic API Access.`,
+    );
   }
-  if (write.kind === "category" && typeof write.payload["primaryCategory"] === "string") {
+  if (
+    write.kind === "category" &&
+    typeof write.payload["primaryCategory"] === "string"
+  ) {
     db.update(gbpLocations)
       .set({ primaryCategory: write.payload["primaryCategory"] })
       .where(eq(gbpLocations.id, write.locationId))

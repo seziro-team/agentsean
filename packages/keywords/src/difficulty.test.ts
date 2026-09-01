@@ -3,7 +3,13 @@ import { trainDifficulty } from "./difficulty.js";
 import type { QueryDaily } from "./types.js";
 
 function row(query: string, position: number, impressions: number): QueryDaily {
-  return { date: "2026-08-01", query, clicks: position <= 10 ? 10 : 0, impressions, position };
+  return {
+    date: "2026-08-01",
+    query,
+    clicks: position <= 10 ? 10 : 0,
+    impressions,
+    position,
+  };
 }
 
 describe("per-site difficulty", () => {

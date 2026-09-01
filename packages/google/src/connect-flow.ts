@@ -2,12 +2,13 @@ import type { CredentialStore } from "@agentsean/credentials";
 import type { SqliteDatabase } from "@agentsean/db";
 import { sites } from "@agentsean/db";
 import { eq } from "drizzle-orm";
-import { resolveOAuthConfig, loopbackRedirectUri, parseDesktopClientJson } from "./oauth-config.js";
-import { startByoAuthorization, exchangeByoCode } from "./oauth-desktop.js";
 import {
-  grantFromBrokerHandoff,
-  startBrokerAuthorization,
-} from "./oauth-broker.js";
+  resolveOAuthConfig,
+  loopbackRedirectUri,
+  parseDesktopClientJson,
+} from "./oauth-config.js";
+import { startByoAuthorization, exchangeByoCode } from "./oauth-desktop.js";
+import { grantFromBrokerHandoff, startBrokerAuthorization } from "./oauth-broker.js";
 import type { PendingStore } from "./pending.js";
 import {
   loadByoClient,
@@ -71,24 +72,34 @@ export async function startConnect(opts: {
     pending: opts.pending,
     siteId: opts.input.siteId,
   });
-  return { authorizationUrl: started.authorizationUrl, state: started.state, mode: "broker" };
+  return {
+    authorizationUrl: started.authorizationUrl,
+    state: started.state,
+    mode: "broker",
+  };
 }
 
 export async function finishConnect(opts: {
   store: CredentialStore;
   pending: PendingStore;
-  query: { code?: string | undefined; state?: string | undefined; payload?: string | undefined };
+  query: {
+    code?: string | undefined;
+    state?: string | undefined;
+    payload?: string | undefined;
+  };
   fetch?: typeof fetch | undefined;
   env?: NodeJS.ProcessEnv | undefined;
 }): Promise<StoredGoogleGrant> {
   const state = opts.query.state;
   if (!state) throw new GscTokenError("OAuth callback missing state.");
   const pending = opts.pending.take(state);
-  if (!pending) throw new GscTokenError("OAuth state is unknown or expired. Start connect again.");
+  if (!pending)
+    throw new GscTokenError("OAuth state is unknown or expired. Start connect again.");
   const prev = await loadGrant(opts.store);
   const fetchFn = opts.fetch ?? fetch;
   if (pending.mode === "broker") {
-    if (!opts.query.payload) throw new GscTokenError("Broker callback missing sealed payload.");
+    if (!opts.query.payload)
+      throw new GscTokenError("Broker callback missing sealed payload.");
     const grant = grantFromBrokerHandoff(pending, opts.query.payload, prev);
     await saveGrant(opts.store, grant);
     return grant;
@@ -96,7 +107,8 @@ export async function finishConnect(opts: {
   if (!opts.query.code) throw new GscTokenError("OAuth callback missing code.");
   const cfg = resolveOAuthConfig(opts.env);
   const byo = (await loadByoClient(opts.store)) ?? cfg.byo;
-  if (!byo) throw new GscTokenError("BYO client credentials missing at token exchange.");
+  if (!byo)
+    throw new GscTokenError("BYO client credentials missing at token exchange.");
   const grant = await exchangeByoCode({
     client: byo,
     pending,
@@ -158,7 +170,8 @@ export async function discoverProperties(opts: {
       const want = normalizeGscSiteUrl(site.origin);
       suggestedGsc =
         gscSites.find((s) => s.siteUrl === want)?.siteUrl ??
-        gscSites.find((s) => site.origin.startsWith(s.siteUrl.replace(/\/$/, "")))?.siteUrl ??
+        gscSites.find((s) => site.origin.startsWith(s.siteUrl.replace(/\/$/, "")))
+          ?.siteUrl ??
         null;
     }
   }

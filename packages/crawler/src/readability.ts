@@ -30,7 +30,10 @@ export type ReadabilityResult = {
   wordCount: number;
 };
 
-export function extractMainContent(html: string, documentTitle: string): ReadabilityResult {
+export function extractMainContent(
+  html: string,
+  documentTitle: string,
+): ReadabilityResult {
   let text = "";
   try {
     const { document } = parseHTML(html);

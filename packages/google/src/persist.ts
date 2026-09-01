@@ -120,7 +120,12 @@ export function persistGscDaily(
   siteId: string,
   searchType: string,
   date: string,
-  row: { clicks: number; impressions: number; ctr?: number | null; position?: number | null },
+  row: {
+    clicks: number;
+    impressions: number;
+    ctr?: number | null;
+    position?: number | null;
+  },
   dataState: string,
   firstIncompleteDate: string | null,
 ): void {
@@ -295,7 +300,10 @@ export function persistGa4Landing(
     .get();
   const values = { sessions, engagedSessions };
   if (existing) {
-    db.update(ga4LandingDaily).set(values).where(eq(ga4LandingDaily.id, existing.id)).run();
+    db.update(ga4LandingDaily)
+      .set(values)
+      .where(eq(ga4LandingDaily.id, existing.id))
+      .run();
     return;
   }
   db.insert(ga4LandingDaily)
@@ -372,7 +380,11 @@ export function persistCrux(db: SqliteDatabase, siteId: string, rec: CruxRecord)
     .run();
 }
 
-export function persistPsi(db: SqliteDatabase, siteId: string, result: PsiResult): void {
+export function persistPsi(
+  db: SqliteDatabase,
+  siteId: string,
+  result: PsiResult,
+): void {
   db.insert(psiAudits)
     .values({
       id: randomUUID(),
@@ -422,7 +434,10 @@ export function persistVerification(
     error: row.error ?? null,
   };
   if (existing) {
-    db.update(siteVerifications).set(values).where(eq(siteVerifications.id, existing.id)).run();
+    db.update(siteVerifications)
+      .set(values)
+      .where(eq(siteVerifications.id, existing.id))
+      .run();
     return;
   }
   db.insert(siteVerifications)

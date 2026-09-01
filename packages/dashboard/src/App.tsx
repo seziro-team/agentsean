@@ -40,7 +40,12 @@ function usePath(): [string, (p: string) => void] {
   ];
 }
 
-type Site = { id: string; origin: string; name: string | null; observeUntil: string | null };
+type Site = {
+  id: string;
+  origin: string;
+  name: string | null;
+  observeUntil: string | null;
+};
 
 export function App() {
   const [path, go] = usePath();
@@ -70,8 +75,8 @@ export function App() {
       <main className="page">
         <h2>Agent Sean</h2>
         <p className="lead">
-          Open this dashboard from <code>sean start</code> so the local session cookie can be set.
-          A hosted page never talks to this machine.
+          Open this dashboard from <code>sean start</code> so the local session cookie
+          can be set. A hosted page never talks to this machine.
         </p>
       </main>
     );
@@ -86,21 +91,21 @@ export function App() {
     <div className="shell">
       <nav className="side">
         <h1>Agent Sean</h1>
-        {ROUTES.filter(([p]) => (empty ? p === "/onboarding" || p === "/settings" : true)).map(
-          ([p, label]) => (
-            <a
-              key={p}
-              href={p}
-              className={screen === p ? "active" : ""}
-              onClick={(e) => {
-                e.preventDefault();
-                go(p);
-              }}
-            >
-              {label}
-            </a>
-          ),
-        )}
+        {ROUTES.filter(([p]) =>
+          empty ? p === "/onboarding" || p === "/settings" : true,
+        ).map(([p, label]) => (
+          <a
+            key={p}
+            href={p}
+            className={screen === p ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              go(p);
+            }}
+          >
+            {label}
+          </a>
+        ))}
         <p className="muted" style={{ marginTop: "1rem" }}>
           <a href="/connect">Connect Google</a>
           <br />
@@ -109,7 +114,9 @@ export function App() {
       </nav>
       <div>
         {health.data?.halted ? (
-          <div className="banner halt">Writes are frozen. Sean will not apply Actions until you unfreeze.</div>
+          <div className="banner halt">
+            Writes are frozen. Sean will not apply Actions until you unfreeze.
+          </div>
         ) : null}
         <main className="page">
           <Screen path={screen} siteId={siteId} go={go} />
@@ -119,7 +126,11 @@ export function App() {
   );
 }
 
-function Screen(props: { path: string; siteId: string | undefined; go: (p: string) => void }) {
+function Screen(props: {
+  path: string;
+  siteId: string | undefined;
+  go: (p: string) => void;
+}) {
   switch (props.path) {
     case "/findings":
       return <Findings siteId={props.siteId} />;
@@ -184,7 +195,9 @@ function Overview(props: { siteId: string | undefined; go: (p: string) => void }
         <div className="card">
           <div className="muted">Site score</div>
           <div className="metric">{d?.score?.score ?? "—"}</div>
-          <div className="muted">{d?.score?.band} · {d?.score?.version}</div>
+          <div className="muted">
+            {d?.score?.band} · {d?.score?.version}
+          </div>
         </div>
         <div className="card">
           <div className="muted">This week</div>
@@ -218,8 +231,8 @@ function Overview(props: { siteId: string | undefined; go: (p: string) => void }
       <div className="card">
         <strong>Surfaces beyond classic organic</strong>
         <p className="muted">
-          AI citation share, GBP within quota, and brand mentions. Schema / llms.txt / length are not sold as AEO
-          levers.
+          AI citation share, GBP within quota, and brand mentions. Schema / llms.txt /
+          length are not sold as AEO levers.
         </p>
         <div className="row">
           <button className="secondary" onClick={() => props.go("/ai")}>
@@ -264,10 +277,16 @@ function Onboarding(props: { go: (p: string) => void }) {
   return (
     <>
       <h2>Onboarding</h2>
-      <p className="lead">URL → crawl → first findings. Then offer Google. No account required.</p>
+      <p className="lead">
+        URL → crawl → first findings. Then offer Google. No account required.
+      </p>
       <div className="card">
         <label>Site URL</label>
-        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com"
+        />
         <div className="row" style={{ marginTop: "0.75rem" }}>
           <button
             disabled={busy}
@@ -313,33 +332,40 @@ function Onboarding(props: { go: (p: string) => void }) {
         {err ? <p className="err">{err}</p> : null}
         {done ? (
           <p className="ok">
-            {done.pages} pages, {done.findings} findings, score {done.score}. Connect Google when you want
-            clicks data.
+            {done.pages} pages, {done.findings} findings, score {done.score}. Connect
+            Google when you want clicks data.
           </p>
         ) : null}
         <p className="muted">
-          Most changes on a small site land in evidence tier E — applied, not measurable. That is true of
-          every SEO tool; only Sean says so.
+          Most changes on a small site land in evidence tier E — applied, not
+          measurable. That is true of every SEO tool; only Sean says so.
         </p>
         {done?.power ? <p className="warn">{done.power}</p> : null}
         {done?.preset ? (
           <p className="muted">
             Detected vertical: <strong>{done.preset}</strong>
-            {done.preset === "b2b_saas" || done.preset === "multi_location" ? " (v1 preset)" : ""}. Affiliate and
-            YMYL sites hard-block content generation.
+            {done.preset === "b2b_saas" || done.preset === "multi_location"
+              ? " (v1 preset)"
+              : ""}
+            . Affiliate and YMYL sites hard-block content generation.
           </p>
         ) : null}
       </div>
       {done?.siteId && (questions.data?.questions ?? []).length > 0 ? (
         <div className="card">
           <strong>Six onboarding questions</strong>
-          <p className="muted">A generic checklist gives opposite advice per vertical. Answer these so Sean can apply the right rules.</p>
+          <p className="muted">
+            A generic checklist gives opposite advice per vertical. Answer these so Sean
+            can apply the right rules.
+          </p>
           {(questions.data?.questions ?? []).map((q) => (
             <label key={q.id}>
               {q.prompt}
               <select
                 value={answers[q.id] ?? ""}
-                onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                onChange={(e) =>
+                  setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                }
               >
                 <option value="">Select…</option>
                 {q.options.map((o) => (
@@ -449,7 +475,10 @@ function Findings(props: { siteId: string | undefined }) {
         </tbody>
       </table>
       {search.data?.nextCursor ? (
-        <button className="secondary" onClick={() => setCursor(search.data?.nextCursor ?? undefined)}>
+        <button
+          className="secondary"
+          onClick={() => setCursor(search.data?.nextCursor ?? undefined)}
+        >
           Next page
         </button>
       ) : null}
@@ -462,9 +491,14 @@ function Crawls(props: { siteId: string | undefined }) {
   const crawls = useQuery({
     queryKey: ["crawls", props.siteId],
     queryFn: () =>
-      api<{ crawls: Array<{ id: string; startedAt: string; status: string; pagesSeen: number }> }>(
-        `/api/crawls?siteId=${props.siteId}`,
-      ),
+      api<{
+        crawls: Array<{
+          id: string;
+          startedAt: string;
+          status: string;
+          pagesSeen: number;
+        }>;
+      }>(`/api/crawls?siteId=${props.siteId}`),
     enabled: Boolean(props.siteId),
   });
   const a = crawls.data?.crawls[0]?.id;
@@ -488,13 +522,21 @@ function Crawls(props: { siteId: string | undefined }) {
   return (
     <>
       <h2>Crawl explorer</h2>
-      <p className="lead">Crawl-to-crawl diff. filter_mode: added / new / removed / missing / no_change.</p>
+      <p className="lead">
+        Crawl-to-crawl diff. filter_mode: added / new / removed / missing / no_change.
+      </p>
       <div className="row">
-        {["all", "added", "new", "removed", "missing", "no_change", "changed"].map((m) => (
-          <button key={m} className={filter === m ? "" : "secondary"} onClick={() => setFilter(m)}>
-            {m}
-          </button>
-        ))}
+        {["all", "added", "new", "removed", "missing", "no_change", "changed"].map(
+          (m) => (
+            <button
+              key={m}
+              className={filter === m ? "" : "secondary"}
+              onClick={() => setFilter(m)}
+            >
+              {m}
+            </button>
+          ),
+        )}
       </div>
       <div className="virtual" ref={parent}>
         <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
@@ -547,34 +589,47 @@ function Activity(_props: { siteId: string | undefined }) {
   return (
     <>
       <h2>Activity</h2>
-      <p className="lead">Every write is a reversible diff. One click reverts it. The LLM never holds credentials.</p>
+      <p className="lead">
+        Every write is a reversible diff. One click reverts it. The LLM never holds
+        credentials.
+      </p>
       {(q.data?.changes ?? []).map((c) => (
-          <div className="card" key={c.id}>
-            <strong>{c.summary}</strong>
-            <span className={`pill tier-${c.evidenceTier ?? "E"}`}>tier {c.evidenceTier ?? "E"}</span>
-            <div className="muted">{c.appliedAt}{c.causationClaimed ? "" : " · no causal claim"}</div>
-            <pre className="diff">
-              <span className="del">{c.before.slice(0, 400)}</span>
-              {"\n"}
-              <span className="ins">{c.after.slice(0, 400)}</span>
-            </pre>
-            {c.prUrl ? <p><a href={c.prUrl}>Pull request</a></p> : null}
-            {c.revertible ? (
-              <button
-                className="secondary"
-                onClick={() => {
-                  void api(`/api/changes/${c.id}/revert`, { method: "POST", body: {} }).then(() =>
-                    q.refetch(),
-                  );
-                }}
-              >
-                Revert
-              </button>
-            ) : (
-              <span className="muted">Already reverted</span>
-            )}
+        <div className="card" key={c.id}>
+          <strong>{c.summary}</strong>
+          <span className={`pill tier-${c.evidenceTier ?? "E"}`}>
+            tier {c.evidenceTier ?? "E"}
+          </span>
+          <div className="muted">
+            {c.appliedAt}
+            {c.causationClaimed ? "" : " · no causal claim"}
           </div>
-        ))}
+          <pre className="diff">
+            <span className="del">{c.before.slice(0, 400)}</span>
+            {"\n"}
+            <span className="ins">{c.after.slice(0, 400)}</span>
+          </pre>
+          {c.prUrl ? (
+            <p>
+              <a href={c.prUrl}>Pull request</a>
+            </p>
+          ) : null}
+          {c.revertible ? (
+            <button
+              className="secondary"
+              onClick={() => {
+                void api(`/api/changes/${c.id}/revert`, {
+                  method: "POST",
+                  body: {},
+                }).then(() => q.refetch());
+              }}
+            >
+              Revert
+            </button>
+          ) : (
+            <span className="muted">Already reverted</span>
+          )}
+        </div>
+      ))}
     </>
   );
 }
@@ -599,10 +654,16 @@ function Approvals(props: { siteId: string | undefined }) {
   return (
     <>
       <h2>Approvals</h2>
-      <p className="lead">T3 queue. Four diff modes. Two-key rule is not overridable.</p>
+      <p className="lead">
+        T3 queue. Four diff modes. Two-key rule is not overridable.
+      </p>
       <div className="row">
         {(["rendered", "source", "serp", "jsonld"] as const).map((m) => (
-          <button key={m} className={mode === m ? "" : "secondary"} onClick={() => setMode(m)}>
+          <button
+            key={m}
+            className={mode === m ? "" : "secondary"}
+            onClick={() => setMode(m)}
+          >
             {m === "jsonld" ? "structured data" : m === "serp" ? "SERP snippet" : m}
           </button>
         ))}
@@ -623,7 +684,9 @@ function Approvals(props: { siteId: string | undefined }) {
           <p className="muted">{a.blast}</p>
         </div>
       ))}
-      {(q.data?.actions ?? []).length === 0 ? <p className="muted">Nothing waiting for a human.</p> : null}
+      {(q.data?.actions ?? []).length === 0 ? (
+        <p className="muted">Nothing waiting for a human.</p>
+      ) : null}
     </>
   );
 }
@@ -633,7 +696,13 @@ function Automations(props: { siteId: string | undefined }) {
     queryKey: ["settings", props.siteId],
     queryFn: () =>
       api<{
-        matrix: Array<{ kind: string; tier: number; auto: boolean; locked: boolean; note: string }>;
+        matrix: Array<{
+          kind: string;
+          tier: number;
+          auto: boolean;
+          locked: boolean;
+          note: string;
+        }>;
         t1: boolean;
         t2: boolean;
       }>(`/api/automations${props.siteId ? `?siteId=${props.siteId}` : ""}`),
@@ -641,7 +710,9 @@ function Automations(props: { siteId: string | undefined }) {
   return (
     <>
       <h2>Automations</h2>
-      <p className="lead">Full autonomy matrix. T3 is gated. T4 is refused. No setting exists for T4.</p>
+      <p className="lead">
+        Full autonomy matrix. T3 is gated. T4 is refused. No setting exists for T4.
+      </p>
       <table>
         <thead>
           <tr>
@@ -673,7 +744,13 @@ function Content(props: { siteId: string | undefined }) {
     queryKey: ["content", props.siteId],
     queryFn: () =>
       api<{
-        items: Array<{ id: string; kind: string; state: string; createdAt: string; targetRef: string }>;
+        items: Array<{
+          id: string;
+          kind: string;
+          state: string;
+          createdAt: string;
+          targetRef: string;
+        }>;
         drafts: Array<{
           id: string;
           state: string;
@@ -682,8 +759,18 @@ function Content(props: { siteId: string | undefined }) {
           createdAt: string;
           publishedAt: string | null;
         }>;
-        briefs: Array<{ id: string; kind: string; targetUrl: string; score: number; createdAt: string }>;
-        cap: { newPagesPerDay: number; contentRefreshPerDay: number; overridable: boolean };
+        briefs: Array<{
+          id: string;
+          kind: string;
+          targetUrl: string;
+          score: number;
+          createdAt: string;
+        }>;
+        cap: {
+          newPagesPerDay: number;
+          contentRefreshPerDay: number;
+          overridable: boolean;
+        };
         evidence: { default: string; meaning: string };
       }>(`/api/content${props.siteId ? `?siteId=${props.siteId}` : ""}`),
   });
@@ -691,9 +778,9 @@ function Content(props: { siteId: string | undefined }) {
     <>
       <h2>Content</h2>
       <p className="lead">
-        Default is rewrite-in-place. Cap: {q.data?.cap.contentRefreshPerDay ?? 2} refreshes/day and{" "}
-        {q.data?.cap.newPagesPerDay ?? 2} new pages/day, not overridable. Evidence: {q.data?.evidence.default} —{" "}
-        {q.data?.evidence.meaning}
+        Default is rewrite-in-place. Cap: {q.data?.cap.contentRefreshPerDay ?? 2}{" "}
+        refreshes/day and {q.data?.cap.newPagesPerDay ?? 2} new pages/day, not
+        overridable. Evidence: {q.data?.evidence.default} — {q.data?.evidence.meaning}
       </p>
       <h3>Drafts</h3>
       <table>
@@ -760,9 +847,14 @@ function SearchPerf(props: { siteId: string | undefined }) {
   return (
     <>
       <h2>Search performance</h2>
-      <p className="lead">Default metric is clicks. GSC impressions 2025-05-13 → 2026-04-27 are contaminated.</p>
+      <p className="lead">
+        Default metric is clicks. GSC impressions 2025-05-13 → 2026-04-27 are
+        contaminated.
+      </p>
       {d?.impressionsContaminated ? (
-        <p className="warn">Impressions / CTR / position in the bug window are not used as the default.</p>
+        <p className="warn">
+          Impressions / CTR / position in the bug window are not used as the default.
+        </p>
       ) : null}
       <div className="grid">
         <div className="card">
@@ -810,9 +902,12 @@ function Evidence(props: { siteId: string | undefined }) {
   const power = useQuery({
     queryKey: ["power", props.siteId],
     queryFn: () =>
-      api<{ message: string; splitMde: number; prePostMde: number; typicalTier: string }>(
-        `/api/measure/power${props.siteId ? `?siteId=${props.siteId}` : ""}`,
-      ),
+      api<{
+        message: string;
+        splitMde: number;
+        prePostMde: number;
+        typicalTier: string;
+      }>(`/api/measure/power${props.siteId ? `?siteId=${props.siteId}` : ""}`),
     enabled: Boolean(props.siteId),
   });
   const d = q.data;
@@ -820,8 +915,8 @@ function Evidence(props: { siteId: string | undefined }) {
     <>
       <h2>Evidence</h2>
       <p className="lead">
-        Every claim carries a tier. Sean declines to claim causation it cannot support. Default metric is
-        clicks.
+        Every claim carries a tier. Sean declines to claim causation it cannot support.
+        Default metric is clicks.
       </p>
       <div className="card">
         <strong>{d?.headline ?? "No claims yet."}</strong>
@@ -830,7 +925,10 @@ function Evidence(props: { siteId: string | undefined }) {
       <button
         disabled={!props.siteId}
         onClick={() => {
-          void api("/api/measure", { method: "POST", body: { siteId: props.siteId } }).then(() => {
+          void api("/api/measure", {
+            method: "POST",
+            body: { siteId: props.siteId },
+          }).then(() => {
             void q.refetch();
             void power.refetch();
           });
@@ -876,10 +974,24 @@ function Keywords(props: { siteId: string | undefined }) {
     queryFn: () =>
       api<{
         origin: string;
-        keywords: Array<{ query: string; source: string; clicks: number; position: number | null }>;
+        keywords: Array<{
+          query: string;
+          source: string;
+          clicks: number;
+          position: number | null;
+        }>;
         clusters: Array<{ label: string; memberCount: number; serpConfirmed: number }>;
-        strikingDistance: Array<{ query: string; position: number | null; clicks: number }>;
-        ranks: Array<{ query: string; position: number | null; provider: string; estimatedUsd: number }>;
+        strikingDistance: Array<{
+          query: string;
+          position: number | null;
+          clicks: number;
+        }>;
+        ranks: Array<{
+          query: string;
+          position: number | null;
+          provider: string;
+          estimatedUsd: number;
+        }>;
       }>(`/api/keywords${props.siteId ? `?siteId=${props.siteId}` : ""}`),
     enabled: Boolean(props.siteId),
   });
@@ -888,13 +1000,17 @@ function Keywords(props: { siteId: string | undefined }) {
     <>
       <h2>Keywords</h2>
       <p className="lead">
-        Demand from GSC, volume proxy from Bing Webmaster, clusters at cosine ≈ 0.78. Zero paid keys required.
-        A DataForSEO key upgrades rank tracking in place. Sean never scrapes Google.
+        Demand from GSC, volume proxy from Bing Webmaster, clusters at cosine ≈ 0.78.
+        Zero paid keys required. A DataForSEO key upgrades rank tracking in place. Sean
+        never scrapes Google.
       </p>
       <button
         disabled={!props.siteId}
         onClick={() => {
-          void api("/api/keywords", { method: "POST", body: { siteId: props.siteId } }).then(() => q.refetch());
+          void api("/api/keywords", {
+            method: "POST",
+            body: { siteId: props.siteId },
+          }).then(() => q.refetch());
         }}
       >
         Refresh opportunities
@@ -911,18 +1027,22 @@ function Keywords(props: { siteId: string | undefined }) {
       <ul>
         {(d?.clusters ?? []).map((c) => (
           <li key={c.label}>
-            {c.label} · {c.memberCount} queries{c.serpConfirmed ? " · SERP-confirmed" : ""}
+            {c.label} · {c.memberCount} queries
+            {c.serpConfirmed ? " · SERP-confirmed" : ""}
           </li>
         ))}
       </ul>
       <h3>Licensed ranks</h3>
       {(d?.ranks ?? []).length === 0 ? (
-        <p className="muted">No licensed rank snapshots. Configure DataForSEO to upgrade in place.</p>
+        <p className="muted">
+          No licensed rank snapshots. Configure DataForSEO to upgrade in place.
+        </p>
       ) : (
         <ul>
           {(d?.ranks ?? []).map((r) => (
             <li key={`${r.query}:${r.provider}`}>
-              {r.query} · #{r.position ?? "—"} · {r.provider} · ${r.estimatedUsd.toFixed(4)}
+              {r.query} · #{r.position ?? "—"} · {r.provider} · $
+              {r.estimatedUsd.toFixed(4)}
             </li>
           ))}
         </ul>
@@ -942,7 +1062,11 @@ function AiVisibility(props: { siteId: string | undefined }) {
         shareOfVoice: number;
         estimatedUsd: number;
         bingShare: number | null;
-        bingRows: Array<{ groundingQuery: string; citations: number; citationShare: number }>;
+        bingRows: Array<{
+          groundingQuery: string;
+          citations: number;
+          citationShare: number;
+        }>;
         ranAt: string | null;
         refusals: Array<{ claim: string; truth: string }>;
         note: string;
@@ -954,37 +1078,56 @@ function AiVisibility(props: { siteId: string | undefined }) {
     <>
       <h2>AI visibility</h2>
       <p className="lead">
-        DIY prompt panel (~20 prompts × ChatGPT + Gemini, ~$1.11/run) plus Bing Webmaster AI Performance CSV.
-        Citation share is measured, not sold as a schema or llms.txt trick.
+        DIY prompt panel (~20 prompts × ChatGPT + Gemini, ~$1.11/run) plus Bing
+        Webmaster AI Performance CSV. Citation share is measured, not sold as a schema
+        or llms.txt trick.
       </p>
       <div className="grid">
         <div className="card">
           <div className="muted">Citation share</div>
-          <div className="metric">{d ? `${Math.round(d.citationShare * 100)}%` : "—"}</div>
-          <div className="muted">{d?.ranAt ? d.ranAt.slice(0, 16) : "No panel run yet"}</div>
+          <div className="metric">
+            {d ? `${Math.round(d.citationShare * 100)}%` : "—"}
+          </div>
+          <div className="muted">
+            {d?.ranAt ? d.ranAt.slice(0, 16) : "No panel run yet"}
+          </div>
         </div>
         <div className="card">
           <div className="muted">Share of voice</div>
-          <div className="metric">{d ? `${Math.round(d.shareOfVoice * 100)}%` : "—"}</div>
+          <div className="metric">
+            {d ? `${Math.round(d.shareOfVoice * 100)}%` : "—"}
+          </div>
           <div className="muted">engines {d?.engines.join(", ") || "—"}</div>
         </div>
         <div className="card">
           <div className="muted">Bing Citation Share</div>
           <div className="metric">
-            {d?.bingShare === null || d?.bingShare === undefined ? "—" : `${Math.round(d.bingShare * 100)}%`}
+            {d?.bingShare === null || d?.bingShare === undefined
+              ? "—"
+              : `${Math.round(d.bingShare * 100)}%`}
           </div>
           <div className="muted">CSV ingest — Bing has no AI Performance API</div>
         </div>
       </div>
       <div className="card">
         <strong>Run the panel</strong>
-        <p className="muted">Monthly cadence. Estimated ${d?.estimatedUsd ? d.estimatedUsd.toFixed(2) : "1.11"} at 2026 API rates. Requires a BYOK LLM.</p>
+        <p className="muted">
+          Monthly cadence. Estimated $
+          {d?.estimatedUsd ? d.estimatedUsd.toFixed(2) : "1.11"} at 2026 API rates.
+          Requires a BYOK LLM.
+        </p>
         <label>Optional Bing AI Performance CSV</label>
-        <textarea value={bingCsv} onChange={(e) => setBingCsv(e.target.value)} rows={4} />
+        <textarea
+          value={bingCsv}
+          onChange={(e) => setBingCsv(e.target.value)}
+          rows={4}
+        />
         <button
           disabled={!props.siteId}
           onClick={() => {
-            const body: { siteId: string | undefined; bingCsv?: string } = { siteId: props.siteId };
+            const body: { siteId: string | undefined; bingCsv?: string } = {
+              siteId: props.siteId,
+            };
             if (bingCsv.trim()) body.bingCsv = bingCsv;
             void api("/api/ai", { method: "POST", body }).then(() => q.refetch());
           }}
@@ -1034,18 +1177,21 @@ function LocalSeo(props: { siteId: string | undefined }) {
     <>
       <h2>Local SEO</h2>
       <p className="lead">
-        Google Business Profile writes are token-bucketed at {d?.editsPerMin ?? 10} edits/min per profile and{" "}
-        {d?.qpm ?? 300} QPM. Quota starts at 0 until Google approves Basic API Access. Review generation and
-        city×service pages are T4.
+        Google Business Profile writes are token-bucketed at {d?.editsPerMin ?? 10}{" "}
+        edits/min per profile and {d?.qpm ?? 300} QPM. Quota starts at 0 until Google
+        approves Basic API Access. Review generation and city×service pages are T4.
       </p>
       {d?.gap.gap ? <div className="card warn">{d.gap.message}</div> : null}
       {(d?.locations ?? []).length === 0 ? (
-        <div className="card muted">No GBP connected. Local mode is read-only until approval lands.</div>
+        <div className="card muted">
+          No GBP connected. Local mode is read-only until approval lands.
+        </div>
       ) : (
         <ul>
           {(d?.locations ?? []).map((loc) => (
             <li key={loc.id}>
-              {loc.title ?? loc.locationName} · {loc.primaryCategory ?? "uncategorised"} · {loc.approvalStatus}
+              {loc.title ?? loc.locationName} · {loc.primaryCategory ?? "uncategorised"}{" "}
+              · {loc.approvalStatus}
               <div className="row" style={{ marginTop: "0.35rem" }}>
                 <button
                   className="secondary"
@@ -1074,7 +1220,8 @@ function LocalSeo(props: { siteId: string | undefined }) {
       )}
       {err ? <p className="err">{err}</p> : null}
       <p className="muted">
-        Title keyword-stuffing is advisory-only. {d?.reviewGeneration} · {d?.cityServicePages}.
+        Title keyword-stuffing is advisory-only. {d?.reviewGeneration} ·{" "}
+        {d?.cityServicePages}.
       </p>
     </>
   );
@@ -1085,8 +1232,20 @@ function Mentions(props: { siteId: string | undefined }) {
     queryKey: ["mentions", props.siteId],
     queryFn: () =>
       api<{
-        mentions: Array<{ id: string; url: string; snippet: string; linked: number; score: number; kind: string }>;
-        inbound404s: Array<{ id: string; sourceUrl: string; targetUrl: string; status: number | null }>;
+        mentions: Array<{
+          id: string;
+          url: string;
+          snippet: string;
+          linked: number;
+          score: number;
+          kind: string;
+        }>;
+        inbound404s: Array<{
+          id: string;
+          sourceUrl: string;
+          targetUrl: string;
+          status: number | null;
+        }>;
         outreach: Array<{ id: string; subject: string; state: string }>;
         sendRequiresApproval: boolean;
       }>(`/api/mentions${props.siteId ? `?siteId=${props.siteId}` : ""}`),
@@ -1097,12 +1256,15 @@ function Mentions(props: { siteId: string | undefined }) {
     <>
       <h2>Off-page & brand authority</h2>
       <p className="lead">
-        Mention-first. Branded web mentions correlate 0.656–0.709 with AI-assistant visibility versus 0.266–0.326
-        for Domain Rating. Outreach send is T3. Disavow is locked unless a manual action exists.
+        Mention-first. Branded web mentions correlate 0.656–0.709 with AI-assistant
+        visibility versus 0.266–0.326 for Domain Rating. Outreach send is T3. Disavow is
+        locked unless a manual action exists.
       </p>
       <h3>Unlinked mentions</h3>
       {(d?.mentions ?? []).length === 0 ? (
-        <p className="muted">No mention opportunities stored. Run the AI visibility job to harvest.</p>
+        <p className="muted">
+          No mention opportunities stored. Run the AI visibility job to harvest.
+        </p>
       ) : (
         <ul>
           {(d?.mentions ?? []).map((m) => (
@@ -1141,7 +1303,9 @@ function Mentions(props: { siteId: string | undefined }) {
       )}
       <h3>Outreach drafts</h3>
       <p className="muted">
-        {d?.sendRequiresApproval ? "Send requires per-message two-key approval. No auto-send setting exists." : ""}
+        {d?.sendRequiresApproval
+          ? "Send requires per-message two-key approval. No auto-send setting exists."
+          : ""}
       </p>
       <ul>
         {(d?.outreach ?? []).map((o) => (
@@ -1164,7 +1328,13 @@ function Billing() {
       api<{
         plan?: { id: string; name: string; priceUsdMonth: number; sites: number };
         tenant?: { id: string; status: string; email: string };
-        cost?: { sites: number; siteCap: number; ledgerUsd: number; cogsUsd: number; byok: boolean };
+        cost?: {
+          sites: number;
+          siteCap: number;
+          ledgerUsd: number;
+          cogsUsd: number;
+          byok: boolean;
+        };
         note?: string;
         checkoutUrl?: string;
       }>("/api/billing"),
@@ -1174,8 +1344,9 @@ function Billing() {
     <>
       <h2>Billing</h2>
       <p className="lead">
-        Self-host is $0. Cloud Starter $9/mo (1 site, BYOK, weekly ranks). Agency $249/mo (25–50 sites, ≈$6–8/site).
-        BYOK is not optional — without it, COGS is $13–16 against $8.
+        Self-host is $0. Cloud Starter $9/mo (1 site, BYOK, weekly ranks). Agency
+        $249/mo (25–50 sites, ≈$6–8/site). BYOK is not optional — without it, COGS is
+        $13–16 against $8.
       </p>
       {d?.note ? <div className="card muted">{d.note}</div> : null}
       {d?.plan ? (
@@ -1183,12 +1354,17 @@ function Billing() {
           <div className="card">
             <div className="muted">Plan</div>
             <div className="metric">{d.plan.name ?? d.plan.id}</div>
-            <div className="muted">${d.plan.priceUsdMonth}/mo · {d.cost?.sites ?? 0}/{d.plan.sites} sites</div>
+            <div className="muted">
+              ${d.plan.priceUsdMonth}/mo · {d.cost?.sites ?? 0}/{d.plan.sites} sites
+            </div>
           </div>
           <div className="card">
             <div className="muted">This tenant</div>
             <div className="metric">${(d.cost?.ledgerUsd ?? 0).toFixed(2)}</div>
-            <div className="muted">ledger · COGS ${(d.cost?.cogsUsd ?? 0).toFixed(2)} · BYOK {d.cost?.byok ? "on" : "off"}</div>
+            <div className="muted">
+              ledger · COGS ${(d.cost?.cogsUsd ?? 0).toFixed(2)} · BYOK{" "}
+              {d.cost?.byok ? "on" : "off"}
+            </div>
           </div>
         </div>
       ) : null}
@@ -1205,7 +1381,10 @@ function Billing() {
         </select>
         <button
           onClick={() => {
-            void api("/api/billing/signup", { method: "POST", body: { email, plan } }).then(() => q.refetch());
+            void api("/api/billing/signup", {
+              method: "POST",
+              body: { email, plan },
+            }).then(() => q.refetch());
           }}
         >
           Start checkout
@@ -1213,13 +1392,18 @@ function Billing() {
       </div>
       <div className="card">
         <strong>Add a client site</strong>
-        <p className="muted">Hosted Sean will not store WordPress or Shopify write credentials. Pair a customer-side connector.</p>
+        <p className="muted">
+          Hosted Sean will not store WordPress or Shopify write credentials. Pair a
+          customer-side connector.
+        </p>
         <label>Origin</label>
         <input value={origin} onChange={(e) => setOrigin(e.target.value)} />
         <button
           className="secondary"
           onClick={() => {
-            void api("/api/billing/sites", { method: "POST", body: { origin } }).then(() => q.refetch());
+            void api("/api/billing/sites", { method: "POST", body: { origin } }).then(
+              () => q.refetch(),
+            );
           }}
         >
           Attach site
@@ -1233,18 +1417,24 @@ function Reports(props: { siteId: string | undefined }) {
   const q = useQuery({
     queryKey: ["reports", props.siteId],
     queryFn: () =>
-      api<{ reports: Array<{ id: string; title: string; createdAt: string; hash: string }> }>(
-        `/api/reports${props.siteId ? `?siteId=${props.siteId}` : ""}`,
-      ),
+      api<{
+        reports: Array<{ id: string; title: string; createdAt: string; hash: string }>;
+      }>(`/api/reports${props.siteId ? `?siteId=${props.siteId}` : ""}`),
   });
   return (
     <>
       <h2>Reports</h2>
-      <p className="lead">Immutable snapshots. Hash covers the payload. White-label hides Agent Sean in the PDF.</p>
+      <p className="lead">
+        Immutable snapshots. Hash covers the payload. White-label hides Agent Sean in
+        the PDF.
+      </p>
       <button
         disabled={!props.siteId}
         onClick={() => {
-          void api("/api/reports", { method: "POST", body: { siteId: props.siteId } }).then(() => q.refetch());
+          void api("/api/reports", {
+            method: "POST",
+            body: { siteId: props.siteId },
+          }).then(() => q.refetch());
         }}
       >
         Snapshot now
@@ -1252,7 +1442,8 @@ function Reports(props: { siteId: string | undefined }) {
       <ul>
         {(q.data?.reports ?? []).map((r) => (
           <li key={r.id}>
-            {r.title} · {r.createdAt.slice(0, 16)} · <a href={`/api/reports/${r.id}.pdf`}>PDF</a>
+            {r.title} · {r.createdAt.slice(0, 16)} ·{" "}
+            <a href={`/api/reports/${r.id}.pdf`}>PDF</a>
             <div className="muted">{r.hash.slice(0, 16)}…</div>
           </li>
         ))}
@@ -1276,13 +1467,18 @@ function Settings() {
         llmConfigured: boolean;
         aiDisclosure: string;
         providers: { dataforseo: boolean; bing: boolean; openpagerank: boolean };
-        caps: { newPagesPerDay: number; contentRefreshPerDay: number; overridable: boolean };
+        caps: {
+          newPagesPerDay: number;
+          contentRefreshPerDay: number;
+          overridable: boolean;
+        };
         telemetry?: { enabled: boolean; events: string[] };
       }>("/api/settings"),
   });
   const adapters = useQuery({
     queryKey: ["adapters"],
-    queryFn: () => api<{ adapters: Array<{ kind: string; connected: boolean }> }>("/api/adapters"),
+    queryFn: () =>
+      api<{ adapters: Array<{ kind: string; connected: boolean }> }>("/api/adapters"),
   });
   const [budget, setBudget] = useState("");
   useEffect(() => {
@@ -1292,13 +1488,22 @@ function Settings() {
   return (
     <>
       <h2>Settings</h2>
-      <p className="lead">Providers, budgets, notifications, kill switch. Remote access is Tailscale / Cloudflare Tunnel — never bind 0.0.0.0.</p>
+      <p className="lead">
+        Providers, budgets, notifications, kill switch. Remote access is Tailscale /
+        Cloudflare Tunnel — never bind 0.0.0.0.
+      </p>
       <div className="card">
         <strong>Kill switch</strong>
-        <p className="muted">Halts all writes across every site and survives restart. Same as <code>sean freeze</code>.</p>
+        <p className="muted">
+          Halts all writes across every site and survives restart. Same as{" "}
+          <code>sean freeze</code>.
+        </p>
         <button
           onClick={() => {
-            void api("/api/freeze", { method: "POST", body: { halted: !d?.halted } }).then(() => q.refetch());
+            void api("/api/freeze", {
+              method: "POST",
+              body: { halted: !d?.halted },
+            }).then(() => q.refetch());
           }}
         >
           {d?.halted ? "Unfreeze" : "Freeze writes"}
@@ -1318,7 +1523,10 @@ function Settings() {
         >
           Save
         </button>
-        <p className="muted">Observe period: {d?.observeDays ?? 7} days (shortenable to 24h, not zero). Rank cadence: {d?.rankCadence ?? "weekly"}.</p>
+        <p className="muted">
+          Observe period: {d?.observeDays ?? 7} days (shortenable to 24h, not zero).
+          Rank cadence: {d?.rankCadence ?? "weekly"}.
+        </p>
       </div>
       <div className="card">
         <strong>Platform adapters</strong>
@@ -1329,36 +1537,42 @@ function Settings() {
         </p>
         <p className="muted">
           <code>sean connect wordpress --api-key USER:APP_PASSWORD</code> ·{" "}
-          <code>sean connect shopify --api-key shpat_…</code> · edge overlay never branches on user-agent.
+          <code>sean connect shopify --api-key shpat_…</code> · edge overlay never
+          branches on user-agent.
         </p>
       </div>
       <div className="card">
         <strong>Demand providers</strong>
         <p className="muted">
           DataForSEO {d?.providers?.dataforseo ? "connected" : "off"} · Bing Webmaster{" "}
-          {d?.providers?.bing ? "connected" : "off"} · OpenPageRank {d?.providers?.openpagerank ? "connected" : "off"}.
-          Free default is GSC + Bing + autocomplete. Sean never scrapes Google.
+          {d?.providers?.bing ? "connected" : "off"} · OpenPageRank{" "}
+          {d?.providers?.openpagerank ? "connected" : "off"}. Free default is GSC + Bing
+          + autocomplete. Sean never scrapes Google.
         </p>
         <p className="muted">
-          Store keys with <code>sean connect dataforseo --api-key login:password</code> (or bing / openpagerank).
+          Store keys with <code>sean connect dataforseo --api-key login:password</code>{" "}
+          (or bing / openpagerank).
         </p>
       </div>
       <div className="card">
         <strong>LLM (BYOK)</strong>
         <p className="muted">
-          Provider {d?.llmProvider ?? "anthropic"} · {d?.llmConfigured ? "key configured" : "no key"} · disclosure{" "}
-          {d?.aiDisclosure ?? "html_comment"}. The model never holds CMS credentials and never calls a write API.
+          Provider {d?.llmProvider ?? "anthropic"} ·{" "}
+          {d?.llmConfigured ? "key configured" : "no key"} · disclosure{" "}
+          {d?.aiDisclosure ?? "html_comment"}. The model never holds CMS credentials and
+          never calls a write API.
         </p>
         <p className="muted">
-          Content caps: {d?.caps.contentRefreshPerDay ?? 2} refreshes/day, {d?.caps.newPagesPerDay ?? 2} new
-          pages/day. Not overridable.
+          Content caps: {d?.caps.contentRefreshPerDay ?? 2} refreshes/day,{" "}
+          {d?.caps.newPagesPerDay ?? 2} new pages/day. Not overridable.
         </p>
       </div>
       <div className="card">
         <strong>Privacy</strong>
         <p className="muted">
-          Anonymous usage events only (install method, OS, version, CMS type, command names). Never domains,
-          URLs, queries, keys, or IPs. Honor <code>DO_NOT_TRACK=1</code>.
+          Anonymous usage events only (install method, OS, version, CMS type, command
+          names). Never domains, URLs, queries, keys, or IPs. Honor{" "}
+          <code>DO_NOT_TRACK=1</code>.
         </p>
         <button
           className="secondary"
@@ -1375,5 +1589,3 @@ function Settings() {
     </>
   );
 }
-
-

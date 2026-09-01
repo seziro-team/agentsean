@@ -9,7 +9,7 @@ describe("@agentsean/ee", () => {
   });
 
   it("verifies a Stripe-style signature", () => {
-    const payload = "{\"id\":\"evt_1\"}";
+    const payload = '{"id":"evt_1"}';
     const secret = "whsec_test";
     const ts = "1000";
     const v1 = createHmac("sha256", secret).update(`${ts}.${payload}`).digest("hex");

@@ -81,7 +81,12 @@ export function createQuotaManager(
 ): QuotaManager {
   const mem = new Map<string, number>();
 
-  const read = (api: QuotaApi, scope: string, kind: WindowKind, start: string): number => {
+  const read = (
+    api: QuotaApi,
+    scope: string,
+    kind: WindowKind,
+    start: string,
+  ): number => {
     const k = keyOf(api, scope, kind, start);
     const hit = mem.get(k);
     if (hit !== undefined) return hit;
@@ -165,11 +170,7 @@ export function createQuotaManager(
         const used = read(api, scopeKey, kind, start);
         if (used + cost > limit) {
           const retry =
-            kind === "minute"
-              ? 60_000
-              : kind === "hour"
-                ? 15 * 60_000
-                : 60 * 60_000;
+            kind === "minute" ? 60_000 : kind === "hour" ? 15 * 60_000 : 60 * 60_000;
           throw new QuotaExceededError(
             api,
             `${api} quota exceeded for ${scopeKey} (${used}/${limit} per ${kind})`,

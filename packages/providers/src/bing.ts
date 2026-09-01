@@ -4,8 +4,14 @@ import { freeEstimate } from "./rates.js";
 const BING_JSON = "https://ssl.bing.com/webmaster/api.svc/json";
 
 export type BingClient = {
-  getKeywordStats(query: string, opts?: { country?: string; language?: string }): Promise<VolumeRow>;
-  getRelatedKeywords(query: string, opts?: { country?: string; language?: string }): Promise<KeywordRow[]>;
+  getKeywordStats(
+    query: string,
+    opts?: { country?: string; language?: string },
+  ): Promise<VolumeRow>;
+  getRelatedKeywords(
+    query: string,
+    opts?: { country?: string; language?: string },
+  ): Promise<KeywordRow[]>;
 };
 
 /**
@@ -20,7 +26,10 @@ export function createBingClient(opts: {
   const fetchFn = opts.fetch ?? fetch;
   const base = opts.baseUrl ?? BING_JSON;
 
-  async function getJson(path: string, params: Record<string, string>): Promise<unknown> {
+  async function getJson(
+    path: string,
+    params: Record<string, string>,
+  ): Promise<unknown> {
     const url = new URL(`${base}/${path}`);
     url.searchParams.set("apikey", opts.apiKey);
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
@@ -38,7 +47,12 @@ export function createBingClient(opts: {
         country: extra?.country ?? "us",
         language: extra?.language ?? "en-US",
       });
-      return { query, volume: parseVolume(json, query), source: "bing", country: extra?.country ?? "us" };
+      return {
+        query,
+        volume: parseVolume(json, query),
+        source: "bing",
+        country: extra?.country ?? "us",
+      };
     },
     async getRelatedKeywords(query, extra) {
       const json = await getJson("GetRelatedKeywords", {
@@ -56,7 +70,13 @@ export function createBingVolume(client: BingClient): VolumeCapability {
     id: "bing",
     volume(queries, extra): ProviderCall<VolumeRow[]> {
       return {
-        estimate: freeEstimate("bing", "volume", "GetKeywordStats", queries.length, "Bing Webmaster"),
+        estimate: freeEstimate(
+          "bing",
+          "volume",
+          "GetKeywordStats",
+          queries.length,
+          "Bing Webmaster",
+        ),
         async run() {
           const out: VolumeRow[] = [];
           for (const q of queries) {
@@ -77,7 +97,9 @@ export async function bingRelated(
 }
 
 function asRecord(v: unknown): Record<string, unknown> | null {
-  return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
+  return v && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : null;
 }
 
 function rowsOf(json: unknown): unknown[] {
@@ -92,14 +114,17 @@ function rowsOf(json: unknown): unknown[] {
 
 function num(v: unknown): number | null {
   if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) return Number(v);
+  if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v)))
+    return Number(v);
   return null;
 }
 
 function parseVolume(json: unknown, fallback: string): number | null {
   const rec = asRecord(json);
   if (rec) {
-    const direct = num(rec["Count"] ?? rec["count"] ?? rec["Impressions"] ?? rec["volume"]);
+    const direct = num(
+      rec["Count"] ?? rec["count"] ?? rec["Impressions"] ?? rec["volume"],
+    );
     if (direct !== null) return Math.round(direct);
   }
   for (const row of rowsOf(json)) {

@@ -65,10 +65,7 @@ export function hops(p: CrawledPage): number {
 }
 
 export function noindexOf(p: CrawledPage): boolean {
-  const parts = [
-    ...(p.extract?.robotsMeta ?? []),
-    p.extract?.xRobotsTag ?? "",
-  ]
+  const parts = [...(p.extract?.robotsMeta ?? []), p.extract?.xRobotsTag ?? ""]
     .join(",")
     .toLowerCase();
   return /\bnoindex\b|\bnone\b/.test(parts);
@@ -107,7 +104,8 @@ export function stripSlash(url: string): string {
   try {
     const u = new URL(url);
     u.hash = "";
-    if (u.pathname.endsWith("/") && u.pathname !== "/") u.pathname = u.pathname.slice(0, -1);
+    if (u.pathname.endsWith("/") && u.pathname !== "/")
+      u.pathname = u.pathname.slice(0, -1);
     return u.href;
   } catch {
     return url;

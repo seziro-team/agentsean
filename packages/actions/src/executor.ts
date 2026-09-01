@@ -111,7 +111,11 @@ export async function executeAction(opts: ExecuteOptions): Promise<ExecuteResult
   }
 
   const dry = await opts.adapter.dryRun(action);
-  const ctx = buildValidationContext(opts, before, dry.after || afterText(action, before));
+  const ctx = buildValidationContext(
+    opts,
+    before,
+    dry.after || afterText(action, before),
+  );
   if ("error" in ctx) {
     saveAction(opts.db, action, "failed", { error: ctx.error });
     return { status: "failed", action, error: ctx.error };
@@ -120,7 +124,8 @@ export async function executeAction(opts: ExecuteOptions): Promise<ExecuteResult
   const validation = validateParsed(action, ctx);
   if (!validation.ok) {
     const queued = validation.vetoes.every(
-      (v) => v.code === "OBSERVE_PERIOD" || v.code === "TWO_KEY" || v.code === "POLICY_TIER",
+      (v) =>
+        v.code === "OBSERVE_PERIOD" || v.code === "TWO_KEY" || v.code === "POLICY_TIER",
     );
     const observeOnly = validation.vetoes.every((v) => v.code === "OBSERVE_PERIOD");
     const state: StoredActionState = observeOnly || queued ? "queued" : "rejected";
@@ -164,7 +169,9 @@ export async function executeAction(opts: ExecuteOptions): Promise<ExecuteResult
     } catch {
       /* shadow ledger still holds the before snapshot */
     }
-    saveAction(opts.db, action, "failed", { error: `verify failed: ${verified.detail}` });
+    saveAction(opts.db, action, "failed", {
+      error: `verify failed: ${verified.detail}`,
+    });
     return { status: "failed", action, error: `verify failed: ${verified.detail}` };
   }
 

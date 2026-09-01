@@ -115,8 +115,7 @@ export async function startDaemon(options: BootOptions = {}): Promise<RunningDae
   }
 
   const addr = app.server.address();
-  const actualPort =
-    typeof addr === "object" && addr !== null ? addr.port : port;
+  const actualPort = typeof addr === "object" && addr !== null ? addr.port : port;
   bound.port = actualPort;
 
   writePid(seanHome, {

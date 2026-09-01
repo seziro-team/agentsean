@@ -162,7 +162,8 @@ export function parseArgs(argv: string[]): CliArgs {
     if (a === "--concurrency") {
       const raw = rest[++i];
       const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1) args.errors.push(`invalid --concurrency ${raw}`);
+      if (!Number.isInteger(n) || n < 1)
+        args.errors.push(`invalid --concurrency ${raw}`);
       else args.concurrency = n;
       continue;
     }

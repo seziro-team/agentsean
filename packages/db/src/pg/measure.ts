@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { changes, sites } from "./schema.js";
 
 /** Phase 7 — experiments, claims, reconciliation waterfall. Dual-dialect with sqlite/measure.ts. */
@@ -78,27 +71,24 @@ export const cohortMembers = pgTable(
   ],
 );
 
-export const experimentResults = pgTable(
-  "experiment_results",
-  {
-    experimentId: text("experiment_id")
-      .primaryKey()
-      .references(() => experiments.id, { onDelete: "cascade" }),
-    metric: text("metric").notNull(),
-    pointEstimate: real("point_estimate"),
-    ciLow: real("ci_low"),
-    ciHigh: real("ci_high"),
-    ciLevel: real("ci_level"),
-    probPositive: real("prob_positive"),
-    realisedMde: real("realised_mde"),
-    nBoot: integer("n_boot"),
-    suppressedBy: text("suppressed_by").notNull().default("[]"),
-    evidenceTier: text("evidence_tier").notNull(),
-    statement: text("statement").notNull(),
-    causationClaimed: integer("causation_claimed").notNull().default(0),
-    analysedAt: text("analysed_at").notNull(),
-  },
-);
+export const experimentResults = pgTable("experiment_results", {
+  experimentId: text("experiment_id")
+    .primaryKey()
+    .references(() => experiments.id, { onDelete: "cascade" }),
+  metric: text("metric").notNull(),
+  pointEstimate: real("point_estimate"),
+  ciLow: real("ci_low"),
+  ciHigh: real("ci_high"),
+  ciLevel: real("ci_level"),
+  probPositive: real("prob_positive"),
+  realisedMde: real("realised_mde"),
+  nBoot: integer("n_boot"),
+  suppressedBy: text("suppressed_by").notNull().default("[]"),
+  evidenceTier: text("evidence_tier").notNull(),
+  statement: text("statement").notNull(),
+  causationClaimed: integer("causation_claimed").notNull().default(0),
+  analysedAt: text("analysed_at").notNull(),
+});
 
 export const dataAnomalies = pgTable(
   "data_anomalies",

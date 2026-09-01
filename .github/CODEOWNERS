@@ -1,0 +1,28 @@
+# Code owners for Agent Sean.
+#
+# Order matters: the last matching pattern takes precedence. The catch-all
+# below assigns everything to the team; the more specific lines that follow
+# require review from the same team on security-critical and licensing paths.
+#
+# See: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+*                                   @seziro-team
+
+# Actions and their validators decide what Sean is allowed to do to a live site.
+/packages/actions/                  @seziro-team
+
+# Daemon network exposure and request authentication.
+/packages/daemon/src/security.ts    @seziro-team
+/packages/daemon/src/bind.ts        @seziro-team
+
+# Credential storage and secret handling.
+/packages/credentials/              @seziro-team
+
+# Commercially licensed enterprise code.
+/packages/ee/                       @seziro-team
+
+# CI, release, and supply-chain workflows.
+/.github/workflows/                 @seziro-team
+
+# Licensing.
+/LICENSE                            @seziro-team

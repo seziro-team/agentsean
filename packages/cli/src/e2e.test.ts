@@ -123,7 +123,14 @@ describe("cli e2e against a live daemon", () => {
 
   it("freeze writes HALT and status reports it", async () => {
     home = tmpHome();
-    const frozen = await captureRun(["node", "sean", "freeze", "--json", "--home", home]);
+    const frozen = await captureRun([
+      "node",
+      "sean",
+      "freeze",
+      "--json",
+      "--home",
+      home,
+    ]);
     expect(frozen.code).toBe(0);
     expect(JSON.parse(frozen.out).halted).toBe(true);
     running = await startDaemon({
@@ -136,7 +143,14 @@ describe("cli e2e against a live daemon", () => {
       headers: { Host: `127.0.0.1:${running.port}` },
     });
     expect((await health.json()).halted).toBe(true);
-    const thawed = await captureRun(["node", "sean", "unfreeze", "--json", "--home", home]);
+    const thawed = await captureRun([
+      "node",
+      "sean",
+      "unfreeze",
+      "--json",
+      "--home",
+      home,
+    ]);
     expect(JSON.parse(thawed.out).halted).toBe(false);
   });
 });

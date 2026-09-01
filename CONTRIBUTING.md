@@ -18,7 +18,7 @@ if needed — the Metabase / Grafana / PostHog pattern.
 ## Setup
 
 ```bash
-git clone https://github.com/vp2722/sean.git
+git clone https://github.com/seziro-team/agentsean.git
 cd sean
 pnpm install
 pnpm test

@@ -13,17 +13,17 @@ import {
   twoKeyApprovals,
   urlAllowlist,
 } from "@agentsean/db";
-import type { Action, AppliedChange, EntitySource, SitePolicy, TwoKeyApproval } from "./types.js";
+import type {
+  Action,
+  AppliedChange,
+  EntitySource,
+  SitePolicy,
+  TwoKeyApproval,
+} from "./types.js";
 import { BLAST } from "./types.js";
 
 export type StoredActionState =
-  | "proposed"
-  | "queued"
-  | "approved"
-  | "applied"
-  | "rejected"
-  | "reverted"
-  | "failed";
+  "proposed" | "queued" | "approved" | "applied" | "rejected" | "reverted" | "failed";
 
 export type Envelope = {
   payload: Action["payload"];
@@ -184,7 +184,11 @@ export function loadChange(db: SqliteDatabase, changeId: string): AppliedChange 
   const before = snaps.find((s) => s.kind === "before");
   const after = snaps.find((s) => s.kind === "after");
   const metaRow = snaps.find((s) => s.kind === "meta");
-  let meta: { branch?: string | null; commitSha?: string | null; prUrl?: string | null } = {};
+  let meta: {
+    branch?: string | null;
+    commitSha?: string | null;
+    prUrl?: string | null;
+  } = {};
   if (metaRow) {
     try {
       meta = JSON.parse(metaRow.body) as typeof meta;
@@ -220,7 +224,8 @@ export function loadSitePolicy(db: SqliteDatabase, siteId: string): SitePolicy |
   let globs: string[] = [];
   try {
     const parsed = JSON.parse(row.neverTouchGlobs) as unknown;
-    if (Array.isArray(parsed) && parsed.every((g) => typeof g === "string")) globs = parsed;
+    if (Array.isArray(parsed) && parsed.every((g) => typeof g === "string"))
+      globs = parsed;
   } catch {
     globs = [];
   }
@@ -334,7 +339,9 @@ export function upsertAdapterConnection(
   const existing = db
     .select()
     .from(adapterConnections)
-    .where(and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)))
+    .where(
+      and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)),
+    )
     .get();
   if (existing) {
     db.update(adapterConnections)
@@ -363,7 +370,9 @@ export function loadAdapterConnection(
   const row = db
     .select()
     .from(adapterConnections)
-    .where(and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)))
+    .where(
+      and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)),
+    )
     .get();
   if (!row) return null;
   try {
@@ -447,7 +456,13 @@ export function countsForLedger(
     .where(and(eq(costLedger.siteId, siteId), gte(costLedger.ts, day)))
     .all();
   const spentUsdToday = costs.reduce((s, r) => s + (r.costUsd ?? 0), 0);
-  return { appliedThisHour, appliedThisDay, newPagesToday, contentRefreshToday, spentUsdToday };
+  return {
+    appliedThisHour,
+    appliedThisDay,
+    newPagesToday,
+    contentRefreshToday,
+    spentUsdToday,
+  };
 }
 
 export { BLAST };

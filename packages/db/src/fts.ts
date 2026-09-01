@@ -66,9 +66,7 @@ export function searchFindingsFts(
     params.push(query.status);
   }
   if (query.cursor) {
-    where.push(
-      "(f.first_detected_at < ? OR (f.first_detected_at = ? AND f.id < ?))",
-    );
+    where.push("(f.first_detected_at < ? OR (f.first_detected_at = ? AND f.id < ?))");
     params.push(query.cursor.detectedAt, query.cursor.detectedAt, query.cursor.id);
   }
 

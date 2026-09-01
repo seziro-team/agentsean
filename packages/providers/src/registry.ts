@@ -2,9 +2,19 @@ import type { CredentialStore } from "@agentsean/credentials";
 import type { KeywordRow, ProviderKeys, ProviderStack } from "./types.js";
 import { createGscKeywords } from "./gsc.js";
 import { createBingClient, createBingVolume } from "./bing.js";
-import { createDataForSeoBacklinks, createDataForSeoClient, createDataForSeoSerp, createDataForSeoVolume } from "./dataforseo.js";
+import {
+  createDataForSeoBacklinks,
+  createDataForSeoClient,
+  createDataForSeoSerp,
+  createDataForSeoVolume,
+} from "./dataforseo.js";
 import { createOpenPageRank } from "./openpagerank.js";
-import { emptyKeywords, unavailableBacklinks, unavailableSerp, unavailableVolume } from "./unavailable.js";
+import {
+  emptyKeywords,
+  unavailableBacklinks,
+  unavailableSerp,
+  unavailableVolume,
+} from "./unavailable.js";
 import { isDeadProvider, refuseDeadProvider } from "./refuse.js";
 
 export const PROVIDER_ACCOUNTS = {

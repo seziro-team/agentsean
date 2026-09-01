@@ -3,7 +3,7 @@
 Scope: `src/db/**` (SQLite + `pg/` variants), `drizzle/`, `drizzle-pg/`, `drizzle*.config.ts`,
 `scripts/migrate-d1-to-postgres.ts`, `runbooks/d1-to-postgres-*.md`, `runbooks/gdpr-erasure.md`.
 
-Repo root: `/home/vp2722/seoe/reference/open-seo` (MIT, every-app / Ben Senescu).
+Repo root: `/reference/open-seo` (MIT, every-app / Ben Senescu).
 
 ---
 
@@ -14,8 +14,8 @@ Drizzle `sqliteTable` definitions (for Cloudflare D1) and once as `pgTable` defi
 Postgres behind Cloudflare Hyperdrive). Application code never picks a dialect: it imports
 `db` from `@/db` and tables from `@/db/schema`, and a runtime switch on `DATABASE_PROVIDER`
 resolves which set of table objects and which driver are actually used
-(`/home/vp2722/seoe/reference/open-seo/src/db/index.ts:16-19`,
-`/home/vp2722/seoe/reference/open-seo/src/db/schema.ts:41-67`).
+(`/reference/open-seo/src/db/index.ts:16-19`,
+`/reference/open-seo/src/db/schema.ts:41-67`).
 
 D1 is the default (free, zero-config for self-hosters). Postgres is the escape hatch for the
 hosted tier once D1's ~10GB storage ceiling gets close. Because both dialects must behave

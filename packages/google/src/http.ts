@@ -56,12 +56,19 @@ export async function googleFetch(
   }
   if (!last) throw new Error("googleFetch: no response");
   if (last.status === 429) {
-    throw new QuotaExceededError(api, `${api} returned 429 after retries`, http.maxBackoffMs);
+    throw new QuotaExceededError(
+      api,
+      `${api} returned 429 after retries`,
+      http.maxBackoffMs,
+    );
   }
   http.quota.record(api, scopeKey, cost);
   return last;
 }
 
-export function bearer(token: string, extra?: Record<string, string>): Record<string, string> {
+export function bearer(
+  token: string,
+  extra?: Record<string, string>,
+): Record<string, string> {
   return { Authorization: `Bearer ${token}`, ...extra };
 }

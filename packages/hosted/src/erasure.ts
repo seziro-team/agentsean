@@ -15,8 +15,16 @@ import {
 } from "@agentsean/db";
 
 /** GDPR erasure runbook. Deletes tenant-owned rows; sites cascade via FK. */
-export function eraseTenant(db: SqliteDatabase, tenantId: string, now = new Date()): { sitesRemoved: number } {
-  const links = db.select().from(tenantSites).where(eq(tenantSites.tenantId, tenantId)).all();
+export function eraseTenant(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): { sitesRemoved: number } {
+  const links = db
+    .select()
+    .from(tenantSites)
+    .where(eq(tenantSites.tenantId, tenantId))
+    .all();
   const siteIds = links.map((l) => l.siteId);
   for (const siteId of siteIds) {
     db.delete(sites).where(eq(sites.id, siteId)).run();
@@ -45,7 +53,19 @@ export function eraseTenant(db: SqliteDatabase, tenantId: string, now = new Date
 export const SUBPROCESSORS = [
   { name: "Stripe", purpose: "Billing and metered article usage", region: "US" },
   { name: "Hetzner", purpose: "App and Postgres compute", region: "EU" },
-  { name: "Cloudflare R2", purpose: "Object storage (crawl artifacts, reports)", region: "global" },
-  { name: "Google", purpose: "Search Console / Analytics OAuth (refresh tokens)", region: "US" },
-  { name: "DataForSEO", purpose: "Licensed rank snapshots when a customer key is present", region: "US" },
+  {
+    name: "Cloudflare R2",
+    purpose: "Object storage (crawl artifacts, reports)",
+    region: "global",
+  },
+  {
+    name: "Google",
+    purpose: "Search Console / Analytics OAuth (refresh tokens)",
+    region: "US",
+  },
+  {
+    name: "DataForSEO",
+    purpose: "Licensed rank snapshots when a customer key is present",
+    region: "US",
+  },
 ] as const;

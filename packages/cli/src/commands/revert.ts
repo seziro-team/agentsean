@@ -53,7 +53,10 @@ export async function revertCommand(opts: {
       return 1;
     }
     markReverted(db, change.id);
-    db.update(actions).set({ state: "reverted" }).where(eq(actions.id, change.actionId)).run();
+    db.update(actions)
+      .set({ state: "reverted" })
+      .where(eq(actions.id, change.actionId))
+      .run();
     emit(
       opts.json,
       { ok: true, command: "revert", changeId: change.id },

@@ -85,7 +85,9 @@ export async function fetchUrl(
 
     const headers: Record<string, string> = {
       "user-agent": userAgent,
-      accept: opts.accept ?? "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      accept:
+        opts.accept ??
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "accept-encoding": acceptEncodingHeader(),
     };
     if (opts.etag) headers["if-none-match"] = opts.etag;

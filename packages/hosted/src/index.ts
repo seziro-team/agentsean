@@ -60,7 +60,16 @@ export {
 } from "./billing.js";
 export { tenantCostVisibility, type TenantCost } from "./cost.js";
 export { eraseTenant, SUBPROCESSORS } from "./erasure.js";
-export { hostedPublicOrigin, hostedOauthRedirectUri, assertOauthRedirect } from "./oauth.js";
+export {
+  hostedPublicOrigin,
+  hostedOauthRedirectUri,
+  assertOauthRedirect,
+} from "./oauth.js";
 export { traceLlm, type LlmTrace } from "./tracing.js";
-export { EntitlementError, hasFeature, assertEntitlement, type EntitlementFeature } from "./entitlements.js";
+export {
+  EntitlementError,
+  hasFeature,
+  assertEntitlement,
+  type EntitlementFeature,
+} from "./entitlements.js";
 export { signupTenant, completeCheckout, hostedStatus } from "./engine.js";

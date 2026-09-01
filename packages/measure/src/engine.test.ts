@@ -33,7 +33,12 @@ function seedSite(db: ReturnType<typeof openSqlite>["db"], now: Date) {
   return id;
 }
 
-function addPages(db: ReturnType<typeof openSqlite>["db"], siteId: string, urls: string[], now: Date) {
+function addPages(
+  db: ReturnType<typeof openSqlite>["db"],
+  siteId: string,
+  urls: string[],
+  now: Date,
+) {
   for (const url of urls) {
     db.insert(pages)
       .values({
@@ -133,20 +138,29 @@ describe("Phase 7 measurement honesty", () => {
     expect(result.waterfall!.euProperty).toBe(true);
     expect(result.waterfall!.euInvisibleShare).toBeGreaterThanOrEqual(0.4);
     expect(result.waterfall!.euInvisibleShare).toBeLessThanOrEqual(0.65);
-    expect(result.claims.some((c) => c.changeId === "chg-1" && c.evidenceTier === "E")).toBe(true);
+    expect(
+      result.claims.some((c) => c.changeId === "chg-1" && c.evidenceTier === "E"),
+    ).toBe(true);
     expect(result.claims.every((c) => c.causationClaimed === false)).toBe(true);
     expect(result.headline).toMatch(/not measurable/i);
     sqlite.close();
   });
 
   it("blocks peeking before planned_end and refuses a verdict", () => {
-    expect(guardPeeking("2026-09-01", new Date("2026-08-01T00:00:00Z")).allowed).toBe(false);
-    expect(guardPeeking("2026-09-01", new Date("2026-08-01T00:00:00Z")).reason).toMatch(/4\.7%/);
+    expect(guardPeeking("2026-09-01", new Date("2026-08-01T00:00:00Z")).allowed).toBe(
+      false,
+    );
+    expect(guardPeeking("2026-09-01", new Date("2026-08-01T00:00:00Z")).reason).toMatch(
+      /4\.7%/,
+    );
 
     const { db, sqlite } = openSqlite(":memory:");
     const now = new Date("2026-07-01T12:00:00.000Z");
     const siteId = seedSite(db, now);
-    const treatment = Array.from({ length: 20 }, (_, i) => `https://example.com/t/${i}`);
+    const treatment = Array.from(
+      { length: 20 },
+      (_, i) => `https://example.com/t/${i}`,
+    );
     const control = Array.from({ length: 20 }, (_, i) => `https://example.com/c/${i}`);
     addPages(db, siteId, [...treatment, ...control], now);
     const preClicks: Record<string, number> = {};
@@ -185,7 +199,10 @@ describe("Phase 7 measurement honesty", () => {
     const now = new Date("2026-08-21T12:00:00.000Z");
     const siteId = seedSite(db, now);
     seedCuratedChangepoints(db);
-    const treatment = Array.from({ length: 100 }, (_, i) => `https://example.com/t/${i}`);
+    const treatment = Array.from(
+      { length: 100 },
+      (_, i) => `https://example.com/t/${i}`,
+    );
     const control = Array.from({ length: 100 }, (_, i) => `https://example.com/c/${i}`);
     addPages(db, siteId, [...treatment, ...control], now);
     const preClicks: Record<string, number> = {};
@@ -250,6 +267,8 @@ describe("Phase 7 measurement honesty", () => {
   });
 
   it("never emits per-URL click attribution", () => {
-    expect(() => refuseUrlAttribution("https://example.com/x")).toThrow(/never the URL/i);
+    expect(() => refuseUrlAttribution("https://example.com/x")).toThrow(
+      /never the URL/i,
+    );
   });
 });

@@ -12,7 +12,12 @@ describe("stdio MCP server", () => {
     const siteId = randomUUID();
     const now = new Date().toISOString();
     db.insert(sites)
-      .values({ id: siteId, origin: "https://example.com", createdAt: now, updatedAt: now })
+      .values({
+        id: siteId,
+        origin: "https://example.com",
+        createdAt: now,
+        updatedAt: now,
+      })
       .run();
     saveKeywords(db, siteId, [
       {
@@ -27,9 +32,15 @@ describe("stdio MCP server", () => {
         source: "gsc",
       },
     ]);
-    const init = await handleMcpMessageAsync({ db }, { jsonrpc: "2.0", id: 1, method: "initialize" });
+    const init = await handleMcpMessageAsync(
+      { db },
+      { jsonrpc: "2.0", id: 1, method: "initialize" },
+    );
     expect(init?.result).toMatchObject({ serverInfo: { name: "agentsean" } });
-    const listed = await handleMcpMessageAsync({ db }, { jsonrpc: "2.0", id: 2, method: "tools/list" });
+    const listed = await handleMcpMessageAsync(
+      { db },
+      { jsonrpc: "2.0", id: 2, method: "tools/list" },
+    );
     expect(listed).toBeTruthy();
     const listedResult = listed!.result as { tools: Array<{ name: string }> };
     const names = listedResult.tools.map((t) => t.name);
@@ -40,10 +51,15 @@ describe("stdio MCP server", () => {
         jsonrpc: "2.0",
         id: 3,
         method: "tools/call",
-        params: { name: "striking_distance", arguments: { origin: "https://example.com" } },
+        params: {
+          name: "striking_distance",
+          arguments: { origin: "https://example.com" },
+        },
       },
     );
-    const result = call?.result as { structuredContent?: { strikingDistance?: Array<{ query: string }> } };
+    const result = call?.result as {
+      structuredContent?: { strikingDistance?: Array<{ query: string }> };
+    };
     expect(result.structuredContent?.strikingDistance?.[0]?.query).toBe("seo tools");
     const ai = await handleMcpMessageAsync(
       { db },
@@ -51,7 +67,10 @@ describe("stdio MCP server", () => {
         jsonrpc: "2.0",
         id: 4,
         method: "tools/call",
-        params: { name: "ai_citation_share", arguments: { origin: "https://example.com" } },
+        params: {
+          name: "ai_citation_share",
+          arguments: { origin: "https://example.com" },
+        },
       },
     );
     const aiResult = ai?.result as { structuredContent?: { citationShare?: number } };
@@ -62,10 +81,15 @@ describe("stdio MCP server", () => {
         jsonrpc: "2.0",
         id: 5,
         method: "tools/call",
-        params: { name: "brand_mentions", arguments: { origin: "https://example.com" } },
+        params: {
+          name: "brand_mentions",
+          arguments: { origin: "https://example.com" },
+        },
       },
     );
-    const mentionResult = mentions?.result as { structuredContent?: { sendRequiresApproval?: boolean } };
+    const mentionResult = mentions?.result as {
+      structuredContent?: { sendRequiresApproval?: boolean };
+    };
     expect(mentionResult.structuredContent?.sendRequiresApproval).toBe(true);
     sqlite.close();
   });
@@ -74,7 +98,11 @@ describe("stdio MCP server", () => {
     const fetchFn: typeof fetch = async (_input, init) => {
       const body = JSON.parse(String(init?.body ?? "{}")) as { method?: string };
       if (body.method === "tools/list") {
-        return json({ result: { tools: [{ name: "research_keywords", description: "OpenSEO research" }] } });
+        return json({
+          result: {
+            tools: [{ name: "research_keywords", description: "OpenSEO research" }],
+          },
+        });
       }
       return json({ result: { ok: true } });
     };

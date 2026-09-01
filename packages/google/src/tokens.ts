@@ -108,7 +108,8 @@ export function grantFromTokenResponse(
     );
   }
   const expiresIn = res.expires_in ?? 3600;
-  const testing = testingModeFromTokenResponse(res) || (prev?.testingModeSuspected ?? false);
+  const testing =
+    testingModeFromTokenResponse(res) || (prev?.testingModeSuspected ?? false);
   const refreshExp =
     typeof res.refresh_token_expires_in === "number"
       ? new Date(now.getTime() + res.refresh_token_expires_in * 1000).toISOString()
@@ -183,12 +184,13 @@ export async function refreshAccessToken(
     refresh_token_expires_in?: number;
     scope?: string;
   };
-  if (!json.access_token) throw new GscTokenError("Refresh response missing access_token.");
-  return grantFromTokenResponse(
-    { ...json, access_token: json.access_token },
-    grant,
-    { mode: "byo", email: grant.email, googleSub: grant.googleSub },
-  );
+  if (!json.access_token)
+    throw new GscTokenError("Refresh response missing access_token.");
+  return grantFromTokenResponse({ ...json, access_token: json.access_token }, grant, {
+    mode: "byo",
+    email: grant.email,
+    googleSub: grant.googleSub,
+  });
 }
 
 export function accessTokenValid(grant: StoredGoogleGrant, now = new Date()): boolean {

@@ -22,7 +22,9 @@ export type StripeLike = {
     email: string;
     interval: "month" | "year";
   }) => Promise<{ id: string; url: string }>;
-  reportMeteredUsage?: ((opts: { tenantId: string; quantity: number; period: string }) => Promise<void>) | undefined;
+  reportMeteredUsage?:
+    | ((opts: { tenantId: string; quantity: number; period: string }) => Promise<void>)
+    | undefined;
 };
 
 export function fakeStripe(baseUrl = "https://checkout.stripe.test"): StripeLike {
@@ -49,7 +51,11 @@ export function applyStripeEvent(
   event: StripeEvent,
   now = new Date(),
 ): { duplicate: boolean; tenantId: string | null } {
-  const existing = db.select().from(stripeEvents).where(eq(stripeEvents.id, event.id)).get();
+  const existing = db
+    .select()
+    .from(stripeEvents)
+    .where(eq(stripeEvents.id, event.id))
+    .get();
   if (existing) return { duplicate: true, tenantId: null };
   db.insert(stripeEvents)
     .values({
@@ -66,7 +72,12 @@ export function applyStripeEvent(
   const customer = str(obj, "customer");
   const subscription = str(obj, "subscription") ?? str(obj, "id");
 
-  if (event.type === "checkout.session.completed" && tenantId && planRaw && isPlanId(planRaw)) {
+  if (
+    event.type === "checkout.session.completed" &&
+    tenantId &&
+    planRaw &&
+    isPlanId(planRaw)
+  ) {
     activateSubscription(db, {
       tenantId,
       plan: planRaw,
@@ -76,7 +87,12 @@ export function applyStripeEvent(
     });
     return { duplicate: false, tenantId };
   }
-  if (event.type === "customer.subscription.updated" && tenantId && planRaw && isPlanId(planRaw)) {
+  if (
+    event.type === "customer.subscription.updated" &&
+    tenantId &&
+    planRaw &&
+    isPlanId(planRaw)
+  ) {
     activateSubscription(db, {
       tenantId,
       plan: planRaw,
@@ -140,7 +156,9 @@ export function activateSubscription(
       plan: opts.plan,
       interval: "month",
       status: "active",
-      currentPeriodEnd: new Date((opts.now ?? new Date()).getTime() + 30 * 86400000).toISOString(),
+      currentPeriodEnd: new Date(
+        (opts.now ?? new Date()).getTime() + 30 * 86400000,
+      ).toISOString(),
       createdAt: now,
       updatedAt: now,
     })
@@ -168,7 +186,11 @@ export function reportArticleUsage(
   void stripe?.reportMeteredUsage?.({ tenantId, quantity, period });
 }
 
-export function articlesThisMonth(db: SqliteDatabase, tenantId: string, now = new Date()): number {
+export function articlesThisMonth(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): number {
   const period = now.toISOString().slice(0, 7);
   return db
     .select()

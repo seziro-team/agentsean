@@ -1,4 +1,11 @@
-export { VERSION, CHANNELS, MIN_NODE, isChannel, nodeMeetsMin, type Channel } from "./version.js";
+export {
+  VERSION,
+  CHANNELS,
+  MIN_NODE,
+  isChannel,
+  nodeMeetsMin,
+  type Channel,
+} from "./version.js";
 export {
   MIN_TOKEN_LENGTH,
   MIN_TOKEN_UNIQUE_CHARS,
@@ -34,7 +41,13 @@ export {
   type OnboardAnswers,
   type CmsKind,
 } from "./onboard.js";
-export { runDoctor, portOpen, type DoctorCheck, type DoctorInput, type DoctorReport } from "./doctor.js";
+export {
+  runDoctor,
+  portOpen,
+  type DoctorCheck,
+  type DoctorInput,
+  type DoctorReport,
+} from "./doctor.js";
 export {
   serviceKind,
   planService,

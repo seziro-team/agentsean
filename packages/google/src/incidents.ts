@@ -37,7 +37,8 @@ export function parseIncidentsJson(raw: unknown): GoogleIncident[] {
     if (!row || typeof row !== "object") continue;
     const r = row as Record<string, unknown>;
     if (typeof r.id !== "string" || typeof r.begin !== "string") continue;
-    if (typeof r.external_desc !== "string" || typeof r.service_key !== "string") continue;
+    if (typeof r.external_desc !== "string" || typeof r.service_key !== "string")
+      continue;
     const incident: GoogleIncident = {
       id: r.id,
       begin: r.begin,
@@ -63,7 +64,8 @@ export function parseIncidentsAtom(xml: string): GoogleIncident[] {
   const out: GoogleIncident[] = [];
   for (const e of entries) {
     const title = inner(e, "title") ?? "Google Search incident";
-    const updated = inner(e, "updated") ?? inner(e, "published") ?? new Date().toISOString();
+    const updated =
+      inner(e, "updated") ?? inner(e, "published") ?? new Date().toISOString();
     const id = inner(e, "id") ?? title;
     out.push({
       id: id.slice(0, 64),
@@ -124,7 +126,10 @@ export function loadCuratedChangepoints(): CuratedRow[] {
   return raw;
 }
 
-export function upsertIncidents(db: SqliteDatabase, incidents: GoogleIncident[]): number {
+export function upsertIncidents(
+  db: SqliteDatabase,
+  incidents: GoogleIncident[],
+): number {
   const now = new Date().toISOString();
   let n = 0;
   for (const inc of incidents) {
@@ -150,7 +155,10 @@ export function upsertIncidents(db: SqliteDatabase, incidents: GoogleIncident[])
       ingestedAt: now,
     };
     if (existing) {
-      db.update(googleIncidents).set(values).where(eq(googleIncidents.id, inc.id)).run();
+      db.update(googleIncidents)
+        .set(values)
+        .where(eq(googleIncidents.id, inc.id))
+        .run();
     } else {
       db.insert(googleIncidents).values(values).run();
     }
@@ -212,9 +220,11 @@ function upsertChangepoint(
     notes: string | null;
   },
 ): void {
-  const existing = db.select().from(googleChangepoints).all().find(
-    (r) => r.kind === row.kind && r.begin === row.begin && r.title === row.title,
-  );
+  const existing = db
+    .select()
+    .from(googleChangepoints)
+    .all()
+    .find((r) => r.kind === row.kind && r.begin === row.begin && r.title === row.title);
   const values = {
     kind: row.kind,
     begin: row.begin,
@@ -229,7 +239,10 @@ function upsertChangepoint(
     notes: row.notes,
   };
   if (existing) {
-    db.update(googleChangepoints).set(values).where(eq(googleChangepoints.id, existing.id)).run();
+    db.update(googleChangepoints)
+      .set(values)
+      .where(eq(googleChangepoints.id, existing.id))
+      .run();
     return;
   }
   db.insert(googleChangepoints)

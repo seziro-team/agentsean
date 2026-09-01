@@ -34,6 +34,7 @@ export function applyDisclosure(body: string, profile: StyleProfile): string {
 
 export function hasDisclosure(body: string, profile: StyleProfile): boolean {
   if (profile.disclosure === "none") return true;
-  if (profile.disclosure === "visible") return /ai-disclosure|AI-generated text produced by Agent Sean/i.test(body);
+  if (profile.disclosure === "visible")
+    return /ai-disclosure|AI-generated text produced by Agent Sean/i.test(body);
   return /ai-generated/i.test(body);
 }

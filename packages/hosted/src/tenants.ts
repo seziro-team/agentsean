@@ -54,12 +54,18 @@ export function getTenant(db: SqliteDatabase, tenantId: string) {
 }
 
 export function tenantSiteCount(db: SqliteDatabase, tenantId: string): number {
-  return db.select().from(tenantSites).where(eq(tenantSites.tenantId, tenantId)).all().length;
+  return db.select().from(tenantSites).where(eq(tenantSites.tenantId, tenantId)).all()
+    .length;
 }
 
 export function addTenantSite(
   db: SqliteDatabase,
-  opts: { tenantId: string; origin: string; name?: string | undefined; now?: Date | undefined },
+  opts: {
+    tenantId: string;
+    origin: string;
+    name?: string | undefined;
+    now?: Date | undefined;
+  },
 ): { siteId: string } {
   const tenant = getTenant(db, opts.tenantId);
   if (!tenant) throw new Error("unknown_tenant");
@@ -108,7 +114,11 @@ export function addTenantSite(
 }
 
 export function listTenantSites(db: SqliteDatabase, tenantId: string) {
-  const links = db.select().from(tenantSites).where(eq(tenantSites.tenantId, tenantId)).all();
+  const links = db
+    .select()
+    .from(tenantSites)
+    .where(eq(tenantSites.tenantId, tenantId))
+    .all();
   const out: Array<{ id: string; origin: string; name: string | null }> = [];
   for (const link of links) {
     const site = db.select().from(sites).where(eq(sites.id, link.siteId)).get();
@@ -118,7 +128,10 @@ export function listTenantSites(db: SqliteDatabase, tenantId: string) {
 }
 
 export function tenantIdForSite(db: SqliteDatabase, siteId: string): string | null {
-  return db.select().from(tenantSites).where(eq(tenantSites.siteId, siteId)).get()?.tenantId ?? null;
+  return (
+    db.select().from(tenantSites).where(eq(tenantSites.siteId, siteId)).get()
+      ?.tenantId ?? null
+  );
 }
 
 export function assertByok(tenant: { byok: number }): void {
@@ -129,7 +142,10 @@ export function assertByok(tenant: { byok: number }): void {
   }
 }
 
-export function rankCadenceForTenant(db: SqliteDatabase, tenantId: string): "weekly" | "daily" {
+export function rankCadenceForTenant(
+  db: SqliteDatabase,
+  tenantId: string,
+): "weekly" | "daily" {
   const tenant = getTenant(db, tenantId);
   if (!tenant) return "weekly";
   return PLANS[planOf(tenant.plan).id].ranks;

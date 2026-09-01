@@ -14,15 +14,11 @@ import { contentHash } from "./hash.js";
 import { pathOf } from "./url.js";
 import type { RobotsGroup, RobotsOutcome } from "./types.js";
 
-const KNOWN = new Set([
-  "user-agent",
-  "allow",
-  "disallow",
-  "sitemap",
-  "crawl-delay",
-]);
+const KNOWN = new Set(["user-agent", "allow", "disallow", "sitemap", "crawl-delay"]);
 
-export function parseRobotsTxt(raw: string): Omit<
+export function parseRobotsTxt(
+  raw: string,
+): Omit<
   RobotsOutcome,
   "statusCode" | "contentType" | "bytes" | "redirectHops" | "error" | "mode"
 > {
@@ -103,7 +99,9 @@ export function parseRobotsTxt(raw: string): Omit<
   const disallowAll = groups.some(
     (g) =>
       (g.agents.includes("*") || g.agents.includes("googlebot")) &&
-      g.rules.some((r) => r.type === "disallow" && (r.pattern === "/" || r.pattern === "/*")),
+      g.rules.some(
+        (r) => r.type === "disallow" && (r.pattern === "/" || r.pattern === "/*"),
+      ),
   );
 
   return {
@@ -140,11 +138,7 @@ export function robotsFromFetch(opts: {
       groups: parsed.groups,
     };
   }
-  if (
-    opts.statusCode !== null &&
-    opts.statusCode >= 400 &&
-    opts.statusCode < 500
-  ) {
+  if (opts.statusCode !== null && opts.statusCode >= 400 && opts.statusCode < 500) {
     const parsed = parseRobotsTxt("");
     return { ...parsed, ...opts, raw: opts.raw, mode: "allow-all" };
   }

@@ -1,10 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { sites } from "./schema.js";
 
 /** Phase 10 — hosted tenants, billing, envelope keys. Dual-dialect with sqlite/hosted.ts. */

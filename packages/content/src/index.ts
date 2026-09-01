@@ -26,7 +26,11 @@ export {
   hasDisclosure,
   HTML_COMMENT,
 } from "./disclosure.js";
-export { evidenceForContentChange, EVIDENCE_MEANING, DEFAULT_EVIDENCE_TIER } from "./evidence.js";
+export {
+  evidenceForContentChange,
+  EVIDENCE_MEANING,
+  DEFAULT_EVIDENCE_TIER,
+} from "./evidence.js";
 export type {
   ContentBrief,
   ContentDraft,

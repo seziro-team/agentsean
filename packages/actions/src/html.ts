@@ -7,10 +7,16 @@ export function htmlTitle(html: string): string | null {
 
 export function patchHtmlTitle(html: string, title: string): string {
   if (/<title[^>]*>[\s\S]*?<\/title>/i.test(html)) {
-    return html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
+    return html.replace(
+      /<title[^>]*>[\s\S]*?<\/title>/i,
+      `<title>${escapeHtml(title)}</title>`,
+    );
   }
   if (/<head[^>]*>/i.test(html)) {
-    return html.replace(/<head[^>]*>/i, (h) => `${h}<title>${escapeHtml(title)}</title>`);
+    return html.replace(
+      /<head[^>]*>/i,
+      (h) => `${h}<title>${escapeHtml(title)}</title>`,
+    );
   }
   return `<!doctype html><html><head><title>${escapeHtml(title)}</title></head><body></body></html>`;
 }
@@ -55,7 +61,12 @@ export function titleFromPayload(payload: { title?: string }): string | null {
 }
 
 export function requireTitle(payload: unknown): string {
-  if (payload && typeof payload === "object" && "title" in payload && typeof payload.title === "string") {
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "title" in payload &&
+    typeof payload.title === "string"
+  ) {
     return payload.title;
   }
   throw new Error("action payload has no title");

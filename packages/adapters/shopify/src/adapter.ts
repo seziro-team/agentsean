@@ -38,7 +38,8 @@ export function resourceFromUrl(pageUrl: string): ShopifyResource {
   const path = new URL(pageUrl).pathname.replace(/\/+$/, "") || "/";
   const segs = path.split("/").filter(Boolean);
   if (segs[0] === "products" && segs[1]) return { type: "product", handle: segs[1] };
-  if (segs[0] === "collections" && segs[1]) return { type: "collection", handle: segs[1] };
+  if (segs[0] === "collections" && segs[1])
+    return { type: "collection", handle: segs[1] };
   if (segs[0] === "pages" && segs[1]) return { type: "page", handle: segs[1] };
   if (segs[0] === "blogs" && segs[2]) return { type: "article", handle: segs[2] };
   return { type: "page", handle: segs[segs.length - 1] ?? "index" };
@@ -55,7 +56,10 @@ export function createShopifyAdapter(opts: ShopifyAdapterOptions): SiteAdapter {
   const gql = `https://${host}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`;
   const liveOrigin = (opts.storefrontOrigin ?? `https://${host}`).replace(/\/+$/, "");
 
-  async function graphql(query: string, variables: Record<string, unknown>): Promise<unknown> {
+  async function graphql(
+    query: string,
+    variables: Record<string, unknown>,
+  ): Promise<unknown> {
     if (/themeFilesUpsert|themeFilesDelete|themeCreate|Asset/i.test(query)) {
       refuseThemeFileWrite();
     }
@@ -71,9 +75,18 @@ export function createShopifyAdapter(opts: ShopifyAdapterOptions): SiteAdapter {
     const json = (await res.json()) as {
       data?: unknown;
       errors?: Array<{ message: string }>;
-      extensions?: { cost?: { throttleStatus?: { currentlyAvailable?: number; restoreRate?: number; maximumAvailable?: number } } };
+      extensions?: {
+        cost?: {
+          throttleStatus?: {
+            currentlyAvailable?: number;
+            restoreRate?: number;
+            maximumAvailable?: number;
+          };
+        };
+      };
     };
-    if (json.errors?.length) throw new Error(json.errors.map((e) => e.message).join("; "));
+    if (json.errors?.length)
+      throw new Error(json.errors.map((e) => e.message).join("; "));
     return json.data;
   }
 
@@ -84,7 +97,13 @@ export function createShopifyAdapter(opts: ShopifyAdapterOptions): SiteAdapter {
   const adapter: SiteAdapter = {
     kind: "shopify",
     capabilities(): AdapterCapabilities {
-      return { kind: "shopify", reads: true, writes: true, pullRequests: false, rollback: true };
+      return {
+        kind: "shopify",
+        reads: true,
+        writes: true,
+        pullRequests: false,
+        rollback: true,
+      };
     },
     async read(target: ActionTarget): Promise<AdapterRead> {
       const html = await (await fetchFn(liveUrl(target))).text();
@@ -133,7 +152,21 @@ export function createShopifyAdapter(opts: ShopifyAdapterOptions): SiteAdapter {
       if (!previous) throw new Error("no previous title to restore");
       const resource = resourceFromUrl(change.targetRef);
       await graphql(
-        `mutation ($input: ProductInput!) { productUpdate(input: $input) { product { id seo { title } } userErrors { message } } }`,
+        `
+          mutation ($input: ProductInput!) {
+            productUpdate(input: $input) {
+              product {
+                id
+                seo {
+                  title
+                }
+              }
+              userErrors {
+                message
+              }
+            }
+          }
+        `,
         { input: { handle: resource.handle, seo: { title: previous } } },
       );
       return {

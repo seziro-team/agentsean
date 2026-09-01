@@ -62,7 +62,11 @@ export function loadOrCreateDek(
   master: Buffer,
   now = new Date(),
 ): Buffer {
-  const existing = db.select().from(envelopeKeys).where(eq(envelopeKeys.tenantId, tenantId)).get();
+  const existing = db
+    .select()
+    .from(envelopeKeys)
+    .where(eq(envelopeKeys.tenantId, tenantId))
+    .get();
   if (existing) return unwrapDek(master, existing.wrappedDek);
   const dek = randomBytes(32);
   db.insert(envelopeKeys)

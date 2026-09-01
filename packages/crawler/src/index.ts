@@ -2,7 +2,12 @@ export { crawlSite, ramConcurrency } from "./crawl.js";
 export { persistCrawl, persistFindings } from "./persist.js";
 export { fetchUrl, createCrawlerAgent } from "./http.js";
 export { decodeBody } from "./decode.js";
-export { parseRobotsTxt, isAllowedByRobots, robotsFromFetch, matchRule } from "./robots.js";
+export {
+  parseRobotsTxt,
+  isAllowedByRobots,
+  robotsFromFetch,
+  matchRule,
+} from "./robots.js";
 export { parseSitemapXml } from "./sitemap.js";
 export { extractPage } from "./extract.js";
 export { extractMainContent } from "./readability.js";

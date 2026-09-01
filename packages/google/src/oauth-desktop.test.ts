@@ -13,7 +13,9 @@ describe("RFC 8252 desktop OAuth", () => {
       pending,
     });
     const u = new URL(started.authorizationUrl);
-    expect(u.searchParams.get("redirect_uri")).toBe("http://127.0.0.1:0/oauth/callback");
+    expect(u.searchParams.get("redirect_uri")).toBe(
+      "http://127.0.0.1:0/oauth/callback",
+    );
     expect(u.searchParams.get("redirect_uri")).not.toContain("localhost");
     expect(u.searchParams.get("code_challenge_method")).toBe("S256");
     expect(u.searchParams.get("access_type")).toBe("offline");
@@ -36,7 +38,9 @@ describe("RFC 8252 desktop OAuth", () => {
       const body = String(init?.body);
       expect(body).toContain("code_verifier=");
       expect(body).toContain("client_secret=sec");
-      expect(body).toContain("redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Foauth%2Fcallback");
+      expect(body).toContain(
+        "redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Foauth%2Fcallback",
+      );
       return new Response(
         JSON.stringify({
           access_token: "at",

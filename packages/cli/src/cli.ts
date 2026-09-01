@@ -35,7 +35,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     return 0;
   }
   if (args.version) {
-    emit(args.json, { ok: true, name: "agentsean", version: VERSION }, `agentsean ${VERSION}`);
+    emit(
+      args.json,
+      { ok: true, name: "agentsean", version: VERSION },
+      `agentsean ${VERSION}`,
+    );
     return 0;
   }
   if (args.errors.length > 0) {
@@ -185,7 +189,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         port: args.port,
       });
     case "telemetry":
-      return telemetryCommand({ json: args.json, home: args.home, target: args.target });
+      return telemetryCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
     case "recipes":
       return recipesCommand({ json: args.json, target: args.target });
     default:

@@ -10,7 +10,12 @@ function inRange(cp: number, a: number, b: number): boolean {
 
 function classifyInvisible(cp: number): string | null {
   if (inRange(cp, 0xe0000, 0xe007f)) return "tag_block";
-  if (cp === 0x200e || cp === 0x200f || inRange(cp, 0x202a, 0x202e) || inRange(cp, 0x2066, 0x2069)) {
+  if (
+    cp === 0x200e ||
+    cp === 0x200f ||
+    inRange(cp, 0x202a, 0x202e) ||
+    inRange(cp, 0x2066, 0x2069)
+  ) {
     return "bidi";
   }
   if (inRange(cp, 0x200b, 0x200d) || cp === 0x2060 || cp === 0xfeff || cp === 0x180e) {
@@ -29,7 +34,13 @@ function classifyInvisible(cp: number): string | null {
   ) {
     return "other_invisible";
   }
-  if (inRange(cp, 0x00, 0x08) || cp === 0x0b || cp === 0x0c || inRange(cp, 0x0e, 0x1f) || inRange(cp, 0x7f, 0x9f)) {
+  if (
+    inRange(cp, 0x00, 0x08) ||
+    cp === 0x0b ||
+    cp === 0x0c ||
+    inRange(cp, 0x0e, 0x1f) ||
+    inRange(cp, 0x7f, 0x9f)
+  ) {
     return "ctrl";
   }
   if (inRange(cp, 0xfe00, 0xfe0f) || inRange(cp, 0xe0100, 0xe01ef)) return "variation";
@@ -118,12 +129,13 @@ export function bannedHits(text: string): string[] {
 
 function tryDecodeBase64(chunk: string): string | null {
   if (chunk.length < 40 || chunk.length % 4 === 1) return null;
-  if (!/^[A-Za-z0-9+/]+=*$/.test(chunk) && !/^[A-Za-z0-9_-]+=*$/.test(chunk)) return null;
+  if (!/^[A-Za-z0-9+/]+=*$/.test(chunk) && !/^[A-Za-z0-9_-]+=*$/.test(chunk))
+    return null;
   try {
     const buf = Buffer.from(chunk.replace(/-/g, "+").replace(/_/g, "/"), "base64");
     if (buf.length < 8) return null;
     const s = buf.toString("utf8");
-    const printable = [...s].filter((c) => c >= " " && c <= "~" || c === "\n").length;
+    const printable = [...s].filter((c) => (c >= " " && c <= "~") || c === "\n").length;
     if (printable / s.length < 0.6) return null;
     return s;
   } catch {
@@ -138,9 +150,13 @@ const U_ESCAPE = /(?:\\u[0-9a-fA-F]{4}){4,}/g;
 const HEX_BLOB = /(?:[0-9a-fA-F]{2}){20,}/g;
 
 function decodeEntities(seq: string): string {
-  return seq.replace(/&#x([0-9a-fA-F]+);/gi, (_, h: string) =>
-    String.fromCodePoint(Number.parseInt(h, 16)),
-  ).replace(/&#(\d+);/g, (_, d: string) => String.fromCodePoint(Number.parseInt(d, 10)));
+  return seq
+    .replace(/&#x([0-9a-fA-F]+);/gi, (_, h: string) =>
+      String.fromCodePoint(Number.parseInt(h, 16)),
+    )
+    .replace(/&#(\d+);/g, (_, d: string) =>
+      String.fromCodePoint(Number.parseInt(d, 10)),
+    );
 }
 
 function rot13(s: string): string {

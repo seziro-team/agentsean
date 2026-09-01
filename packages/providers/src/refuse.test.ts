@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { DEAD_PROVIDERS, isDeadProvider, refuseDeadProvider, scrapeGoogleSerp } from "./refuse.js";
+import {
+  DEAD_PROVIDERS,
+  isDeadProvider,
+  refuseDeadProvider,
+  scrapeGoogleSerp,
+} from "./refuse.js";
 
 describe("refused providers", () => {
   it("lists the dead options from PLAN Phase 6", () => {
@@ -14,7 +19,9 @@ describe("refused providers", () => {
 
   it("refuses the decommissioned Bing Search API", () => {
     expect(isDeadProvider("bing-search-api")).toBe(true);
-    expect(() => refuseDeadProvider("bing_search_api")).toThrow(/decommissioned 2025-08-11/);
+    expect(() => refuseDeadProvider("bing_search_api")).toThrow(
+      /decommissioned 2025-08-11/,
+    );
   });
 
   it("T4-refuses Google SERP scraping", () => {

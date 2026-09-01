@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { pages, sites } from "./schema.js";
 
 /** Phase 5 — content engine. Dual-dialect with sqlite/content.ts. */

@@ -33,7 +33,10 @@ function slugTitle(url: string): string {
     const u = new URL(url);
     const parts = u.pathname.split("/").filter(Boolean);
     const last = parts[parts.length - 1] ?? "";
-    const cleaned = last.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " ").trim();
+    const cleaned = last
+      .replace(/\.[a-z0-9]+$/i, "")
+      .replace(/[-_]+/g, " ")
+      .trim();
     if (!cleaned) return "";
     return cleaned
       .split(" ")
@@ -68,7 +71,10 @@ export function proposeTitle(page: PageRow, origin: string): string {
   if (h1 && usable(h1)) title = `${h1} | ${site}`;
   if (title.length < 30) title = `${title} — ${site} official site`;
   if (title.length > 60) {
-    title = title.slice(0, 57).replace(/\s+\S*$/, "").trimEnd();
+    title = title
+      .slice(0, 57)
+      .replace(/\s+\S*$/, "")
+      .trimEnd();
   }
   if (title.length < 30) title = `${site} official site home page`;
   if (!usable(title)) title = `${site} official site home page`;

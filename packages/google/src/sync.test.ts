@@ -6,7 +6,12 @@ import { openSqlite } from "@agentsean/db";
 import { openCredentialStore } from "@agentsean/credentials";
 import { Secret } from "@agentsean/credentials";
 import { GOOGLE_OAUTH_ACCOUNT } from "./scopes.js";
-import { persistGa4Daily, persistGscDaily, upsertGa4Connection, upsertGscConnection } from "./persist.js";
+import {
+  persistGa4Daily,
+  persistGscDaily,
+  upsertGa4Connection,
+  upsertGscConnection,
+} from "./persist.js";
 import { seedCuratedChangepoints } from "./incidents.js";
 import { reconcileSite } from "./reconcile.js";
 import { loadAuditExtras } from "./audit-extras.js";

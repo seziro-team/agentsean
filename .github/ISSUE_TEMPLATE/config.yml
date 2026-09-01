@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or usage help
+    url: https://github.com/seziro-team/agentsean/discussions/categories/q-a
+    about:
+      Ask how to configure or run Sean, or get help with something that is not a bug.
+  - name: Idea or feature discussion
+    url: https://github.com/seziro-team/agentsean/discussions/categories/ideas
+    about: Float an idea or discuss a direction before opening a formal feature request.
+  - name: Report a security vulnerability
+    url: https://github.com/seziro-team/agentsean/security/policy
+    about: Do not open a public issue for security problems. Report them privately here.

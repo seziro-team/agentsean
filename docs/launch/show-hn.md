@@ -18,6 +18,6 @@ It binds 127.0.0.1:7777 only. `sean freeze` halts every write. Hosted never stor
 
 OpenSEO (MIT, analyzes and reports) proved an open-source SEO platform could work. Sean is the execution layer, not a fork.
 
-Repo: https://github.com/vp2722/sean
+Repo: https://github.com/seziro-team/agentsean
 
 What it does *not* do, on purpose: stakeholder negotiation, strategy arguments, or deciding whether you should want the traffic.

@@ -34,7 +34,8 @@ function latestBodies(db: SqliteDatabase, siteId: string): Map<string, string> {
   for (const s of snaps) {
     if (!pageIds.has(s.pageId) || !s.body) continue;
     const cur = best.get(s.pageId);
-    if (!cur || s.fetchedAt > cur.at) best.set(s.pageId, { at: s.fetchedAt, body: s.body });
+    if (!cur || s.fetchedAt > cur.at)
+      best.set(s.pageId, { at: s.fetchedAt, body: s.body });
   }
   return new Map([...best].map(([id, v]) => [id, v.body]));
 }
@@ -52,7 +53,10 @@ function googleNote(db: SqliteDatabase, now: Date): string | null {
     .all()
     .filter((r) => r.begin >= begin && r.begin <= now.toISOString());
   if (!rows.length) return null;
-  return `Google incidents in window: ${rows.map((r) => r.externalDesc).slice(0, 3).join("; ")}. Do not claim the rewrite caused a recovery.`;
+  return `Google incidents in window: ${rows
+    .map((r) => r.externalDesc)
+    .slice(0, 3)
+    .join("; ")}. Do not claim the rewrite caused a recovery.`;
 }
 
 export function pickCandidates(opts: {
@@ -60,14 +64,26 @@ export function pickCandidates(opts: {
   siteId: string;
   now: Date;
 }): ContentCandidate[] {
-  const pageRows = opts.db.select().from(pages).where(eq(pages.siteId, opts.siteId)).all();
+  const pageRows = opts.db
+    .select()
+    .from(pages)
+    .where(eq(pages.siteId, opts.siteId))
+    .all();
   const bodies = latestBodies(opts.db, opts.siteId);
-  const gsc = opts.db.select().from(gscPageDaily).where(eq(gscPageDaily.siteId, opts.siteId)).all();
+  const gsc = opts.db
+    .select()
+    .from(gscPageDaily)
+    .where(eq(gscPageDaily.siteId, opts.siteId))
+    .all();
   const decay = decayingPages(
     gsc.map((r) => ({ date: r.date, page: r.page, clicks: r.clicks })),
     opts.now,
   );
-  const findingRows = opts.db.select().from(findings).where(eq(findings.siteId, opts.siteId)).all();
+  const findingRows = opts.db
+    .select()
+    .from(findings)
+    .where(eq(findings.siteId, opts.siteId))
+    .all();
   const byUrl = new Map(pageRows.map((p) => [p.url, p]));
   const out: ContentCandidate[] = [];
   const seen = new Set<string>();
@@ -89,7 +105,9 @@ export function pickCandidates(opts: {
     });
   }
 
-  const thin = findingRows.filter((f) => f.ruleId.startsWith("THIN.") && f.status === "open");
+  const thin = findingRows.filter(
+    (f) => f.ruleId.startsWith("THIN.") && f.status === "open",
+  );
   for (const f of thin) {
     if (!f.pageId || seen.has(f.pageId)) continue;
     const page = pageRows.find((p) => p.id === f.pageId);
@@ -185,7 +203,11 @@ export async function runContentJob(
     try {
       const produced = await draftFromBrief(brief, llm, style);
       draft = produced.draft;
-      recordLlmCost(db, { siteId: opts.siteId, result: produced.usage, operation: "content_draft" });
+      recordLlmCost(db, {
+        siteId: opts.siteId,
+        result: produced.usage,
+        operation: "content_draft",
+      });
     } catch {
       saveDraft(db, {
         briefId,
@@ -236,7 +258,10 @@ export async function runContentJob(
         evidenceTier,
       });
       saveAction(db, action, "rejected", {
-        error: gate.checks.filter((c) => !c.ok).map((c) => c.code).join(","),
+        error: gate.checks
+          .filter((c) => !c.ok)
+          .map((c) => c.code)
+          .join(","),
       });
       result.rejected++;
       continue;

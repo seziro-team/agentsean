@@ -81,7 +81,9 @@ describe("PublishGate", () => {
       brief: brief(),
       draft: draft(),
       style: DEFAULT_STYLE,
-      corpus: [{ url: "https://example.com/guide", body: "short original widgets copy" }],
+      corpus: [
+        { url: "https://example.com/guide", body: "short original widgets copy" },
+      ],
       ymylCategory: null,
       newPagesToday: 0,
       kind: "refresh",

@@ -60,7 +60,11 @@ export function debitProvider(
     .run();
 }
 
-export function spendTodayUsd(db: SqliteDatabase, siteId: string, now = new Date()): number {
+export function spendTodayUsd(
+  db: SqliteDatabase,
+  siteId: string,
+  now = new Date(),
+): number {
   const day = now.toISOString().slice(0, 10);
   const rows = db
     .select()

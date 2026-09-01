@@ -38,7 +38,8 @@ export async function persistCrawl(
   recordCrawlEntity(db, siteId, result.origin + "/", now);
 
   const status =
-    opts?.status ?? (result.aborted ? "running" : result.truncated ? "running" : "complete");
+    opts?.status ??
+    (result.aborted ? "running" : result.truncated ? "running" : "complete");
   let crawlId = opts?.crawlId;
   if (crawlId) {
     const row = db.select().from(crawls).where(eq(crawls.id, crawlId)).get();
@@ -106,9 +107,11 @@ function persistPage(
     h1: extract?.h1[0] ?? null,
     wordCount: extract?.mainWordCount ?? extract?.wordCount ?? null,
     lang: extract?.lang ?? null,
-    jsonld: extract?.jsonLd.length ? JSON.stringify(extract.jsonLd.map((j) => j.parsed)) : null,
+    jsonld: extract?.jsonLd.length
+      ? JSON.stringify(extract.jsonLd.map((j) => j.parsed))
+      : null,
     lastCrawledAt: now,
-    lastChangedAt: page.notModified ? found?.lastChangedAt ?? now : now,
+    lastChangedAt: page.notModified ? (found?.lastChangedAt ?? now) : now,
     inlinkCount: page.inlinkCount,
     outlinkCount: page.outlinkCount,
   };

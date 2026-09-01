@@ -127,7 +127,13 @@ describe("parseArgs", () => {
   });
 
   it("parses visibility, local, and mentions", () => {
-    const a = parseArgs(["node", "sean", "visibility", "https://example.com", "--json"]);
+    const a = parseArgs([
+      "node",
+      "sean",
+      "visibility",
+      "https://example.com",
+      "--json",
+    ]);
     expect(a.command).toBe("visibility");
     expect(a.target).toBe("https://example.com");
     const b = parseArgs(["node", "sean", "local", "--json"]);

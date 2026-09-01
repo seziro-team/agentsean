@@ -10,7 +10,7 @@ Body: Most tools stop at the audit. Sean crawls, prioritizes against a published
 
 I am not selling schema / word count / llms.txt as AI-citation levers.
 
-https://github.com/vp2722/sean
+https://github.com/seziro-team/agentsean
 
 ## r/selfhosted
 

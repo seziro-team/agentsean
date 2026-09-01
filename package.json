@@ -33,7 +33,9 @@
       "esbuild"
     ],
     "peerDependencyRules": {
-      "ignoreMissing": ["playwright"]
+      "ignoreMissing": [
+        "playwright"
+      ]
     }
   }
 }

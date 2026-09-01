@@ -6,7 +6,12 @@ import {
   TWO_KEY_KINDS,
 } from "./kinds.js";
 import { parseAction } from "./payloads.js";
-import { bannedHits, collectActionText, encodedPayloadHits, invisibleHits } from "./scan.js";
+import {
+  bannedHits,
+  collectActionText,
+  encodedPayloadHits,
+  invisibleHits,
+} from "./scan.js";
 import { verifyApproval } from "./hmac.js";
 import { extractDomains, extractUrls, matchGlob, sameSite } from "./urls.js";
 import {
@@ -35,7 +40,10 @@ function beforeLen(ctx: ValidationContext): number {
 function changedBytes(ctx: ValidationContext): number {
   const a = Buffer.from(ctx.beforeText, "utf8");
   const b = Buffer.from(ctx.afterText, "utf8");
-  return Math.abs(b.length - a.length) + levenshteinCap(ctx.beforeText, ctx.afterText, 50_000);
+  return (
+    Math.abs(b.length - a.length) +
+    levenshteinCap(ctx.beforeText, ctx.afterText, 50_000)
+  );
 }
 
 function levenshteinCap(a: string, b: string, cap: number): number {
@@ -52,7 +60,11 @@ function levenshteinCap(a: string, b: string, cap: number): number {
     const ca = a.charCodeAt(i - 1);
     for (let j = 1; j <= n; j++) {
       const cost = ca === b.charCodeAt(j - 1) ? 0 : 1;
-      cur[j] = Math.min((cur[j - 1] ?? 0) + 1, (prev[j] ?? 0) + 1, (prev[j - 1] ?? 0) + cost);
+      cur[j] = Math.min(
+        (cur[j - 1] ?? 0) + 1,
+        (prev[j] ?? 0) + 1,
+        (prev[j - 1] ?? 0) + cost,
+      );
     }
     prev.set(cur);
   }
@@ -100,7 +112,13 @@ function checkSchema(raw: unknown): { action: Action } | { vetoes: Veto[] } {
 function checkTarget(action: Action, ctx: ValidationContext): Veto[] {
   const page = pageById(ctx, action.target.pageId);
   if (!page) {
-    return [veto(2, "TARGET_BINDING", `pageId ${action.target.pageId} is not in the crawl table`)];
+    return [
+      veto(
+        2,
+        "TARGET_BINDING",
+        `pageId ${action.target.pageId} is not in the crawl table`,
+      ),
+    ];
   }
   if (page.url !== action.target.url) {
     return [
@@ -131,7 +149,9 @@ function checkUrlAllowlist(action: Action, ctx: ValidationContext): Veto[] {
   for (const url of urls) {
     if (url === action.target.url) continue;
     if (!urlAllowed(ctx, url)) {
-      out.push(veto(3, "URL_ALLOWLIST", `payload url not crawled or allowlisted: ${url}`));
+      out.push(
+        veto(3, "URL_ALLOWLIST", `payload url not crawled or allowlisted: ${url}`),
+      );
     }
     if (!sameSite(url, ctx.site.origin) && !ctx.allowlist.includes(url)) {
       out.push(veto(3, "URL_ALLOWLIST", `off-site url requires allowlist: ${url}`));
@@ -144,14 +164,24 @@ function checkFirstAppearance(action: Action, ctx: ValidationContext): Veto[] {
   const out: Veto[] = [];
   const urls = [action.target.url, ...payloadUrls(action)];
   for (const url of urls) {
-    if (!firstAppearanceOk(ctx, url) && !pageByUrl(ctx, url) && !ctx.allowlist.includes(url)) {
+    if (
+      !firstAppearanceOk(ctx, url) &&
+      !pageByUrl(ctx, url) &&
+      !ctx.allowlist.includes(url)
+    ) {
       out.push(
-        veto(4, "FIRST_APPEARANCE", `url first appeared outside our crawl table: ${url}`),
+        veto(
+          4,
+          "FIRST_APPEARANCE",
+          `url first appeared outside our crawl table: ${url}`,
+        ),
       );
     }
     const row = ctx.entities.find((e) => e.entity === url);
     if (row?.source === "third_party") {
-      out.push(veto(4, "FIRST_APPEARANCE", `entity first seen in third-party content: ${url}`));
+      out.push(
+        veto(4, "FIRST_APPEARANCE", `entity first seen in third-party content: ${url}`),
+      );
     }
   }
   for (const domain of payloadDomains(action)) {
@@ -165,9 +195,17 @@ function checkFirstAppearance(action: Action, ctx: ValidationContext): Veto[] {
       }
     });
     if (asUrl) continue;
-    const row = ctx.entities.find((e) => e.entity === domain || e.entity.endsWith(`.${domain}`));
+    const row = ctx.entities.find(
+      (e) => e.entity === domain || e.entity.endsWith(`.${domain}`),
+    );
     if (row?.source === "third_party") {
-      out.push(veto(4, "FIRST_APPEARANCE", `domain first seen in third-party content: ${domain}`));
+      out.push(
+        veto(
+          4,
+          "FIRST_APPEARANCE",
+          `domain first seen in third-party content: ${domain}`,
+        ),
+      );
     } else if (!row && !ctx.allowlist.some((u) => u.includes(domain))) {
       const mentioned = collectActionText(action.payload);
       if (mentioned.includes(domain) && domain !== originHost) {
@@ -190,13 +228,19 @@ const FIELD_KINDS = new Set([
   "fix_meta_length",
 ]);
 
-function fieldDiff(action: Action, ctx: ValidationContext): { before: string; after: string } | null {
+function fieldDiff(
+  action: Action,
+  ctx: ValidationContext,
+): { before: string; after: string } | null {
   const page = pageById(ctx, action.target.pageId);
   if ("title" in action.payload) {
     return { before: page?.title ?? "", after: action.payload.title };
   }
   if ("metaDescription" in action.payload) {
-    return { before: page?.metaDescription ?? "", after: action.payload.metaDescription };
+    return {
+      before: page?.metaDescription ?? "",
+      after: action.payload.metaDescription,
+    };
   }
   if ("alt" in action.payload) {
     return { before: "", after: action.payload.alt };
@@ -213,8 +257,7 @@ function checkDiffCaps(action: Action, ctx: ValidationContext): Veto[] {
   const before = field ? Buffer.byteLength(field.before, "utf8") : beforeLen(ctx);
   const after = field ? Buffer.byteLength(field.after, "utf8") : afterLen(ctx);
   const changed = field
-    ? Math.abs(after - before) +
-      levenshteinCap(field.before, field.after, cap.maxBytes)
+    ? Math.abs(after - before) + levenshteinCap(field.before, field.after, cap.maxBytes)
     : changedBytes(ctx);
   if (changed > cap.maxBytes) {
     return [veto(5, "DIFF_CAPS", `changed ${changed} bytes, cap ${cap.maxBytes}`)];
@@ -223,7 +266,9 @@ function checkDiffCaps(action: Action, ctx: ValidationContext): Veto[] {
   if (!field && !contentKind && before > 0) {
     const pct = (changed / before) * 100;
     if (pct > cap.maxPct && changed > 40) {
-      return [veto(5, "DIFF_CAPS", `changed ${pct.toFixed(1)}% of page, cap ${cap.maxPct}%`)];
+      return [
+        veto(5, "DIFF_CAPS", `changed ${pct.toFixed(1)}% of page, cap ${cap.maxPct}%`),
+      ];
     }
   }
   if (!field && !contentKind && after > before * 1.5 + 200 && before > 0) {
@@ -263,7 +308,9 @@ function checkPolicy(action: Action, ctx: ValidationContext): Veto[] {
     return [veto(7, "POLICY_TIER", `kind ${action.kind} is locked at T${locked}`)];
   }
   if (locked === 4) {
-    return [veto(7, "POLICY_TIER", `kind ${action.kind} is T4 refused; no setting exists`)];
+    return [
+      veto(7, "POLICY_TIER", `kind ${action.kind} is T4 refused; no setting exists`),
+    ];
   }
   if (locked === 0) {
     return [veto(7, "POLICY_TIER", "T0 observe actions must not write")];
@@ -289,18 +336,28 @@ function checkBudget(ctx: ValidationContext): Veto[] {
 }
 
 function checkInvisible(action: Action): Veto[] {
-  const text = collectActionText({ payload: action.payload, rationale: action.rationale });
+  const text = collectActionText({
+    payload: action.payload,
+    rationale: action.rationale,
+  });
   const hits = invisibleHits(text);
   if (hits.count > 0) {
     return [
-      veto(9, "INVISIBLE_CHARS", `output contains ${hits.count} invisible chars (${hits.kinds.join(",")})`),
+      veto(
+        9,
+        "INVISIBLE_CHARS",
+        `output contains ${hits.count} invisible chars (${hits.kinds.join(",")})`,
+      ),
     ];
   }
   return [];
 }
 
 function checkEncoded(action: Action): Veto[] {
-  const text = collectActionText({ payload: action.payload, rationale: action.rationale });
+  const text = collectActionText({
+    payload: action.payload,
+    rationale: action.rationale,
+  });
   const hits = encodedPayloadHits(text);
   if (hits.length) {
     return [veto(10, "ENCODED_PAYLOAD", hits.join(","))];
@@ -309,7 +366,10 @@ function checkEncoded(action: Action): Veto[] {
 }
 
 function checkBanned(action: Action): Veto[] {
-  const text = collectActionText({ payload: action.payload, rationale: action.rationale });
+  const text = collectActionText({
+    payload: action.payload,
+    rationale: action.rationale,
+  });
   const hits = bannedHits(text);
   if (hits.length) {
     return [veto(11, "BANNED_SUBSTRING", hits.join(","))];
@@ -351,7 +411,8 @@ function checkTwoKey(action: Action, ctx: ValidationContext): Veto[] {
 function checkVertical(action: Action, ctx: ValidationContext): Veto[] {
   const cat = (ctx.site.ymylCategory ?? "").toLowerCase();
   if (!cat) return [];
-  const blocked = cat === "ymyl" || cat === "affiliate" || cat === "yours-money-your-life";
+  const blocked =
+    cat === "ymyl" || cat === "affiliate" || cat === "yours-money-your-life";
   if (blocked && CONTENT_GEN_KINDS.has(action.kind)) {
     return [
       veto(13, "VERTICAL_BLOCK", `content generation is T4-blocked for ${cat} sites`),
@@ -363,7 +424,8 @@ function checkVertical(action: Action, ctx: ValidationContext): Veto[] {
 function checkObserve(ctx: ValidationContext): Veto[] {
   if (!ctx.site.observeUntil) return [];
   const until = Date.parse(ctx.site.observeUntil);
-  if (Number.isNaN(until)) return [veto(14, "OBSERVE_PERIOD", "observeUntil is not a date")];
+  if (Number.isNaN(until))
+    return [veto(14, "OBSERVE_PERIOD", "observeUntil is not a date")];
   if (ctx.now.getTime() < until) {
     return [
       veto(
@@ -378,13 +440,18 @@ function checkObserve(ctx: ValidationContext): Veto[] {
 
 function checkRate(action: Action, ctx: ValidationContext): Veto[] {
   if (NEW_PAGE_KINDS.has(action.kind) && ctx.newPagesToday >= BLAST.newPagesPerDay) {
-    return [
-      veto(15, "RATE_LIMIT", `new-page cap is ${BLAST.newPagesPerDay}/day/site`),
-    ];
+    return [veto(15, "RATE_LIMIT", `new-page cap is ${BLAST.newPagesPerDay}/day/site`)];
   }
-  if (CONTENT_REFRESH_KINDS.has(action.kind) && ctx.contentRefreshToday >= BLAST.contentRefreshPerDay) {
+  if (
+    CONTENT_REFRESH_KINDS.has(action.kind) &&
+    ctx.contentRefreshToday >= BLAST.contentRefreshPerDay
+  ) {
     return [
-      veto(15, "RATE_LIMIT", `content-refresh cap is ${BLAST.contentRefreshPerDay}/day/site`),
+      veto(
+        15,
+        "RATE_LIMIT",
+        `content-refresh cap is ${BLAST.contentRefreshPerDay}/day/site`,
+      ),
     ];
   }
   return [];
@@ -419,6 +486,9 @@ export function validateAction(raw: unknown, ctx: ValidationContext): Validation
   return { ok: true };
 }
 
-export function validateParsed(action: Action, ctx: ValidationContext): ValidationResult {
+export function validateParsed(
+  action: Action,
+  ctx: ValidationContext,
+): ValidationResult {
   return validateAction(action, ctx);
 }

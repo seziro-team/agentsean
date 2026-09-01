@@ -1,5 +1,5 @@
 === Agent Sean Bridge ===
-Contributors: seanhq
+Contributors: seziro
 Tags: seo, rest-api, yoast, rank-math, aioseo
 Requires at least: 6.4
 Tested up to: 6.8

@@ -43,7 +43,10 @@ export function createHttpEmbeddings(opts: {
         body: JSON.stringify({ model, prompt: text, input: text }),
       });
       if (!res.ok) throw new Error(`embeddings HTTP ${res.status}`);
-      const json = (await res.json()) as { embedding?: number[]; data?: Array<{ embedding: number[] }> };
+      const json = (await res.json()) as {
+        embedding?: number[];
+        data?: Array<{ embedding: number[] }>;
+      };
       const vec = json.embedding ?? json.data?.[0]?.embedding;
       if (!vec?.length) throw new Error("embeddings response missing vector");
       return l2(vec);

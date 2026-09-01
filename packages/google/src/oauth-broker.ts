@@ -112,6 +112,7 @@ export async function brokerRefreshAccessToken(
   const json = (await res.json()) as { payload?: string };
   if (!json.payload) throw new GscTokenError("Broker refresh missing payload.");
   const opened = JSON.parse(unseal(wrapKey, json.payload)) as BrokerHandoff;
-  if (!opened.access_token) throw new GscTokenError("Broker refresh missing access_token.");
+  if (!opened.access_token)
+    throw new GscTokenError("Broker refresh missing access_token.");
   return opened;
 }

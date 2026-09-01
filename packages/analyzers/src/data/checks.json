@@ -5,9 +5,7 @@
     "name": "Page is canonicalised away (non-self)",
     "severity": "insight",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`canonical != self`",
@@ -19,9 +17,7 @@
     "name": "Canonicalised URL present in XML sitemap",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "set intersection",
@@ -33,9 +29,7 @@
     "name": "Case variants both 200",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "fetch lowercased variant",
@@ -47,9 +41,7 @@
     "name": "Canonical points to another canonicalized URL",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "`canonical(target) != target`",
@@ -61,9 +53,7 @@
     "name": "Canonical to a different registrable domain",
     "severity": "insight",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "eTLD+1 differs",
@@ -75,9 +65,7 @@
     "name": "Empty or unparseable",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`value.strip()==''` or `urlparse` fails",
@@ -89,9 +77,7 @@
     "name": "Canonical contains",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "`'#' in value`",
@@ -103,9 +89,7 @@
     "name": "truncated by invalid element before canonical",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Raw HTML: presence of `<img>`, `<div>`, `<iframe>`, `<noscript><img>`, `<p>` inside `<head>` preceding the canonical",
@@ -117,9 +101,7 @@
     "name": "HTML canonical \u2260 HTTP header canonical",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "compare normalized URLs",
@@ -131,9 +113,7 @@
     "name": "and both 200",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "fetch both",
@@ -145,9 +125,7 @@
     "name": "Canonical loop (A\u2192B\u2192A)",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Cycle in canonical graph",
@@ -159,9 +137,7 @@
     "name": "No canonical",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "No `<link rel=canonical>` in `<head>` and no `Link: <...>; rel=\"canonical\"` header",
@@ -173,9 +149,7 @@
     "name": "Multiple conflicting canonicals",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`count(distinct canonical_targets) > 1` across head + header + rendered DOM",
@@ -187,9 +161,7 @@
     "name": "Multiple canonicals, same target",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "`count > 1`, one distinct value",
@@ -201,9 +173,7 @@
     "name": "+ canonical to another URL",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "both present",
@@ -215,9 +185,7 @@
     "name": "Canonical outside",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Node's ancestor chain does not include `head`, or appears after first `<body>`-forcing tag in raw HTML",
@@ -229,9 +197,7 @@
     "name": "Parameterised duplicates lacking canonical to clean URL",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "URL has tracking params (`utm_*`, `gclid`, `fbclid`, `msclkid`, `_ga`) AND canonical == self-with-params",
@@ -243,9 +209,7 @@
     "name": "Relative canonical",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Value does not start with `http://`/`https://`",
@@ -257,10 +221,7 @@
     "name": "Rendered canonical \u2260 raw HTML canonical",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "diff raw vs rendered",
@@ -272,10 +233,7 @@
     "name": "Canonical only exists after JS",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "absent raw, present rendered",
@@ -287,9 +245,7 @@
     "name": "Canonical target blocked by robots.txt",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "robots matcher disallow",
@@ -301,9 +257,7 @@
     "name": "Deep page canonicalizes to",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`target == origin + '/'` and `source != origin + '/'`",
@@ -315,9 +269,7 @@
     "name": "Canonical points to HTTP while site is HTTPS",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "scheme mismatch",
@@ -329,9 +281,7 @@
     "name": "Canonical target is noindex",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Target has noindex",
@@ -343,9 +293,7 @@
     "name": "Canonical target 4xx/5xx",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Fetch target status \u2265 400",
@@ -357,9 +305,7 @@
     "name": "Canonical target redirects",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Target status 3xx",
@@ -371,9 +317,7 @@
     "name": "and both 200 with same content",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "fetch both",
@@ -385,9 +329,7 @@
     "name": "Canonical target has no internal inlinks",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "`inlinks(target) == 0`",
@@ -399,9 +341,7 @@
     "name": "Both www and non-www return 200",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "fetch both hosts",
@@ -413,9 +353,7 @@
     "name": "hreflang points at URL X, canonical points at Y \u2260 X",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -427,9 +365,7 @@
     "name": "canonical says A, server 301s A\u2192B",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -441,9 +377,7 @@
     "name": "robots.txt + meta (Google can never see the noindex)",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -455,10 +389,7 @@
     "name": "GSC URL Inspection",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -470,9 +401,7 @@
     "name": "+ present in XML sitemap",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -484,9 +413,7 @@
     "name": "page 2..n canonicalises to page 1 (deprecated pattern; hides items)",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -498,9 +425,7 @@
     "name": "sitemap URL returns",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -512,9 +437,7 @@
     "name": "Date-parameter infinite space",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "month\\",
@@ -526,9 +449,7 @@
     "name": "Click depth from homepage > 3",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "BFS shortest path over follow-able internal links",
@@ -540,9 +461,7 @@
     "name": "Depth > 5",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "BFS",
@@ -554,10 +473,7 @@
     "name": "Large bucket",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "URL Inspection `coverageState`",
@@ -569,9 +485,7 @@
     "name": "Combinatorial facet URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "\u2265 3 distinct filter params co-occurring; count distinct combos",
@@ -583,9 +497,7 @@
     "name": "Crawler trap",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "path segment repeats \u2265 3\u00d7 (`/a/b/a/b/a/b`), or unique-URL growth continues while unique content-hash count plateaus",
@@ -597,10 +509,7 @@
     "name": "Googlebot hits on non-indexable URLs (logs)",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "`hits_on_noindex_or_3xx_or_4xx / total_googlebot_hits`; alert > 0.3",
@@ -612,9 +521,7 @@
     "name": "0 internal follow inlinks, but exists",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "inlink count",
@@ -626,9 +533,7 @@
     "name": "Session IDs in URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "sessionid\\",
@@ -640,9 +545,7 @@
     "name": "TTFB rises with concurrency",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "measure p95 TTFB at 1 vs 5 concurrent",
@@ -654,9 +557,7 @@
     "name": "Sort/view params crawlable",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "order\\",
@@ -668,10 +569,7 @@
     "name": "High-value URL not crawled recently",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "logs: `days_since_last_googlebot_hit > 30` on URLs with clicks > 0",
@@ -683,9 +581,7 @@
     "name": "Crawl waste ratio",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "`1 - (indexable_200_selfcanon / total_discovered)`; alert > 0.4",
@@ -697,10 +593,7 @@
     "name": "CrUX p75 CLS > 0.1",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "CrUX",
@@ -712,10 +605,7 @@
     "name": "CrUX p75 INP > 200 ms",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "CrUX",
@@ -727,10 +617,7 @@
     "name": "CrUX p75 LCP > 2.5 s",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "CrUX",
@@ -742,10 +629,7 @@
     "name": "Phone p75 > 1.5\u00d7 desktop p75",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "CrUX both form factors",
@@ -757,10 +641,7 @@
     "name": "CrUX 404 at URL level",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "API",
@@ -772,10 +653,7 @@
     "name": "p75 worsens > 15% week-over-week",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "stored history",
@@ -787,9 +665,7 @@
     "name": "Disallowed **and** noindex",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "robots matcher + meta",
@@ -801,9 +677,7 @@
     "name": "Unrecognised directive token",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "not in supported set",
@@ -815,9 +689,7 @@
     "name": "only in rendered DOM",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "rendered has noindex, raw does not",
@@ -829,9 +701,7 @@
     "name": "Max Snippet Zero",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -843,9 +713,7 @@
     "name": "Multiple declarations",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "count",
@@ -857,9 +725,7 @@
     "name": "on templates with internal links",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "meta nofollow AND outlinks > 0",
@@ -871,9 +737,7 @@
     "name": "present",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -885,9 +749,7 @@
     "name": "noindex in header but not HTML (or vice versa)",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "compare",
@@ -899,10 +761,7 @@
     "name": "on a page with organic clicks in GSC",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "**Critical**",
@@ -914,9 +773,7 @@
     "name": "on a URL present in the sitemap",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "intersect",
@@ -928,9 +785,7 @@
     "name": "used (= noindex,nofollow)",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -942,10 +797,7 @@
     "name": "on high-traffic page",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse + GSC",
@@ -957,9 +809,7 @@
     "name": "Missing on visual content",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Low (opportunity: larger Discover/Search thumbnails)",
@@ -971,9 +821,7 @@
     "name": "Meta robots outside",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "**Critical** (ignored by Google)",
@@ -985,10 +833,7 @@
     "name": "only in original HTML, removed by JS",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "**Critical** \u2014 Google uses the raw signal at crawl time and may drop before render",
@@ -1000,9 +845,7 @@
     "name": "date in the past",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "parse RFC 822/850/ISO 8601",
@@ -1014,9 +857,7 @@
     "name": "Main content < 25% of page text",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "`len(main_text)/len(all_text)`",
@@ -1028,9 +869,7 @@
     "name": "Content also on another domain",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "shingle match against a fetched external copy",
@@ -1042,9 +881,7 @@
     "name": "Identical main content, different URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "SHA-256 collision",
@@ -1056,9 +893,7 @@
     "name": "Identical full HTML",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "SHA-256 of raw HTML",
@@ -1070,9 +905,7 @@
     "name": "Duplicate",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "group-by",
@@ -1084,9 +917,7 @@
     "name": "Both schemes serve 200",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "fetch both",
@@ -1098,9 +929,7 @@
     "name": "Duplicate meta description",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "group-by",
@@ -1112,9 +941,7 @@
     "name": "Jaccard \u2265 0.90",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "MinHash+LSH",
@@ -1126,9 +953,7 @@
     "name": "Paginated pages near-identical",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "MinHash within pagination cluster",
@@ -1140,9 +965,7 @@
     "name": "/ duplicates",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "pattern + hash",
@@ -1154,9 +977,7 @@
     "name": "Cosine \u2265 0.95 on embeddings",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "embeddings",
@@ -1168,9 +989,7 @@
     "name": "Duplicate across URLs",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "group-by",
@@ -1182,10 +1001,7 @@
     "name": "Indexed but not in submitted sitemap",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "Submit the URL",
@@ -1197,9 +1013,7 @@
     "name": "Indexable URL absent from sitemap",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "Add the URL to the sitemap",
@@ -1211,10 +1025,7 @@
     "name": "GSC indexed URL is an orphan",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "Add internal links",
@@ -1226,9 +1037,7 @@
     "name": "Googlebot hits a URL we never crawled from links",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "Discover and link it",
@@ -1240,9 +1049,7 @@
     "name": "Sitemap URL has no internal inlinks",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "Add internal links or remove from sitemap",
@@ -1254,10 +1061,7 @@
     "name": "Submitted in sitemap but not indexed",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "Investigate indexation",
@@ -1269,9 +1073,7 @@
     "name": "Canonical points outside the hreflang cluster",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "set membership",
@@ -1283,9 +1085,7 @@
     "name": "Cluster sizes differ across members",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "group sizes",
@@ -1297,9 +1097,7 @@
     "name": "Product currency doesn't match region",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "schema `priceCurrency` vs region",
@@ -1311,9 +1109,7 @@
     "name": "Same code+URL repeated",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "dedupe",
@@ -1325,9 +1121,7 @@
     "name": "\u2260 hreflang self code",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "compare",
@@ -1339,9 +1133,7 @@
     "name": "Alternate uses http",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "scheme",
@@ -1353,9 +1145,7 @@
     "name": "Not ISO 639-1",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "validate against list",
@@ -1367,9 +1157,7 @@
     "name": "Not ISO 3166-1 Alpha-2 (,,,)",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "validate",
@@ -1381,9 +1169,7 @@
     "name": "Declared disagrees with detected page language",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`lingua`/`fasttext` language ID on main content vs declared code",
@@ -1395,9 +1181,7 @@
     "name": "Not",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "[0-9]{3}))?$\\",
@@ -1409,9 +1193,7 @@
     "name": "Target does not link back",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "fetch target, check its set contains source",
@@ -1423,9 +1205,7 @@
     "name": "No self-referencing hreflang",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "self URL \u2209 alternate set",
@@ -1437,9 +1217,7 @@
     "name": "No in the cluster",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "set check",
@@ -1451,9 +1229,7 @@
     "name": "hreflang in both HTML and sitemap with different sets",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "set diff",
@@ -1465,9 +1241,7 @@
     "name": "Two URLs claim the same hreflang code",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "group-by",
@@ -1479,9 +1253,7 @@
     "name": "> 1",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "count",
@@ -1493,9 +1265,7 @@
     "name": "Alternate returns 3xx/4xx/5xx",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "fetch",
@@ -1507,9 +1277,7 @@
     "name": "Return link uses a different code",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "compare codes both directions",
@@ -1521,9 +1289,7 @@
     "name": "outside",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM ancestry",
@@ -1535,9 +1301,7 @@
     "name": "Region without language ( used for Germany-region intent, or )",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -1549,9 +1313,7 @@
     "name": "Relative/protocol-relative alternate",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "scheme check",
@@ -1563,9 +1325,7 @@
     "name": "Alternate canonicalises elsewhere (\"not using canonical\")",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "canonical \u2260 self",
@@ -1577,9 +1337,7 @@
     "name": "Alternate is noindex",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -1591,9 +1349,7 @@
     "name": "Alternate redirects",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "3xx",
@@ -1605,9 +1361,7 @@
     "name": "Alternate has no internal inlinks",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "inlink count",
@@ -1619,9 +1373,7 @@
     "name": "Repeated keyword tokens",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "token freq",
@@ -1633,9 +1385,7 @@
     "name": "> 100 chars",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "len",
@@ -1647,9 +1397,7 @@
     "name": "Meaningful content as CSS background (invisible to image search)",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "heuristic",
@@ -1661,9 +1409,7 @@
     "name": "Below-fold image without",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "bounding box y > viewport height",
@@ -1675,9 +1421,7 @@
     "name": "returns 4xx/5xx",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "fetch",
@@ -1689,9 +1433,7 @@
     "name": "Intrinsic \u226b displayed size",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "natural vs layout dims from render",
@@ -1703,9 +1445,7 @@
     "name": "LCP image has",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "**High**",
@@ -1717,9 +1457,7 @@
     "name": "JPEG/PNG where AVIF/WebP would save > 30%",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "re-encode test",
@@ -1731,9 +1469,7 @@
     "name": "No attribute at all",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM",
@@ -1745,9 +1481,7 @@
     "name": "on a content image",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM + not decorative (`role=presentation`)",
@@ -1759,9 +1493,7 @@
     "name": "Images absent from image sitemap on an image-heavy site",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "intersect",
@@ -1773,9 +1505,7 @@
     "name": "No // (CLS cause)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM",
@@ -1787,9 +1517,7 @@
     "name": "Responsive images without / or",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM",
@@ -1801,9 +1529,7 @@
     "name": "> 100 KB",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Content-Length",
@@ -1815,10 +1541,7 @@
     "name": "Render-required JS/CSS disallowed in robots.txt",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "intersect",
@@ -1830,10 +1553,7 @@
     "name": "Canonical differs raw vs rendered",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -1845,10 +1565,7 @@
     "name": "Canonical only after JS",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -1860,10 +1577,7 @@
     "name": "Googlebot UA sees materially different content than a normal UA",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "**Critical** (policy violation)",
@@ -1875,10 +1589,7 @@
     "name": "Cookie/consent overlay blocks content for the crawler",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "**Critical**",
@@ -1890,10 +1601,7 @@
     "name": "Page throws JS errors during render",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "CDP `Runtime.exceptionThrown`",
@@ -1905,10 +1613,7 @@
     "name": "> 50% of main content only after JS",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "`content_delta_pct > 0.5`",
@@ -1920,10 +1625,7 @@
     "name": "Content differs with cookies disabled",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "second render with cookies blocked",
@@ -1935,10 +1637,7 @@
     "name": "Render-time requests failing (4xx/5xx/CORS)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "CDP `Network.loadingFailed`",
@@ -1950,10 +1649,7 @@
     "name": "IP-based redirect sends Googlebot elsewhere",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "compare fetch from \u2265 2 geographies",
@@ -1965,10 +1661,7 @@
     "name": "same for H1",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -1980,10 +1673,7 @@
     "name": "same for H1",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -1995,10 +1685,7 @@
     "name": "URLs use routes",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "URL pattern",
@@ -2010,10 +1697,7 @@
     "name": "SSR HTML replaced wholesale by client render",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "raw main text vs rendered main text Jaccard < 0.5 while both non-empty",
@@ -2025,10 +1709,7 @@
     "name": "Only first N items in DOM without scroll",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "count items before/after scroll",
@@ -2040,10 +1721,7 @@
     "name": "Structured data injected by JS",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "Medium (works, but adds render-queue latency)",
@@ -2055,10 +1733,7 @@
     "name": "> 30% of internal links only after render",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "`link_delta / total`",
@@ -2070,10 +1745,7 @@
     "name": "Content requires",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "render with storage disabled",
@@ -2085,10 +1757,7 @@
     "name": "same for meta description",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -2100,10 +1769,7 @@
     "name": "same for meta description",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -2115,10 +1781,7 @@
     "name": "in raw, gone after render",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -2130,10 +1793,7 @@
     "name": "in raw HTML removed by JS",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "**Critical**",
@@ -2145,10 +1805,7 @@
     "name": "Navigation via // with no",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "DOM scan for click handlers navigating",
@@ -2160,10 +1817,7 @@
     "name": "Raw HTML main content < 100 words while rendered > 500",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "compare",
@@ -2175,10 +1829,7 @@
     "name": "URLs or",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "scan",
@@ -2190,10 +1841,7 @@
     "name": "Render exceeds 15 s / never reaches networkidle",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "timer",
@@ -2205,10 +1853,7 @@
     "name": "Title only in rendered HTML",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -2220,10 +1865,7 @@
     "name": "Title differs raw vs rendered",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "field diff",
@@ -2235,9 +1877,7 @@
     "name": "target id does not exist on destination",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2249,9 +1889,7 @@
     "name": "Internal link \u2192 4xx/5xx",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2263,9 +1901,7 @@
     "name": "Internal outlink with no anchor text and no image alt",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2277,9 +1913,7 @@
     "name": "Non-descriptive anchor",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2291,9 +1925,7 @@
     "name": "> 300 internal outlinks on one page",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2305,9 +1937,7 @@
     "name": "Gini coefficient of inlink distribution",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2319,9 +1949,7 @@
     "name": "Links only present after render / navigation without",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2333,9 +1961,7 @@
     "name": "Link to ///staging host",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2347,9 +1973,7 @@
     "name": "Internal links with",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2361,9 +1985,7 @@
     "name": "Page reachable only via nofollow links",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2375,9 +1997,7 @@
     "name": "Page with zero internal outlinks (dead end)",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2389,9 +2009,7 @@
     "name": "resource links",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2403,10 +2021,7 @@
     "name": "Page with GSC impressions in top quartile but internal PR in bottom quartile",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2418,9 +2033,7 @@
     "name": "High internal PR flowing to non-indexable URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2432,9 +2045,7 @@
     "name": "without",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "link",
     "fixTemplate": "Review and fix.",
@@ -2446,10 +2057,7 @@
     "name": "5xx served to verified Googlebot",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "filter",
@@ -2461,10 +2069,7 @@
     "name": "GPTBot/ClaudeBot/PerplexityBot/Bytespider hits and bandwidth",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "group-by",
@@ -2476,10 +2081,7 @@
     "name": "Hits vs click depth",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "correlation",
@@ -2491,10 +2093,7 @@
     "name": "Hits/day per URL template",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "group-by",
@@ -2506,10 +2105,7 @@
     "name": "% of hits on non-indexable URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "join with crawl",
@@ -2521,10 +2117,7 @@
     "name": "> 50% drop in Googlebot hits week-over-week",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "**Critical** (leading indicator of a traffic drop)",
@@ -2536,10 +2129,7 @@
     "name": "UA claims Googlebot, fails rDNS/IP verification",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "Medium (security)",
@@ -2551,10 +2141,7 @@
     "name": "Frequently-updated templates crawled rarely",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "join content-change history with hit rate",
@@ -2566,10 +2153,7 @@
     "name": "Days since last Googlebot hit per URL",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "max(timestamp)",
@@ -2581,10 +2165,7 @@
     "name": "Ratio of Googlebot Smartphone to Desktop",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "group-by (expect smartphone-dominant)",
@@ -2596,10 +2177,7 @@
     "name": "URLs hit by Googlebot but not in crawl or sitemap",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "set difference",
@@ -2611,10 +2189,7 @@
     "name": "% of hits on parameterised URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "regex",
@@ -2626,10 +2201,7 @@
     "name": "p95 response time for Googlebot requests",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "percentile",
@@ -2641,10 +2213,7 @@
     "name": "Sudden > 3\u03c3 change in daily Googlebot hits",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "time series",
@@ -2656,10 +2225,7 @@
     "name": "% of Googlebot hits by status class",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "group-by; alert if non-2xx > 20%",
@@ -2671,10 +2237,7 @@
     "name": "Indexable URLs with 0 bot hits in 30 days",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "logs"
-    ],
+    "requires": ["crawl", "logs"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "set difference",
@@ -2686,10 +2249,7 @@
     "name": "GA4/GTM present on new URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "scan",
@@ -2701,10 +2261,7 @@
     "name": "Top external-linked old URLs 301 correctly",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "join backlink data with redirect map",
@@ -2716,10 +2273,7 @@
     "name": "New pages self-canonical to new URLs",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "parse",
@@ -2731,11 +2285,7 @@
     "name": "Change of Address submitted (domain moves only)",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc",
-      "migration"
-    ],
+    "requires": ["crawl", "gsc", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "manual/UI \u2014 **no API**",
@@ -2747,11 +2297,7 @@
     "name": "New property verified in GSC",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc",
-      "migration"
-    ],
+    "requires": ["crawl", "gsc", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "`sites.list`",
@@ -2763,10 +2309,7 @@
     "name": "hreflang points at new URLs",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "parse",
@@ -2778,10 +2321,7 @@
     "name": "Internal links point at new URLs, not via redirects",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "link scan",
@@ -2793,10 +2333,7 @@
     "name": "Every old indexable URL has a mapping",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "old crawl set minus mapped set",
@@ -2808,10 +2345,7 @@
     "name": "Each mapping resolves in exactly one 301",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "chain length == 1",
@@ -2823,10 +2357,7 @@
     "name": "Old\u2192new pair is topically equivalent",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "MinHash/embedding similarity of old (archived) vs new content \u2265 0.6",
@@ -2838,10 +2369,7 @@
     "name": "Staging shipped to prod",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "**Critical**",
@@ -2853,10 +2381,7 @@
     "name": "< 5% of mappings target",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "ratio",
@@ -2868,10 +2393,7 @@
     "name": "Old sitemap kept live during transition",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "fetch",
@@ -2883,11 +2405,7 @@
     "name": "New TTFB/LCP not worse than old",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "crux",
-      "migration"
-    ],
+    "requires": ["crawl", "crux", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "CrUX/lab compare",
@@ -2899,10 +2417,7 @@
     "name": "Redirects still live at 12 months",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "scheduled recheck",
@@ -2914,10 +2429,7 @@
     "name": "New robots.txt is not (staging leak)",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "**Critical**",
@@ -2929,10 +2441,7 @@
     "name": "Same SD types on new templates",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "migration"
-    ],
+    "requires": ["crawl", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "compare",
@@ -2944,11 +2453,7 @@
     "name": "Clicks 28-day post vs pre",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc",
-      "migration"
-    ],
+    "requires": ["crawl", "gsc", "migration"],
     "autonomyTier": "T2",
     "fixKind": "none",
     "fixTemplate": "GSC",
@@ -2960,10 +2465,7 @@
     "name": "Content Wider Than Screen",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -2975,10 +2477,7 @@
     "name": "Computed < 12 px on > 10% of text nodes (note: Lighthouse **removed** its audit in v13 \u2014 we must implement it ourselves)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -2990,10 +2489,7 @@
     "name": "Any element overflows the viewport",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3005,10 +2501,7 @@
     "name": "Full-screen overlay covering > 30% of viewport on load",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3020,10 +2513,7 @@
     "name": "Mobile render main-text Jaccard < 0.9 vs desktop render \u2014 **critical** under mobile-first indexing (mobile is the indexed version)",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3035,10 +2525,7 @@
     "name": "hreflang present on desktop only",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3050,10 +2537,7 @@
     "name": "Structured data present on desktop, missing on mobile",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3065,10 +2549,7 @@
     "name": "Viewport meta absent",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3080,10 +2561,7 @@
     "name": "subdomain still in use",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3095,10 +2573,7 @@
     "name": "Interactive element bounding box < 24 \u00d7 24 CSS px or < 8 px gap to a neighbour (WCAG 2.2 Target Size Minimum)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3110,10 +2585,7 @@
     "name": "/ with Flash/Silverlight",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom"
-    ],
+    "requires": ["crawl", "rendered_dom"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3125,9 +2597,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3139,9 +2609,7 @@
     "name": "Screaming Frog ships both",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3153,9 +2621,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3167,9 +2633,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3181,9 +2645,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3195,9 +2657,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3209,9 +2669,7 @@
     "name": "Heading levels skip (h1\u2192h3)",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3223,9 +2681,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3237,9 +2693,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3251,9 +2705,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3265,9 +2717,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3279,9 +2729,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3293,9 +2741,7 @@
     "name": "Low\u2013Medium",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3307,9 +2753,7 @@
     "name": "Missing (or not in first 1024 bytes)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3321,9 +2765,7 @@
     "name": "missing",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "**T1**",
@@ -3335,9 +2777,7 @@
     "name": "missing",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "**T0**",
@@ -3349,9 +2789,7 @@
     "name": "Flesch reading ease < 30 (\"Very Difficult\")",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3363,9 +2801,7 @@
     "name": "Screaming Frog ships both",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3377,9 +2813,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3391,9 +2825,7 @@
     "name": "High",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3405,9 +2837,7 @@
     "name": "Medium",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3419,9 +2849,7 @@
     "name": "High",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3433,9 +2861,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3447,10 +2873,7 @@
     "name": "Medium \u2014 compare to the title Google shows (only observable via SERP data or GSC + manual)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3462,9 +2885,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3476,9 +2897,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3490,9 +2909,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3504,9 +2921,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3518,9 +2933,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3532,9 +2945,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3546,9 +2957,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3560,9 +2969,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3574,9 +2981,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3588,9 +2993,7 @@
     "name": "Low",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3602,9 +3005,7 @@
     "name": "viewport fixed width",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Review and fix.",
@@ -3616,9 +3017,7 @@
     "name": "Page 2..n canonicalises to page 1",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "canonical == page-1 URL",
@@ -3630,9 +3029,7 @@
     "name": "Page 2..n identical to page 1",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "string equality",
@@ -3644,9 +3041,7 @@
     "name": "Infinite scroll with no paginated URL equivalents",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "rendered DOM grows on scroll, no `?page=` URLs exist",
@@ -3658,9 +3053,7 @@
     "name": "chain loops",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "cycle detection",
@@ -3672,9 +3065,7 @@
     "name": "Paginated pages noindexed",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "meta robots",
@@ -3686,9 +3077,7 @@
     "name": "Pagination URL returns non-200",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "status",
@@ -3700,9 +3089,7 @@
     "name": "Pagination links not in (button/JS)",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "rendered anchors \u220c pagination URLs but raw JS contains them",
@@ -3714,9 +3101,7 @@
     "name": "Non-sequential rel next/prev",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "value ordering",
@@ -3728,9 +3113,7 @@
     "name": "Paginated URL exists but is unreachable",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "discovered via sitemap/logs only",
@@ -3742,9 +3125,7 @@
     "name": "No view-all option on long lists",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "html_head",
     "fixTemplate": "heuristic",
@@ -3756,9 +3137,7 @@
     "name": "Param value case variants",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "lowercase compare",
@@ -3770,9 +3149,7 @@
     "name": "Duplicate Key",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "key count > 1",
@@ -3784,9 +3161,7 @@
     "name": "empty params",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "$)`",
@@ -3798,9 +3173,7 @@
     "name": "Distinct facet combinations crawled",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "count distinct param-sets per path prefix; alert > 1000",
@@ -3812,9 +3185,7 @@
     "name": "Facet URLs in the XML sitemap",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "intersect",
@@ -3826,9 +3197,7 @@
     "name": "Facet params crawlable and not canonicalised",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "robots allow + self-canonical",
@@ -3840,9 +3209,7 @@
     "name": "Facet URL with 0 results returns 200",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "0 products\\",
@@ -3854,9 +3221,7 @@
     "name": "Facets implemented as fragments",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "Insight (good)",
@@ -3868,9 +3233,7 @@
     "name": "/// used as param separator",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "regex on query string",
@@ -3882,9 +3245,7 @@
     "name": "Same param set, different order, both 200",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "normalise by sorting params; hash",
@@ -3896,9 +3257,7 @@
     "name": "Tracking params on indexable URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "param \u2208 {`utm_source`,`utm_medium`,`utm_campaign`,`utm_term`,`utm_content`,`utm_id`,`gclid`,`gbraid`,`wbraid`,`fbclid`,`msclkid`,`ttclid`,`twclid`,`li_fat_id`,`igshid`,`mc_cid`,`mc_eid`,`_ga`,`_gl`,`yclid`,`ref`,`referrer`} and canonical ==",
@@ -3910,9 +3269,7 @@
     "name": "CDN on repeat fetches of static assets",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "two fetches",
@@ -3924,10 +3281,7 @@
     "name": "DOM > 1,400 nodes / depth > 32",
     "severity": "insight",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`dom-size-insight`",
@@ -3939,10 +3293,7 @@
     "name": "Same module bundled twice",
     "severity": "insight",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`duplicated-javascript-insight`",
@@ -3954,9 +3305,7 @@
     "name": "without",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "Medium (**T0**)",
@@ -3968,9 +3317,7 @@
     "name": "No HTTP/2 or HTTP/3",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "ALPN negotiation",
@@ -3982,10 +3329,7 @@
     "name": "LCP element is an image discovered late",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`lcp-discovery-insight`",
@@ -3997,9 +3341,7 @@
     "name": "LCP image has",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "**High, and a T0 auto-fix**",
@@ -4011,10 +3353,7 @@
     "name": "ES5 polyfills shipped to modern browsers",
     "severity": "insight",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`legacy-javascript-insight`",
@@ -4026,9 +3365,7 @@
     "name": "Static assets with < 1 year or missing",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "header scan on `.js/.css/.woff2/.png/.jpg/.webp/.avif`",
@@ -4040,9 +3377,7 @@
     "name": "No CDN edge headers and high TTFB variance by geo",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "absence of `cf-ray`/`x-amz-cf-id`/`x-vercel-cache`/`x-cache`/`fastly-*` + multi-geo TTFB spread > 400 ms",
@@ -4054,9 +3389,7 @@
     "name": "Text asset served without /",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`Content-Encoding` absent on `text/*`, `application/javascript`, `application/json`",
@@ -4068,9 +3401,7 @@
     "name": "without / or",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "Medium (**T0 auto-fix** when intrinsic dims are known)",
@@ -4082,9 +3413,7 @@
     "name": "Total transfer > 3 MB (mobile)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "sum",
@@ -4096,11 +3425,7 @@
     "name": "Render-blocking CSS/JS",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "rendered_dom",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "rendered_dom", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`render-blocking-insight`",
@@ -4112,10 +3437,7 @@
     "name": "Third-party main-thread time > 250 ms",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "lighthouse"
-    ],
+    "requires": ["crawl", "lighthouse"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "`third-parties-insight`",
@@ -4127,10 +3449,7 @@
     "name": "TTFB p75 > 800 ms",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "crux"
-    ],
+    "requires": ["crawl", "crux"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "CrUX `experimental_time_to_first_byte`",
@@ -4142,9 +3461,7 @@
     "name": "Temporary redirect used for a permanent move",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`status in (302,307)` AND stable across \u2265 2 crawls \u2265 14 days apart",
@@ -4156,9 +3473,7 @@
     "name": "Rate limited / crawl throttling",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`status == 429` on Googlebot UA or own crawler",
@@ -4170,9 +3485,7 @@
     "name": "Internal client error (4XX)",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`400 <= status < 500 && is_internal && status != 429`",
@@ -4184,9 +3497,7 @@
     "name": "Internal server error (5XX)",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "redirect",
     "fixTemplate": "`status >= 500 && status <= 599 && is_internal`",
@@ -4198,9 +3509,7 @@
     "name": "Content-Type mismatch",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`Content-Type` header \u2260 actual sniffed type",
@@ -4212,9 +3521,7 @@
     "name": "JS/CSS/image required for render is disallowed",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Resource URL disallowed in robots.txt AND referenced by a rendered page",
@@ -4226,9 +3533,7 @@
     "name": "Internal URL blocked by robots.txt but linked",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "robots matcher = disallow AND inlinks > 0",
@@ -4240,9 +3545,7 @@
     "name": "Broken external link",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "redirect",
     "fixTemplate": "External target \u2265 400 (recheck twice, 24h apart, honour 429/403 bot-blocking)",
@@ -4254,9 +3557,7 @@
     "name": "Broken external link",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "redirect",
     "fixTemplate": "External target \u2265 400 (recheck twice, 24h apart, honour 429/403 bot-blocking)",
@@ -4268,9 +3569,7 @@
     "name": "HTTP header redirect",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`Refresh` response header present",
@@ -4282,9 +3581,7 @@
     "name": "Internal link points to a redirect",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "redirect",
     "fixTemplate": "Internal `<a href>` target has `300 <= status < 400`",
@@ -4296,9 +3593,7 @@
     "name": "JS-only redirect",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Rendered final URL \u2260 raw HTML URL, no 3xx and no meta refresh",
@@ -4310,9 +3605,7 @@
     "name": "Meta refresh redirect",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`<meta http-equiv=\"refresh\" content=\"N;url=...\">`",
@@ -4324,9 +3617,7 @@
     "name": "multi-hop",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Chain contains both protocol change and host change",
@@ -4338,9 +3629,7 @@
     "name": "No conditional-request support",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Send `If-Modified-Since`/`If-None-Match`; server returns 200 with identical body",
@@ -4352,9 +3641,7 @@
     "name": "Connection timeout / DNS failure / reset",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "redirect",
     "fixTemplate": "socket error, no HTTP status",
@@ -4366,9 +3653,7 @@
     "name": "Any resource > 15 MB",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`len(bytes) > 15_728_640`",
@@ -4380,9 +3665,7 @@
     "name": "HTML > 2 MB",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`len(html_bytes) > 2_097_152`",
@@ -4394,9 +3677,7 @@
     "name": "Redirect chain (hops \u2265 2)",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "redirect",
     "fixTemplate": "Walk `Location` graph; `hops >= 2`",
@@ -4408,9 +3689,7 @@
     "name": "Chain \u2265 5 hops (near Google's 10 limit)",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`hops >= 5`",
@@ -4422,9 +3701,7 @@
     "name": "Redirect loop",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Cycle detected in `Location` graph (visited-set)",
@@ -4436,9 +3713,7 @@
     "name": "Redirect terminates on 4xx/5xx",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Terminal node status \u2265 400",
@@ -4450,9 +3725,7 @@
     "name": "Redirect terminates on a noindex URL",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Terminal node has `noindex`",
@@ -4464,9 +3737,7 @@
     "name": "Server response time",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "`ttfb_ms > 600` (Google's \"good\" TTFB guidance \u2248 800 ms; use 600 as warn, 1800 as critical)",
@@ -4478,9 +3749,7 @@
     "name": "Mass redirects to homepage",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "\u2265 20 distinct sources \u2192 `/`",
@@ -4492,9 +3761,7 @@
     "name": "robots.txt returns 5xx",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "robots",
     "fixTemplate": "**Critical**",
@@ -4506,9 +3773,7 @@
     "name": "Training crawler (GPTBot / ClaudeBot / Google-Extended) is blocked — policy choice, never auto-changed",
     "severity": "insight",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "robots",
     "fixTemplate": "Surface as a policy choice. Training crawlers are distinct from citation crawlers.",
@@ -4520,9 +3785,7 @@
     "name": "Disallow matches / used in render",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "intersect rendered resource list with matcher",
@@ -4534,9 +3797,7 @@
     "name": "Disallow matches images used on indexable pages",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "intersect",
@@ -4548,9 +3809,7 @@
     "name": "Sitemap contains disallowed URLs",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "intersect sitemap set with matcher",
@@ -4562,9 +3821,7 @@
     "name": "robots.txt content changed since last crawl",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "content hash diff",
@@ -4576,9 +3833,7 @@
     "name": "present",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "parse",
@@ -4590,9 +3845,7 @@
     "name": "for or",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "robots",
     "fixTemplate": "**Critical**",
@@ -4604,9 +3857,7 @@
     "name": "No robots.txt",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "`GET /robots.txt` \u2192 404",
@@ -4618,9 +3869,7 @@
     "name": "Legacy line in robots.txt",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "regex `^\\s*noindex\\s*:`",
@@ -4632,9 +3881,7 @@
     "name": "No directive",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "parse",
@@ -4646,9 +3893,7 @@
     "name": "> 500 KiB",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "`len(bytes) > 512000`",
@@ -4660,9 +3905,7 @@
     "name": "robots.txt redirects",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "3xx (esp. cross-host or > 5 hops)",
@@ -4674,9 +3917,7 @@
     "name": "URL 404s",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "fetch",
@@ -4688,9 +3929,7 @@
     "name": "value is relative",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "not absolute",
@@ -4702,9 +3941,7 @@
     "name": "Unknown/malformed directive lines",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "robots",
     "fixTemplate": "line not matching the 4 fields + comments",
@@ -4716,9 +3953,7 @@
     "name": "A group appears before a group and author expects merge",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "group analysis: Googlebot group exists \u2192 `*` group is entirely ignored for Googlebot",
@@ -4730,9 +3965,7 @@
     "name": "Not",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "robots",
     "fixTemplate": "`Content-Type` header",
@@ -4744,9 +3977,7 @@
     "name": "Marked-up content must be **visible to users**; don't mark up invisible content",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "Critical (manual-action risk)",
@@ -4758,9 +3989,7 @@
     "name": "Image < 1200 px wide (Article/Recipe/Product guidance)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "fetch dimensions",
@@ -4772,9 +4001,7 @@
     "name": "Date not ISO 8601",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -4786,9 +4013,7 @@
     "name": "Duration not ISO 8601 ()",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "parse",
@@ -4800,9 +4025,7 @@
     "name": "Bad enum (e.g. not a schema.org )",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "enum list",
@@ -4814,9 +4037,7 @@
     "name": "// not absolute or 404s",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "fetch",
@@ -4828,9 +4049,7 @@
     "name": "Markup must describe the page",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "type vs page content mismatch",
@@ -4842,9 +4061,7 @@
     "name": "Structured data only in rendered DOM",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "raw vs rendered",
@@ -4856,9 +4073,7 @@
     "name": "Microdata and JSON-LD disagree on same property",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "compare",
@@ -4870,9 +4085,7 @@
     "name": "No fake/misleading reviews or ratings",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`aggregateRating` present with 0 visible reviews",
@@ -4884,9 +4097,7 @@
     "name": "missing context",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "key check",
@@ -4898,9 +4109,7 @@
     "name": "Template that qualifies for a rich result has none",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "High (opportunity)",
@@ -4912,9 +4121,7 @@
     "name": "Recommended property absent",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "per-feature table",
@@ -4926,9 +4133,7 @@
     "name": "Required property absent for the feature",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "Critical (blocks rich result)",
@@ -4940,9 +4145,7 @@
     "name": "missing type",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "key check",
@@ -4954,9 +4157,7 @@
     "name": "Multiple disconnected JSON-LD blocks with no linkage",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "graph analysis",
@@ -4968,9 +4169,7 @@
     "name": "JSON-LD in an invalid location",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "DOM position",
@@ -4982,9 +4181,7 @@
     "name": "No on a deep page",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "absence + depth \u2265 2",
@@ -4996,9 +4193,7 @@
     "name": "No on homepage",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "absence",
@@ -5010,9 +4205,7 @@
     "name": "name/logo/sameAs differ across pages",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "group-by",
@@ -5024,9 +4217,7 @@
     "name": "JSON-LD is invalid JSON",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "`json.loads` fails",
@@ -5038,9 +4229,7 @@
     "name": "\u2260 visible price",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "regex visible price vs markup",
@@ -5052,9 +4241,7 @@
     "name": "Review snippets not allowed for reviews the entity wrote about itself",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "`Review` about `Organization`/`LocalBusiness` = self",
@@ -5066,9 +4253,7 @@
     "name": "on every page identically",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "duplicate rating values sitewide",
@@ -5080,9 +4265,7 @@
     "name": "Type no longer produces rich results (FAQPage, HowTo, etc.)",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "html_head",
     "fixTemplate": "lookup in `supported_types.json`",
@@ -5094,9 +4277,7 @@
     "name": "not in schema.org vocabulary",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "html_head",
     "fixTemplate": "vocab lookup",
@@ -5108,9 +4289,7 @@
     "name": "Canonical points to http on an https site",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "compare",
@@ -5122,9 +4301,7 @@
     "name": "TLS cert expires < 30 days",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "X.509 `notAfter`",
@@ -5136,9 +4313,7 @@
     "name": "Hostname mismatch, self-signed, expired, incomplete chain",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "header",
     "fixTemplate": "TLS handshake + chain validation",
@@ -5150,9 +4325,7 @@
     "name": "Form Insecure",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "DOM",
@@ -5164,9 +4337,7 @@
     "name": "Form on an http page",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "scheme",
@@ -5178,9 +4349,7 @@
     "name": "hreflang alternates use http",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "compare",
@@ -5192,9 +4361,7 @@
     "name": "< 31536000",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "parse",
@@ -5206,9 +4373,7 @@
     "name": "Internal URLs served over http",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "scheme",
@@ -5220,9 +4385,7 @@
     "name": "http // on https page",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "DOM scan",
@@ -5234,9 +4397,7 @@
     "name": "http // on https page",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "DOM scan",
@@ -5248,9 +4409,7 @@
     "name": "Missing",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T3",
     "fixKind": "header",
     "fixTemplate": "header",
@@ -5262,9 +4421,7 @@
     "name": "No header",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "header",
@@ -5276,9 +4433,7 @@
     "name": "http:// does not 301 to https://",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "fetch http",
@@ -5290,9 +4445,7 @@
     "name": "Missing/weak",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "header",
@@ -5304,9 +4457,7 @@
     "name": "Missing",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "header",
@@ -5318,9 +4469,7 @@
     "name": "Missing /",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "header",
@@ -5332,9 +4481,7 @@
     "name": "resource URLs",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "scan",
@@ -5346,9 +4493,7 @@
     "name": "Sitemap contains http URLs",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "scan",
@@ -5360,9 +4505,7 @@
     "name": "TLS < 1.2 supported",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "header",
     "fixTemplate": "handshake probe",
@@ -5374,9 +4517,7 @@
     "name": "without",
     "severity": "low",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "header",
     "fixTemplate": "DOM",
@@ -5388,9 +4529,7 @@
     "name": "used",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "Low (no-op)",
@@ -5402,9 +4541,7 @@
     "name": "Sitemap URLs canonicalising elsewhere",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "canonical \u2260 self",
@@ -5416,9 +4553,7 @@
     "name": "Sitemap URLs blocked by robots.txt",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "matcher",
@@ -5430,9 +4565,7 @@
     "name": "Sitemap URLs with noindex",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "fetch + parse",
@@ -5444,9 +4577,7 @@
     "name": "Sitemap URLs returning 3xx/4xx/5xx",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "fetch each",
@@ -5458,9 +4589,7 @@
     "name": "on a different host than the sitemap",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "host compare",
@@ -5472,9 +4601,7 @@
     "name": "Same URL in multiple sitemaps",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "set count > 1",
@@ -5486,10 +4613,7 @@
     "name": "GSC reports sitemap errors/warnings",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "`sitemaps.get` \u2192 `errors`, `warnings`, `isPending`, `lastDownloaded`",
@@ -5501,9 +4625,7 @@
     "name": "not valid gzip",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "decompress error",
@@ -5515,9 +4637,7 @@
     "name": "alternates in sitemap disagree with on-page hreflang",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "compare sets",
@@ -5529,9 +4649,7 @@
     "name": "No on image-heavy site",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "absent",
@@ -5543,9 +4661,7 @@
     "name": "Sitemap index referencing another index",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "nested `<sitemapindex>`",
@@ -5557,9 +4673,7 @@
     "name": "Every URL has the same",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "High \u2014 Google will start ignoring lastmod for the whole site",
@@ -5571,9 +4685,7 @@
     "name": "== today for > 90% of URLs on consecutive crawls",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "rolling comparison",
@@ -5585,9 +4697,7 @@
     "name": "newer than last observed content-hash change",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "compare with stored `content_sha256` history",
@@ -5599,9 +4709,7 @@
     "name": "in the future",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "`> now()`",
@@ -5613,9 +4721,7 @@
     "name": "Not W3C Datetime",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "[+-]\\d{2}:\\d{2}))?$`",
@@ -5627,9 +4733,7 @@
     "name": "lastmod missing",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "absent",
@@ -5641,9 +4745,7 @@
     "name": "Parse error",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "XML parser exception",
@@ -5655,9 +4757,7 @@
     "name": "No sitemap discoverable",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "robots.txt has no `Sitemap:`, `/sitemap.xml` and `/sitemap_index.xml` 404",
@@ -5669,9 +4769,7 @@
     "name": "http URLs in an https site's sitemap",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "scheme",
@@ -5683,9 +4781,7 @@
     "name": "Sitemap URL not 200",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "sitemap",
     "fixTemplate": "status",
@@ -5697,9 +4793,7 @@
     "name": "Sitemap exists but not declared in robots.txt",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "parse",
@@ -5711,10 +4805,7 @@
     "name": "Sitemap not listed via",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "API",
@@ -5726,9 +4817,7 @@
     "name": "> 50,000 entries",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "count",
@@ -5740,9 +4829,7 @@
     "name": "> 50 MB uncompressed",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "byte length after gunzip",
@@ -5754,9 +4841,7 @@
     "name": "used",
     "severity": "low",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "Low (no-op)",
@@ -5768,9 +4853,7 @@
     "name": "Relative",
     "severity": "critical",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "not absolute",
@@ -5782,10 +4865,7 @@
     "name": "> 30 days ago",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "API",
@@ -5797,9 +4877,7 @@
     "name": "Raw , , , , in",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "regex on raw text",
@@ -5811,9 +4889,7 @@
     "name": "Missing required video fields (, , , and one of /)",
     "severity": "medium",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "parse",
@@ -5825,9 +4901,7 @@
     "name": "Missing/incorrect",
     "severity": "high",
     "detectScope": "site",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T1",
     "fixKind": "sitemap",
     "fixTemplate": "root attr \u2260 `http://www.sitemaps.org/schemas/sitemap/0.9`",
@@ -5839,9 +4913,7 @@
     "name": "Category/facet with 0 items, 200",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "404 (Google's explicit faceted-nav advice) or noindex",
@@ -5853,10 +4925,7 @@
     "name": "GSC says Soft 404",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Fix status code",
@@ -5868,9 +4937,7 @@
     "name": "Permanently out-of-stock product, 200, no alternatives",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "404/410 or link to replacements",
@@ -5882,9 +4949,7 @@
     "name": "Error phrase on a 200 page",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Return 404",
@@ -5896,9 +4961,7 @@
     "name": "Nonexistent URL returns 200",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Return real 404/410",
@@ -5910,9 +4973,7 @@
     "name": "Missing pages 301 to",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Return 404",
@@ -5924,9 +4985,7 @@
     "name": "JS router renders 404 view on 200",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "redirect",
     "fixTemplate": "Server 404 or inject `noindex` (Google's documented SPA workaround)",
@@ -5938,9 +4997,7 @@
     "name": "Templated pages differing only by a swapped entity",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "High (scaled-content-abuse risk under Google's March 2024 spam policy)",
@@ -5952,9 +5009,7 @@
     "name": "Placeholder text",
     "severity": "critical",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "dolor sit amet\\",
@@ -5966,9 +5021,7 @@
     "name": "Main-content word count below template median",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "`words < max(200, 0.4 * median_words_for_template)` \u2014 always relative to template, never a global \"300 words\" rule",
@@ -5980,10 +5033,7 @@
     "name": "thin + orphan + zero impressions",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "composite",
@@ -5995,9 +5045,7 @@
     "name": "Readability extraction yields < 50 words",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "extractor",
@@ -6009,9 +5057,7 @@
     "name": "Page text \u2248 boilerplate of its template",
     "severity": "high",
     "detectScope": "url",
-    "requires": [
-      "crawl"
-    ],
+    "requires": ["crawl"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "shingle-overlap with template boilerplate > 0.9",
@@ -6023,10 +5069,7 @@
     "name": "Indexable page, 0 GSC impressions in 90 days, age > 90 days",
     "severity": "medium",
     "detectScope": "url",
-    "requires": [
-      "crawl",
-      "gsc"
-    ],
+    "requires": ["crawl", "gsc"],
     "autonomyTier": "T2",
     "fixKind": "content",
     "fixTemplate": "GSC join",

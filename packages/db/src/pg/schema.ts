@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const sites = pgTable(
   "sites",

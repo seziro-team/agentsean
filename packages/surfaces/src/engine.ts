@@ -73,11 +73,17 @@ export function runVerticalDetect(
     eeaTrafficShare: extra?.eeaTrafficShare ?? 0,
     hasPricing: urls.some((u) => /\/pricing\b/i.test(u)),
     hasDemoOrSignup: urls.some((u) => /\/(demo|signup|free-trial)\b/i.test(u)),
-    hasComparePaths: urls.some((u) => /\/(vs|alternatives|compare|integrations)\b/i.test(u)),
+    hasComparePaths: urls.some((u) =>
+      /\/(vs|alternatives|compare|integrations)\b/i.test(u),
+    ),
     medicalLexiconShare: extra?.medicalLexiconShare ?? 0,
   };
   const detected = detectVertical(input);
-  const existing = db.select().from(verticalProfiles).where(eq(verticalProfiles.siteId, siteId)).get();
+  const existing = db
+    .select()
+    .from(verticalProfiles)
+    .where(eq(verticalProfiles.siteId, siteId))
+    .get();
   const values = {
     preset: detected.preset,
     confidence: detected.confidence,
@@ -87,7 +93,10 @@ export function runVerticalDetect(
     updatedAt: new Date().toISOString(),
   };
   if (existing) {
-    db.update(verticalProfiles).set(values).where(eq(verticalProfiles.id, existing.id)).run();
+    db.update(verticalProfiles)
+      .set(values)
+      .where(eq(verticalProfiles.id, existing.id))
+      .run();
   } else {
     db.insert(verticalProfiles)
       .values({ id: randomUUID(), siteId, ...values })
@@ -95,7 +104,10 @@ export function runVerticalDetect(
   }
   const cat = ymylCategoryFor(detected.preset);
   if (cat) {
-    db.update(sites).set({ ymylCategory: cat, updatedAt: new Date().toISOString() }).where(eq(sites.id, siteId)).run();
+    db.update(sites)
+      .set({ ymylCategory: cat, updatedAt: new Date().toISOString() })
+      .where(eq(sites.id, siteId))
+      .run();
   }
   return detected;
 }
@@ -109,12 +121,16 @@ export async function runSurfacesJob(
     generate?: GenerateFn | undefined;
     bingCsv?: string | undefined;
     mentionPages?: Array<{ url: string; text: string; links: string[] }> | undefined;
-    crawl404s?: Array<{ url: string; statusCode: number | null; inlinks: string[] }> | undefined;
+    crawl404s?:
+      Array<{ url: string; statusCode: number | null; inlinks: string[] }> | undefined;
     now?: Date | undefined;
   },
 ): Promise<SurfacesJobResult> {
   const now = opts.now ?? new Date();
-  const brand = opts.brand ?? new URL(opts.origin).hostname.replace(/^www\./, "").split(".")[0] ?? "brand";
+  const brand =
+    opts.brand ??
+    new URL(opts.origin).hostname.replace(/^www\./, "").split(".")[0] ??
+    "brand";
   const detected = runVerticalDetect(db, opts.siteId);
 
   let citationShare = 0;
@@ -217,10 +233,17 @@ export function saveOnboardingAnswers(
   answers: Record<string, string>,
 ): ReturnType<typeof detectVertical> {
   const detected = runVerticalDetect(db, siteId);
-  const existing = db.select().from(verticalProfiles).where(eq(verticalProfiles.siteId, siteId)).get();
+  const existing = db
+    .select()
+    .from(verticalProfiles)
+    .where(eq(verticalProfiles.siteId, siteId))
+    .get();
   if (existing) {
     db.update(verticalProfiles)
-      .set({ answersJson: JSON.stringify(answers), updatedAt: new Date().toISOString() })
+      .set({
+        answersJson: JSON.stringify(answers),
+        updatedAt: new Date().toISOString(),
+      })
       .where(eq(verticalProfiles.id, existing.id))
       .run();
   }

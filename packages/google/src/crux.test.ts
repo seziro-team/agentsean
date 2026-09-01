@@ -9,7 +9,10 @@ describe("CrUX + token hygiene", () => {
   it("treats URL-level 404 as insufficient traffic and falls back to origin", async () => {
     const http: GoogleHttp = {
       fetch: async (url, init) => {
-        const body = JSON.parse(String(init?.body)) as { url?: string; origin?: string };
+        const body = JSON.parse(String(init?.body)) as {
+          url?: string;
+          origin?: string;
+        };
         if (body.url) {
           return new Response(JSON.stringify({ error: { message: "not found" } }), {
             status: 404,
@@ -45,7 +48,9 @@ describe("CrUX + token hygiene", () => {
   });
 
   it("flags Testing-mode refresh tokens that expire in 7 days", () => {
-    expect(testingModeFromTokenResponse({ refresh_token_expires_in: 604800 })).toBe(true);
+    expect(testingModeFromTokenResponse({ refresh_token_expires_in: 604800 })).toBe(
+      true,
+    );
     expect(testingModeFromTokenResponse({})).toBe(false);
     const grant = grantFromTokenResponse(
       {

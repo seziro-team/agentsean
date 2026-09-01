@@ -12,8 +12,8 @@ re-verification**.
 
 ## Cloud project
 
-Create a Google Cloud project owned by the `seanhq` organization (or the
-personal account that currently owns this repo, then transfer).
+Create a Google Cloud project owned by the Seziro organization (or the
+`seziro-team` account that owns this repo, then transfer).
 
 App type for the OSS daemon: **Desktop app** + **Web application**.
 

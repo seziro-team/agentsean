@@ -1,9 +1,4 @@
-import {
-  defaultSeanHome,
-  isPidAlive,
-  readPid,
-  removePid,
-} from "@agentsean/daemon";
+import { defaultSeanHome, isPidAlive, readPid, removePid } from "@agentsean/daemon";
 import { emit, emitError } from "../output.js";
 
 function sleep(ms: number): Promise<void> {

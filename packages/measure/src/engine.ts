@@ -1,15 +1,15 @@
 import { eq } from "drizzle-orm";
-import {
-  gscDaily,
-  gscPageDaily,
-  pages,
-  type SqliteDatabase,
-} from "@agentsean/db";
+import { gscDaily, gscPageDaily, pages, type SqliteDatabase } from "@agentsean/db";
 import { persistWaterfall, waterfallFromSite } from "@agentsean/google";
 import { sitePowerBrief } from "./power.js";
 import { analyzeExperiment, type AnalysisResult } from "./analyze.js";
 import { backfillUnlabelledChanges, headline, listClaims } from "./claims.js";
-import { getExperiment, listCohortUrls, listExperiments, seedDataAnomalies } from "./persist.js";
+import {
+  getExperiment,
+  listCohortUrls,
+  listExperiments,
+  seedDataAnomalies,
+} from "./persist.js";
 import type { ClaimRecord, PageSeries, PowerBrief } from "./types.js";
 import type { WaterfallResult } from "@agentsean/google";
 
@@ -50,7 +50,11 @@ export function seriesForUrls(
   postStart: string,
   postEnd: string,
 ): PageSeries[] {
-  const rows = db.select().from(gscPageDaily).where(eq(gscPageDaily.siteId, siteId)).all();
+  const rows = db
+    .select()
+    .from(gscPageDaily)
+    .where(eq(gscPageDaily.siteId, siteId))
+    .all();
   const out: PageSeries[] = [];
   for (const url of urls) {
     let pre = 0;
@@ -73,7 +77,11 @@ export function runMeasureJob(
   const today = now.toISOString().slice(0, 10);
   seedDataAnomalies(db);
   const monthly = monthlyClicksForSite(db, opts.siteId);
-  const pageCount = db.select().from(pages).where(eq(pages.siteId, opts.siteId)).all().length;
+  const pageCount = db
+    .select()
+    .from(pages)
+    .where(eq(pages.siteId, opts.siteId))
+    .all().length;
   const power = sitePowerBrief({ monthlyClicks: monthly, pageCount });
   const windowEnd = addDays(today, -3);
   const windowStart = addDays(windowEnd, -27);
@@ -87,7 +95,12 @@ export function runMeasureJob(
 
   const analysed: AnalysisResult[] = [];
   for (const exp of listExperiments(db, opts.siteId)) {
-    if (exp.status !== "running" && exp.status !== "planned" && exp.status !== "analysing") continue;
+    if (
+      exp.status !== "running" &&
+      exp.status !== "planned" &&
+      exp.status !== "analysing"
+    )
+      continue;
     if (exp.status === "planned") continue;
     const stored = getExperiment(db, exp.id);
     if (!stored) continue;

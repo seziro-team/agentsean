@@ -1,0 +1,29 @@
+<svg width="132" height="132" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent Sean">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="132" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1b2230"/>
+      <stop offset="1" stop-color="#0c1018"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="1.5" y="1.5" width="129" height="129" rx="30" fill="url(#tile)"/>
+  <rect x="1.5" y="1.5" width="129" height="129" rx="30" fill="url(#edge)"/>
+  <rect x="1.5" y="1.5" width="129" height="129" rx="30" stroke="#2b3444" stroke-width="3"/>
+
+  <!-- removed line -->
+  <rect x="30" y="38" width="9" height="9" rx="2" fill="#f85149"/>
+  <rect x="47" y="39.5" width="34" height="6" rx="3" fill="#f85149" fill-opacity="0.42"/>
+
+  <!-- added line -->
+  <rect x="30" y="61.5" width="9" height="9" rx="2" fill="#3fb950"/>
+  <rect x="47" y="63" width="55" height="6" rx="3" fill="#3fb950" fill-opacity="0.9"/>
+
+  <!-- prompt caret + cursor: the daemon, still running -->
+  <path d="M31 84.5 L41.5 93.5 L31 102.5" stroke="#58a6ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="51" y="86" width="30" height="15" rx="3.5" fill="#58a6ff" fill-opacity="0.85"/>
+</svg>

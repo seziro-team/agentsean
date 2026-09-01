@@ -4,8 +4,7 @@ import * as pgSchema from "./pg/schema.js";
 
 type AppSchema = typeof sqliteSchema;
 
-const runtimeSchema =
-  getDatabaseProvider() === "postgres" ? pgSchema : sqliteSchema;
+const runtimeSchema = getDatabaseProvider() === "postgres" ? pgSchema : sqliteSchema;
 
 // Guarded by schema-parity.test.ts — the two dialects must stay interchangeable.
 const schema = runtimeSchema as unknown as AppSchema;

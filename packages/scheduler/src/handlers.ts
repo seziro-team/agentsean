@@ -11,7 +11,12 @@ import {
 import { createGitAdapter } from "@agentsean/adapter-git";
 import { adapterForSite } from "@agentsean/adapter-factory";
 import { buildReport, flattenForDb } from "@agentsean/analyzers";
-import { crawlSite, persistCrawl, persistFindings, type CrawlCheckpoint } from "@agentsean/crawler";
+import {
+  crawlSite,
+  persistCrawl,
+  persistFindings,
+  type CrawlCheckpoint,
+} from "@agentsean/crawler";
 import { loadAuditExtras, syncGoogle } from "@agentsean/google";
 import type { CredentialStore } from "@agentsean/credentials";
 import { loadLlmConfig } from "@agentsean/llm";
@@ -59,7 +64,11 @@ function defaultAdapterFor(deps: HandlerDeps): (siteId: string) => SiteAdapter |
   return (siteId) => {
     if (deps.adapterFor) return deps.adapterFor(siteId);
     try {
-      return adapterForSite(deps.db, siteId, deps.fetch ? { fetch: deps.fetch } : undefined);
+      return adapterForSite(
+        deps.db,
+        siteId,
+        deps.fetch ? { fetch: deps.fetch } : undefined,
+      );
     } catch {
       const cfg = loadGitConnection(deps.db, siteId) ?? {};
       const repoPath = typeof cfg["repoPath"] === "string" ? cfg["repoPath"] : null;
@@ -86,8 +95,10 @@ async function handleCrawl(
     resumeRaw && typeof resumeRaw === "object"
       ? (resumeRaw as CrawlCheckpoint)
       : undefined;
-  const maxPages = typeof job.payload["maxPages"] === "number" ? job.payload["maxPages"] : 5000;
-  const crawlId = typeof job.payload["crawlId"] === "string" ? job.payload["crawlId"] : undefined;
+  const maxPages =
+    typeof job.payload["maxPages"] === "number" ? job.payload["maxPages"] : 5000;
+  const crawlId =
+    typeof job.payload["crawlId"] === "string" ? job.payload["crawlId"] : undefined;
   const crawl = deps.crawlImpl ?? crawlSite;
   const result = await crawl({
     startUrl: origin,
@@ -111,20 +122,39 @@ async function handleCrawl(
   }
   const extras = loadAuditExtras(deps.db, persisted.siteId);
   const elapsedMs = Date.parse(result.finishedAt) - Date.parse(result.startedAt);
-  const report = buildReport(result, Number.isFinite(elapsedMs) ? elapsedMs : 0, extras);
-  persistFindings(deps.db, persisted.siteId, flattenForDb(persisted.siteId, report.findings));
+  const report = buildReport(
+    result,
+    Number.isFinite(elapsedMs) ? elapsedMs : 0,
+    extras,
+  );
+  persistFindings(
+    deps.db,
+    persisted.siteId,
+    flattenForDb(persisted.siteId, report.findings),
+  );
   const scoreKey = `score:${persisted.siteId}`;
   const scoreJson = JSON.stringify({
     value: report.score.value,
     version: report.score.version,
     band: report.score.band,
   });
-  const existingScore = deps.db.select().from(settings).where(eq(settings.key, scoreKey)).get();
+  const existingScore = deps.db
+    .select()
+    .from(settings)
+    .where(eq(settings.key, scoreKey))
+    .get();
   const ts = new Date().toISOString();
   if (existingScore) {
-    deps.db.update(settings).set({ value: scoreJson, updatedAt: ts }).where(eq(settings.key, scoreKey)).run();
+    deps.db
+      .update(settings)
+      .set({ value: scoreJson, updatedAt: ts })
+      .where(eq(settings.key, scoreKey))
+      .run();
   } else {
-    deps.db.insert(settings).values({ key: scoreKey, value: scoreJson, updatedAt: ts }).run();
+    deps.db
+      .insert(settings)
+      .values({ key: scoreKey, value: scoreJson, updatedAt: ts })
+      .run();
   }
   if (!ctx.halted) {
     await planAndMaybeApply(deps, persisted.siteId, origin, ctx.halted, ctx.now);
@@ -146,7 +176,11 @@ async function planAndMaybeApply(
   now: Date,
 ): Promise<{ planned: number; applied: number; queued: number; rejected: number }> {
   const pageRows = deps.db.select().from(pages).where(eq(pages.siteId, siteId)).all();
-  const findingRows = deps.db.select().from(findings).where(eq(findings.siteId, siteId)).all();
+  const findingRows = deps.db
+    .select()
+    .from(findings)
+    .where(eq(findings.siteId, siteId))
+    .all();
   const planned = planTitleActions({
     siteId,
     origin,
@@ -202,7 +236,8 @@ export function createHandlers(deps: HandlerDeps): Record<JobKind, JobHandler> {
     },
     async gsc_sync(job, ctx) {
       ctx.heartbeat();
-      if (!deps.store || !job.siteId) return { skipped: true, reason: "no_google_store" };
+      if (!deps.store || !job.siteId)
+        return { skipped: true, reason: "no_google_store" };
       const connected = deps.db
         .select()
         .from(gscConnections)
@@ -219,7 +254,8 @@ export function createHandlers(deps: HandlerDeps): Record<JobKind, JobHandler> {
     },
     async cwv(job, ctx) {
       ctx.heartbeat();
-      if (!deps.store || !job.siteId) return { skipped: true, reason: "no_google_store" };
+      if (!deps.store || !job.siteId)
+        return { skipped: true, reason: "no_google_store" };
       const sync = deps.syncImpl ?? syncGoogle;
       return sync({
         db: deps.db,

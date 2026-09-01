@@ -43,7 +43,9 @@ export function dashboardDist(): string | null {
   } catch {
     // not resolvable
   }
-  candidates.push(path.resolve(fileURLToPath(new URL("../../../dashboard/dist", import.meta.url))));
+  candidates.push(
+    path.resolve(fileURLToPath(new URL("../../../dashboard/dist", import.meta.url))),
+  );
   for (const dir of candidates) {
     if (fs.existsSync(path.join(dir, "index.html"))) return dir;
   }
@@ -91,7 +93,11 @@ export function registerSpa(app: FastifyInstance): void {
     if (!dist) return reply.code(404).send({ error: "no_dashboard" });
     const rel = req.url.split("?")[0] ?? "";
     const file = path.resolve(dist, rel.replace(/^\/+/, ""));
-    if (!file.startsWith(dist) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+    if (
+      !file.startsWith(dist) ||
+      !fs.existsSync(file) ||
+      fs.statSync(file).isDirectory()
+    ) {
       return reply.code(404).send({ error: "not_found" });
     }
     sendFile(reply, file);

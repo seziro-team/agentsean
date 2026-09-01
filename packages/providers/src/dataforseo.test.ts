@@ -26,8 +26,18 @@ describe("DataForSEO client", () => {
               result: [
                 {
                   items: [
-                    { type: "organic", rank_group: 1, url: "https://example.com/", title: "Home" },
-                    { type: "organic", rank_group: 2, url: "https://other.test/", title: "Other" },
+                    {
+                      type: "organic",
+                      rank_group: 1,
+                      url: "https://example.com/",
+                      title: "Home",
+                    },
+                    {
+                      type: "organic",
+                      rank_group: 2,
+                      url: "https://other.test/",
+                      title: "Other",
+                    },
                   ],
                 },
               ],
@@ -37,7 +47,10 @@ describe("DataForSEO client", () => {
       }
       throw new Error(`unexpected ${method} ${url}`);
     };
-    const client = createDataForSeoClient({ loginPassword: "login:pass", fetch: fetchFn });
+    const client = createDataForSeoClient({
+      loginPassword: "login:pass",
+      fetch: fetchFn,
+    });
     const estimate = paidEstimate({
       provider: "dataforseo",
       capability: "serp",

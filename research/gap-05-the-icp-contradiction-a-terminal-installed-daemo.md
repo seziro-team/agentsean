@@ -572,12 +572,12 @@ All URLs accessed **2026-08-31 / 2026-09-01** unless otherwise noted.
 - Ahrefs "~49,000 paying organisations", "$149.1M FY2024 revenue" `[B]` — Ahrefs is private and discloses nothing
 
 ### Internal corpus cross-references
-- `/home/vp2722/seoe/research/06-local-seo.md` — GBP API gating (0 QPM pre-approval; v4.9 invisible in Cloud Console; 300 QPM + 10 edits/min/profile post-approval); local landing pages as highest-risk automation
-- `/home/vp2722/seoe/research/10-cms-integrations.md` — the five write classes (A–E), WordPress Application Passwords flow, Wix's "don't trust the API response" warning, companion-plugin rationale
-- `/home/vp2722/seoe/research/12-oss-distribution.md` — corrected self-host→paid conversion band **0.02–1%** (GitLab ~0.02%); refuted claims list (including the HN "front page" framing of the ~289-star figure)
-- `/home/vp2722/seoe/research/14-hosted-economics.md` — BYOK-at-$8 thesis, 80% gross margin, 30 agency customers = 27% of MRR from 3% of customers, SOC 2 cost analysis
-- `/home/vp2722/seoe/research/16-dashboard-ux.md` — approval diffs as the trust surface, four-surface IA, localhost security, Chrome 142+ LNA constraint
-- `/home/vp2722/seoe/research/17-landscape-naming.md` — competitor price anchors (SearchAtlas OTTO $99/site, Alli AI, Profound, Elmo, open-seo $10 metered)
+- `research/06-local-seo.md` — GBP API gating (0 QPM pre-approval; v4.9 invisible in Cloud Console; 300 QPM + 10 edits/min/profile post-approval); local landing pages as highest-risk automation
+- `research/10-cms-integrations.md` — the five write classes (A–E), WordPress Application Passwords flow, Wix's "don't trust the API response" warning, companion-plugin rationale
+- `research/12-oss-distribution.md` — corrected self-host→paid conversion band **0.02–1%** (GitLab ~0.02%); refuted claims list (including the HN "front page" framing of the ~289-star figure)
+- `research/14-hosted-economics.md` — BYOK-at-$8 thesis, 80% gross margin, 30 agency customers = 27% of MRR from 3% of customers, SOC 2 cost analysis
+- `research/16-dashboard-ux.md` — approval diffs as the trust surface, four-surface IA, localhost security, Chrome 142+ LNA constraint
+- `research/17-landscape-naming.md` — competitor price anchors (SearchAtlas OTTO $99/site, Alli AI, Profound, Elmo, open-seo $10 metered)
 
 ---
 

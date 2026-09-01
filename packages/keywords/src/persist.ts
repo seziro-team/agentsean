@@ -59,7 +59,12 @@ export function saveKeywords(
   }
 }
 
-export function saveClusters(db: SqliteDatabase, siteId: string, clusters: Cluster[], now = new Date()): void {
+export function saveClusters(
+  db: SqliteDatabase,
+  siteId: string,
+  clusters: Cluster[],
+  now = new Date(),
+): void {
   const ts = now.toISOString();
   db.delete(keywordClusters).where(eq(keywordClusters.siteId, siteId)).run();
   const allKw = db.select().from(keywords).where(eq(keywords.siteId, siteId)).all();
@@ -78,7 +83,10 @@ export function saveClusters(db: SqliteDatabase, siteId: string, clusters: Clust
     for (const member of c.members) {
       const row = allKw.find((k) => k.query === member);
       if (row) {
-        db.update(keywords).set({ clusterId: c.id, updatedAt: ts }).where(eq(keywords.id, row.id)).run();
+        db.update(keywords)
+          .set({ clusterId: c.id, updatedAt: ts })
+          .where(eq(keywords.id, row.id))
+          .run();
       }
     }
   }
@@ -98,7 +106,10 @@ export function saveRanks(
       .from(rankSnapshots)
       .where(eq(rankSnapshots.siteId, siteId))
       .all()
-      .find((row) => row.query === r.query && row.date === date && row.provider === r.provider);
+      .find(
+        (row) =>
+          row.query === r.query && row.date === date && row.provider === r.provider,
+      );
     if (existing) {
       db.update(rankSnapshots)
         .set({
@@ -133,7 +144,11 @@ export function listKeywords(db: SqliteDatabase, siteId: string) {
 }
 
 export function listClusters(db: SqliteDatabase, siteId: string) {
-  return db.select().from(keywordClusters).where(eq(keywordClusters.siteId, siteId)).all();
+  return db
+    .select()
+    .from(keywordClusters)
+    .where(eq(keywordClusters.siteId, siteId))
+    .all();
 }
 
 export function listRanks(db: SqliteDatabase, siteId: string) {

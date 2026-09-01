@@ -34,7 +34,10 @@ export function assertBindAllowed(host: string, authEnabled: boolean): void {
   }
 }
 
-export function allowedHosts(port: number, publicOrigin?: string | undefined): Set<string> {
+export function allowedHosts(
+  port: number,
+  publicOrigin?: string | undefined,
+): Set<string> {
   const hosts = new Set([
     `127.0.0.1:${port}`,
     `localhost:${port}`,
@@ -52,7 +55,10 @@ export function allowedHosts(port: number, publicOrigin?: string | undefined): S
   return hosts;
 }
 
-export function allowedOrigins(port: number, publicOrigin?: string | undefined): Set<string> {
+export function allowedOrigins(
+  port: number,
+  publicOrigin?: string | undefined,
+): Set<string> {
   const origins = new Set([
     `http://127.0.0.1:${port}`,
     `http://localhost:${port}`,

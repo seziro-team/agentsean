@@ -2,15 +2,38 @@
   "version": "schema.org-subset-2026-08-31",
   "types": {
     "Thing": ["name", "url", "image", "description", "sameAs", "identifier"],
-    "CreativeWork": ["headline", "author", "datePublished", "dateModified", "publisher", "mainEntity"],
-    "Article": ["headline", "image", "datePublished", "dateModified", "author", "publisher"],
+    "CreativeWork": [
+      "headline",
+      "author",
+      "datePublished",
+      "dateModified",
+      "publisher",
+      "mainEntity"
+    ],
+    "Article": [
+      "headline",
+      "image",
+      "datePublished",
+      "dateModified",
+      "author",
+      "publisher"
+    ],
     "NewsArticle": ["headline", "image", "datePublished", "author"],
     "BlogPosting": ["headline", "image", "datePublished", "author"],
     "WebPage": ["name", "url", "breadcrumb", "primaryImageOfPage"],
     "WebSite": ["name", "url", "publisher", "potentialAction"],
     "Organization": ["name", "url", "logo", "sameAs", "address"],
     "Person": ["name", "url", "image", "sameAs"],
-    "Product": ["name", "image", "description", "sku", "brand", "offers", "aggregateRating", "review"],
+    "Product": [
+      "name",
+      "image",
+      "description",
+      "sku",
+      "brand",
+      "offers",
+      "aggregateRating",
+      "review"
+    ],
     "Offer": ["price", "priceCurrency", "availability", "url"],
     "AggregateRating": ["ratingValue", "reviewCount", "bestRating", "worstRating"],
     "Review": ["reviewBody", "author", "datePublished", "reviewRating", "itemReviewed"],
@@ -23,8 +46,24 @@
     "FAQPage": ["mainEntity"],
     "Question": ["name", "acceptedAnswer"],
     "HowTo": ["name", "step"],
-    "Recipe": ["name", "image", "author", "datePublished", "prepTime", "cookTime", "recipeIngredient", "recipeInstructions"],
-    "JobPosting": ["title", "description", "datePosted", "hiringOrganization", "jobLocation", "baseSalary"],
+    "Recipe": [
+      "name",
+      "image",
+      "author",
+      "datePublished",
+      "prepTime",
+      "cookTime",
+      "recipeIngredient",
+      "recipeInstructions"
+    ],
+    "JobPosting": [
+      "title",
+      "description",
+      "datePosted",
+      "hiringOrganization",
+      "jobLocation",
+      "baseSalary"
+    ],
     "Course": ["name", "description", "provider"],
     "Dataset": ["name", "description", "license"],
     "QAPage": ["mainEntity"],

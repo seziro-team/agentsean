@@ -30,7 +30,9 @@ function header(headers: Record<string, string>, name: string): string | undefin
  * Vercel silently omits X-Robots-Tag: noindex when a custom domain is assigned
  * to a non-production branch. Nobody else checks for this.
  */
-export function assertPreviewNotIndexed(input: PreviewIndexationInput): PreviewIndexationResult {
+export function assertPreviewNotIndexed(
+  input: PreviewIndexationInput,
+): PreviewIndexationResult {
   const leaks: string[] = [];
   const production =
     input.isProduction ??
@@ -43,7 +45,10 @@ export function assertPreviewNotIndexed(input: PreviewIndexationInput): PreviewI
     };
   }
   const xrobots = header(input.headers, "x-robots-tag") ?? "";
-  const meta = input.html ? /<meta\s+name=["']robots["'][^>]*content=["']([^"']+)/i.exec(input.html)?.[1] ?? "" : "";
+  const meta = input.html
+    ? (/<meta\s+name=["']robots["'][^>]*content=["']([^"']+)/i.exec(input.html)?.[1] ??
+      "")
+    : "";
   const noindex = /noindex/i.test(xrobots) || /noindex/i.test(meta);
   if (!noindex) {
     leaks.push(
@@ -53,9 +58,7 @@ export function assertPreviewNotIndexed(input: PreviewIndexationInput): PreviewI
   return {
     ok: leaks.length === 0,
     leaks,
-    note: leaks.length
-      ? leaks[0]!
-      : "Preview is noindexed.",
+    note: leaks.length ? leaks[0]! : "Preview is noindexed.",
   };
 }
 

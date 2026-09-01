@@ -39,7 +39,9 @@ export function planInstall(args: {
   const nodePresent = args.nodePresent ?? true;
   const steps: string[] = [];
   if (!nodePresent) {
-    steps.push(`download Node >= 22.19 into ${prefix}/runtime (official nodejs.org tarball)`);
+    steps.push(
+      `download Node >= 22.19 into ${prefix}/runtime (official nodejs.org tarball)`,
+    );
   } else {
     steps.push("use Node already on PATH");
   }

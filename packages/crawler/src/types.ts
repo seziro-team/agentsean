@@ -72,7 +72,12 @@ export type PageExtract = {
   twitterCard: Record<string, string>;
   links: ExtractedLink[];
   images: ExtractedImage[];
-  scripts: { src: string | null; absUrl: string | null; async: boolean; defer: boolean }[];
+  scripts: {
+    src: string | null;
+    absUrl: string | null;
+    async: boolean;
+    defer: boolean;
+  }[];
   stylesheets: { href: string | null; absUrl: string | null }[];
   wordCount: number;
   mainWordCount: number;

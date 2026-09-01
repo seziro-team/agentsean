@@ -10,7 +10,11 @@ import {
   pages,
   sites,
 } from "@agentsean/db";
-import { claimForChange, DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING } from "@agentsean/measure";
+import {
+  claimForChange,
+  DEFAULT_EVIDENCE_TIER,
+  EVIDENCE_MEANING,
+} from "@agentsean/measure";
 import {
   actionFromRow,
   executeAction,
@@ -25,7 +29,11 @@ import {
   upsertGitConnection,
 } from "@agentsean/actions";
 import { adapterForSite } from "@agentsean/adapter-factory";
-import { isCmsWriteKind, isHostedMode, refuseHostedCmsCredential } from "@agentsean/hosted";
+import {
+  isCmsWriteKind,
+  isHostedMode,
+  refuseHostedCmsCredential,
+} from "@agentsean/hosted";
 import { isHalted } from "./paths.js";
 import { activityPageHtml } from "./activity-page.js";
 
@@ -63,7 +71,10 @@ function adapterFor(
   return adapterForSite(db, siteId, factoryOpts);
 }
 
-export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOptions): void {
+export function registerActionRoutes(
+  app: FastifyInstance,
+  opts: ActionRouteOptions,
+): void {
   const html = activityPageHtml();
 
   app.get("/activity", async (_req, reply) => {
@@ -165,12 +176,16 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
     };
     const site = siteOf(opts.db, body.origin);
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    if (!body.kind || !body.config) return reply.code(400).send({ error: "missing_kind_or_config" });
+    if (!body.kind || !body.config)
+      return reply.code(400).send({ error: "missing_kind_or_config" });
     if (isHostedMode() && isCmsWriteKind(body.kind)) {
       try {
         refuseHostedCmsCredential(body.kind);
       } catch (err) {
-        return reply.code(403).send({ error: "hosted_connector", message: err instanceof Error ? err.message : "refused" });
+        return reply.code(403).send({
+          error: "hosted_connector",
+          message: err instanceof Error ? err.message : "refused",
+        });
       }
     }
     upsertAdapterConnection(opts.db, site.id, body.kind, body.config);
@@ -181,7 +196,11 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
     const body = (req.body ?? {}) as { origin?: string };
     const site = siteOf(opts.db, body.origin);
     if (!site) return reply.code(400).send({ error: "unknown_site" });
-    const pageRows = opts.db.select().from(pages).where(eq(pages.siteId, site.id)).all();
+    const pageRows = opts.db
+      .select()
+      .from(pages)
+      .where(eq(pages.siteId, site.id))
+      .all();
     const findingRows = opts.db
       .select()
       .from(findings)
@@ -240,7 +259,8 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
     const change = loadChange(opts.db, id);
     if (!change) return reply.code(404).send({ error: "unknown_change" });
     const existing = opts.db.select().from(changes).where(eq(changes.id, id)).get();
-    if (existing?.revertedAt) return reply.code(409).send({ error: "already_reverted" });
+    if (existing?.revertedAt)
+      return reply.code(409).send({ error: "already_reverted" });
     let adapter;
     try {
       adapter = adapterFor(opts.db, change.siteId, opts);
@@ -253,15 +273,27 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
     const result = await revertChange({ db: opts.db, change, adapter });
     if (!result.ok) return reply.code(500).send({ error: result.error });
     markReverted(opts.db, id);
-    const actionRow = opts.db.select().from(actions).where(eq(actions.id, change.actionId)).get();
+    const actionRow = opts.db
+      .select()
+      .from(actions)
+      .where(eq(actions.id, change.actionId))
+      .get();
     if (actionRow) {
-      opts.db.update(actions).set({ state: "reverted" }).where(eq(actions.id, actionRow.id)).run();
+      opts.db
+        .update(actions)
+        .set({ state: "reverted" })
+        .where(eq(actions.id, actionRow.id))
+        .run();
     }
     return { ok: true, changeId: id };
   });
 
   app.post("/api/apply", async (req, reply) => {
-    const body = (req.body ?? {}) as { origin?: string; repoPath?: string; dryRun?: boolean };
+    const body = (req.body ?? {}) as {
+      origin?: string;
+      repoPath?: string;
+      dryRun?: boolean;
+    };
     const site = siteOf(opts.db, body.origin);
     if (!site) return reply.code(400).send({ error: "unknown_site" });
     if (body.repoPath) {
@@ -279,7 +311,11 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
         message: e instanceof Error ? e.message : String(e),
       });
     }
-    const pageRows = opts.db.select().from(pages).where(eq(pages.siteId, site.id)).all();
+    const pageRows = opts.db
+      .select()
+      .from(pages)
+      .where(eq(pages.siteId, site.id))
+      .all();
     const findingRows = opts.db
       .select()
       .from(findings)

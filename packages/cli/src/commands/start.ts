@@ -40,8 +40,7 @@ export async function startCommand(opts: {
   const existing = readPid(home);
   const store = openDaemonStore(home);
   const token = await loadOrCreateToken(store);
-  const dashFor = (h: string, p: number) =>
-    `http://${h}:${p}/#token=${token.unwrap()}`;
+  const dashFor = (h: string, p: number) => `http://${h}:${p}/#token=${token.unwrap()}`;
 
   if (existing && isPidAlive(existing.pid)) {
     if (!opts.quiet) {

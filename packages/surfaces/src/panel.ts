@@ -41,7 +41,10 @@ export function defaultPrompts(brand: string, category: string): string[] {
 
 const URL_RE = /https?:\/\/[^\s)\]>'"]+/gi;
 
-export function parseCitations(answer: string, originHost: string): { url: string; domain: string; isOurs: boolean }[] {
+export function parseCitations(
+  answer: string,
+  originHost: string,
+): { url: string; domain: string; isOurs: boolean }[] {
   const seen = new Set<string>();
   const out: { url: string; domain: string; isOurs: boolean }[] = [];
   const matches = answer.match(URL_RE) ?? [];
@@ -56,7 +59,11 @@ export function parseCitations(answer: string, originHost: string): { url: strin
     seen.add(url.href);
     const domain = url.hostname.replace(/^www\./, "");
     const ours = originHost.replace(/^www\./, "");
-    out.push({ url: url.href, domain, isOurs: domain === ours || domain.endsWith(`.${ours}`) });
+    out.push({
+      url: url.href,
+      domain,
+      isOurs: domain === ours || domain.endsWith(`.${ours}`),
+    });
   }
   return out;
 }
@@ -79,7 +86,12 @@ export async function runPromptPanel(opts: {
   category?: string | undefined;
   generate: GenerateFn;
   engines?: readonly PanelEngine[] | undefined;
-}): Promise<{ hits: CitationHit[]; citationShare: number; shareOfVoice: number; estimatedUsd: number }> {
+}): Promise<{
+  hits: CitationHit[];
+  citationShare: number;
+  shareOfVoice: number;
+  estimatedUsd: number;
+}> {
   const host = new URL(opts.origin).hostname;
   const prompts = defaultPrompts(opts.brand, opts.category ?? "");
   const engines = opts.engines ?? PANEL_ENGINES;
@@ -88,7 +100,8 @@ export async function runPromptPanel(opts: {
     for (const prompt of prompts) {
       const result = await opts.generate({
         class: "cheap",
-        system: "Answer with sources as absolute http(s) URLs when you cite the web. Do not invent URLs.",
+        system:
+          "Answer with sources as absolute http(s) URLs when you cite the web. Do not invent URLs.",
         prompt: `${prompt}\nBrand origin: ${opts.origin}`,
       });
       const parsed = parseCitations(result.text, host);

@@ -5,7 +5,15 @@ import { scrapeGoogleSerp } from "./refuse.js";
 describe("provider stack", () => {
   it("gives keyword demand from GSC with zero paid keys", async () => {
     const stack = createProviderStack({
-      gsc: [{ query: "seo tools", source: "gsc", clicks: 12, impressions: 400, position: 9 }],
+      gsc: [
+        {
+          query: "seo tools",
+          source: "gsc",
+          clicks: 12,
+          impressions: 400,
+          position: 9,
+        },
+      ],
     });
     expect(stack.paidUpgrade).toBe(false);
     expect(stack.serp.available).toBe(false);

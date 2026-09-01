@@ -48,7 +48,8 @@ export function prioritize(
       const traffic = Math.min(4, 1 + Math.log10(1 + clicks));
       const confidence = f.confidence;
       const effort = effortFactor(check?.autonomyTier ?? f.autonomyTier);
-      const priority = (severity * coverage * indexability * traffic * confidence) / effort;
+      const priority =
+        (severity * coverage * indexability * traffic * confidence) / effort;
       return {
         ...f,
         priority,

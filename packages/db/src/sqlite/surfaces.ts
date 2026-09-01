@@ -24,7 +24,10 @@ export const aiRuns = sqliteTable(
     estimatedUsd: real("estimated_usd").notNull().default(0),
     ranAt: text("ran_at").notNull(),
   },
-  (t) => [index("ai_runs_site_idx").on(t.siteId), index("ai_runs_ran_idx").on(t.siteId, t.ranAt)],
+  (t) => [
+    index("ai_runs_site_idx").on(t.siteId),
+    index("ai_runs_ran_idx").on(t.siteId, t.ranAt),
+  ],
 );
 
 export const aiCitations = sqliteTable(
@@ -105,7 +108,10 @@ export const mentions = sqliteTable(
     kind: text("kind").notNull(),
     createdAt: text("created_at").notNull(),
   },
-  (t) => [index("mentions_site_idx").on(t.siteId), uniqueIndex("mentions_uidx").on(t.siteId, t.url, t.kind)],
+  (t) => [
+    index("mentions_site_idx").on(t.siteId),
+    uniqueIndex("mentions_uidx").on(t.siteId, t.url, t.kind),
+  ],
 );
 
 export const inbound404s = sqliteTable(

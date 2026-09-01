@@ -153,8 +153,7 @@ export function createSqliteQueue(
     async complete(id: string, result?: unknown): Promise<void> {
       const row = db.select().from(jobs).where(eq(jobs.id, id)).get();
       const prev = parsePayload(row?.payload ?? null);
-      const next =
-        result === undefined ? prev : { ...prev, result };
+      const next = result === undefined ? prev : { ...prev, result };
       db.update(jobs)
         .set({
           status: "completed",

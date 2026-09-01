@@ -8,10 +8,12 @@
     "agentsean": "./dist/bin.js",
     "sean": "./dist/bin.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vp2722/sean.git"
+    "url": "git+https://github.com/seziro-team/agentsean.git"
   },
   "engines": {
     "node": ">=22.19.0"

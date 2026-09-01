@@ -3,7 +3,8 @@
 export const AEO_REFUSALS = [
   {
     claim: "Add schema markup to win AI citations",
-    truth: "Ahrefs matched difference-in-differences (1,885 pages): schema has no measurable effect on AI citations.",
+    truth:
+      "Ahrefs matched difference-in-differences (1,885 pages): schema has no measurable effect on AI citations.",
   },
   {
     claim: "Longer pages get cited more",
@@ -11,7 +12,8 @@ export const AEO_REFUSALS = [
   },
   {
     claim: "Publish llms.txt for GEO",
-    truth: "97% of published llms.txt files are never fetched (Ahrefs, 137,210 domains). Google does not support the file.",
+    truth:
+      "97% of published llms.txt files are never fetched (Ahrefs, 137,210 domains). Google does not support the file.",
   },
 ] as const;
 

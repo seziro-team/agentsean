@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Agent Sean Bridge
- * Plugin URI: https://github.com/seanhq/sean
+ * Plugin URI: https://github.com/seziro-team/agentsean
  * Description: Registers SEO meta for REST, normalized write endpoints, redirects, robots.txt, JSON-LD, media alt, and revision restore for Agent Sean.
  * Version: 0.1.0
  * Requires at least: 6.4

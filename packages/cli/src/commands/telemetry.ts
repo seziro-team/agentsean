@@ -34,7 +34,12 @@ export async function telemetryCommand(opts: {
     const cfg = consentTelemetry(home, action === "on", method);
     emit(
       opts.json,
-      { ok: true, command: "telemetry", enabled: cfg.enabled, preview: previewPayload({ installMethod: method }) },
+      {
+        ok: true,
+        command: "telemetry",
+        enabled: cfg.enabled,
+        preview: previewPayload({ installMethod: method }),
+      },
       cfg.enabled
         ? `Telemetry on. Payload preview:\n${JSON.stringify(previewPayload({ installMethod: method }), null, 2)}\nOpt out: sean telemetry off · DO_NOT_TRACK=1`
         : "Telemetry off. Nothing is sent.",

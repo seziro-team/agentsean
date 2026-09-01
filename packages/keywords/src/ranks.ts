@@ -1,5 +1,9 @@
 import type { ProviderStack } from "@agentsean/providers";
-import { debitProvider, remainingBudgetUsd, type CostEstimate } from "@agentsean/providers";
+import {
+  debitProvider,
+  remainingBudgetUsd,
+  type CostEstimate,
+} from "@agentsean/providers";
 import type { SqliteDatabase } from "@agentsean/db";
 import type { RankRow } from "./types.js";
 import { scrapeGoogleSerp } from "@agentsean/providers";
@@ -42,7 +46,12 @@ export async function runRankCheck(opts: {
   const quotes: CostEstimate[] = [];
   const ranks: RankRow[] = [];
   const host = hostOf(opts.origin);
-  let remaining = remainingBudgetUsd(opts.db, opts.siteId, opts.dailyBudgetUsd ?? 8, now);
+  let remaining = remainingBudgetUsd(
+    opts.db,
+    opts.siteId,
+    opts.dailyBudgetUsd ?? 8,
+    now,
+  );
   for (const query of opts.queries) {
     const call = opts.stack.serp.serp(query);
     quotes.push(call.estimate);
@@ -83,7 +92,10 @@ export async function runRankCheck(opts: {
 
 function hostOf(value: string): string {
   try {
-    return new URL(value.includes("://") ? value : `https://${value}`).hostname.replace(/^www\./, "");
+    return new URL(value.includes("://") ? value : `https://${value}`).hostname.replace(
+      /^www\./,
+      "",
+    );
   } catch {
     return value.replace(/^www\./, "");
   }

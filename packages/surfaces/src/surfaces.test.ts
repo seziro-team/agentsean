@@ -14,10 +14,30 @@ import {
   refuseReviewGeneration,
   upsertGbpLocation,
 } from "./gbp.js";
-import { AEO_REFUSALS, refuseAeoLever, PANEL_COST_USD, PANEL_PROMPTS } from "./honest.js";
-import { discoverMentions, findInbound404s, refuseDisavowWithoutManualAction, refuseUnauthedSend } from "./offpage.js";
-import { citationShare, defaultPrompts, parseCitations, runPromptPanel } from "./panel.js";
-import { contentGenerationBlocked, detectVertical, ONBOARDING_QUESTIONS, scoreSignals } from "./verticals.js";
+import {
+  AEO_REFUSALS,
+  refuseAeoLever,
+  PANEL_COST_USD,
+  PANEL_PROMPTS,
+} from "./honest.js";
+import {
+  discoverMentions,
+  findInbound404s,
+  refuseDisavowWithoutManualAction,
+  refuseUnauthedSend,
+} from "./offpage.js";
+import {
+  citationShare,
+  defaultPrompts,
+  parseCitations,
+  runPromptPanel,
+} from "./panel.js";
+import {
+  contentGenerationBlocked,
+  detectVertical,
+  ONBOARDING_QUESTIONS,
+  scoreSignals,
+} from "./verticals.js";
 import { runSurfacesJob } from "./engine.js";
 
 function seedSite() {
@@ -25,7 +45,13 @@ function seedSite() {
   const id = randomUUID();
   const now = new Date().toISOString();
   db.insert(sites)
-    .values({ id, origin: "https://acme.example", name: "Acme", createdAt: now, updatedAt: now })
+    .values({
+      id,
+      origin: "https://acme.example",
+      name: "Acme",
+      createdAt: now,
+      updatedAt: now,
+    })
     .run();
   db.insert(pages)
     .values({
@@ -58,13 +84,18 @@ describe("Phase 9 surfaces", () => {
   it("reports citation share from a 20×2 prompt panel", async () => {
     expect(defaultPrompts("Acme", "CRM").length).toBe(PANEL_PROMPTS);
     const origin = "https://acme.example";
-    const parsed = parseCitations("See https://acme.example/docs and https://rival.test/x", "acme.example");
+    const parsed = parseCitations(
+      "See https://acme.example/docs and https://rival.test/x",
+      "acme.example",
+    );
     expect(parsed.some((p) => p.isOurs)).toBe(true);
     const panel = await runPromptPanel({
       origin,
       brand: "Acme",
       generate: async ({ prompt }) => ({
-        text: prompt.includes("What is") ? "Acme is a CRM. https://acme.example/" : "Others. https://other.test/",
+        text: prompt.includes("What is")
+          ? "Acme is a CRM. https://acme.example/"
+          : "Others. https://other.test/",
         model: "test",
         class: "cheap",
         provider: "ollama",
@@ -81,11 +112,17 @@ describe("Phase 9 surfaces", () => {
 
   it("refuses schema/length/llms.txt as AEO levers and splits training vs citation crawlers", () => {
     expect(AEO_REFUSALS).toHaveLength(3);
-    expect(refuseAeoLever("Add schema markup to win AI citations")).toMatch(/no measurable effect/i);
-    const split = analyzeAiRobots(`User-agent: GPTBot\nDisallow: /\n\nUser-agent: OAI-SearchBot\nDisallow: /\n`);
+    expect(refuseAeoLever("Add schema markup to win AI citations")).toMatch(
+      /no measurable effect/i,
+    );
+    const split = analyzeAiRobots(
+      `User-agent: GPTBot\nDisallow: /\n\nUser-agent: OAI-SearchBot\nDisallow: /\n`,
+    );
     expect(split.conflatesTrainingAndCitation).toBe(true);
     expect(split.blockedCitation.length).toBeGreaterThan(0);
-    const ok = analyzeAiRobots(`User-agent: GPTBot\nDisallow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n`);
+    const ok = analyzeAiRobots(
+      `User-agent: GPTBot\nDisallow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n`,
+    );
     expect(ok.conflatesTrainingAndCitation).toBe(false);
   });
 
@@ -106,7 +143,11 @@ describe("Phase 9 surfaces", () => {
       approvalStatus: "none",
     });
     await expect(
-      applyGbpEdit(db, id, { locationId: locId, kind: "hours", payload: { open: true } }),
+      applyGbpEdit(db, id, {
+        locationId: locId,
+        kind: "hours",
+        payload: { open: true },
+      }),
     ).rejects.toBeInstanceOf(GbpNotApprovedError);
     upsertGbpLocation(db, id, {
       id: locId,
@@ -116,14 +157,28 @@ describe("Phase 9 surfaces", () => {
       approvalStatus: "approved",
     });
     await expect(
-      applyGbpEdit(db, id, { locationId: locId, kind: "title", payload: { title: "Acme CRM Seattle" } }),
+      applyGbpEdit(db, id, {
+        locationId: locId,
+        kind: "title",
+        payload: { title: "Acme CRM Seattle" },
+      }),
     ).rejects.toThrow(/title/);
     const now = new Date("2026-09-01T00:00:00Z");
     for (let i = 0; i < GBP_EDITS_PER_MIN; i++) {
-      await applyGbpEdit(db, id, { locationId: locId, kind: "hours", payload: { n: i } }, now);
+      await applyGbpEdit(
+        db,
+        id,
+        { locationId: locId, kind: "hours", payload: { n: i } },
+        now,
+      );
     }
     await expect(
-      applyGbpEdit(db, id, { locationId: locId, kind: "hours", payload: { n: 99 } }, now),
+      applyGbpEdit(
+        db,
+        id,
+        { locationId: locId, kind: "hours", payload: { n: 99 } },
+        now,
+      ),
     ).rejects.toBeInstanceOf(GbpQuotaError);
     expect(() => refuseReviewGeneration()).toThrow(/T4/);
     expect(() => refuseCityServicePages()).toThrow(/doorway/);
@@ -147,7 +202,11 @@ describe("Phase 9 surfaces", () => {
     });
     expect(found[0]?.linked).toBe(false);
     const broken = findInbound404s([
-      { url: "https://acme.example/old", statusCode: 404, inlinks: ["https://acme.example/"] },
+      {
+        url: "https://acme.example/old",
+        statusCode: 404,
+        inlinks: ["https://acme.example/"],
+      },
     ]);
     expect(broken).toHaveLength(1);
     expect(() => refuseUnauthedSend()).toThrow(/T3/);
@@ -158,7 +217,11 @@ describe("Phase 9 surfaces", () => {
   it("auto-detects B2B SaaS, blocks affiliate/YMYL generation, and asks six questions", () => {
     expect(ONBOARDING_QUESTIONS).toHaveLength(6);
     const input = {
-      urls: ["https://acme.example/pricing", "https://acme.example/demo", "https://acme.example/vs/foo"],
+      urls: [
+        "https://acme.example/pricing",
+        "https://acme.example/demo",
+        "https://acme.example/vs/foo",
+      ],
       titles: ["Pricing"],
       jsonLdTypes: ["SoftwareApplication"],
       outboundSponsoredShare: 0,

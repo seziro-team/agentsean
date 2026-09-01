@@ -10,7 +10,9 @@ export async function fetchOpenPageRank(
   const fetchFn = opts.fetch ?? fetch;
   const url = new URL(OPR_URL);
   url.searchParams.append("domains[]", domain);
-  const res = await fetchFn(url, { headers: { "API-OPR": opts.apiKey, accept: "application/json" } });
+  const res = await fetchFn(url, {
+    headers: { "API-OPR": opts.apiKey, accept: "application/json" },
+  });
   if (!res.ok) throw new Error(`OpenPageRank HTTP ${res.status}`);
   const json = (await res.json()) as {
     response?: Array<{ domain?: string; page_rank_decimal?: number; rank?: string }>;
@@ -51,7 +53,9 @@ export function createOpenPageRank(opts: {
 
 function hostOf(target: string): string {
   try {
-    return new URL(target.includes("://") ? target : `https://${target}`).hostname.replace(/^www\./, "");
+    return new URL(
+      target.includes("://") ? target : `https://${target}`,
+    ).hostname.replace(/^www\./, "");
   } catch {
     return target.replace(/^www\./, "");
   }

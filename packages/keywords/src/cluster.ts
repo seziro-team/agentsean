@@ -46,7 +46,10 @@ export async function clusterQueries(
 }
 
 /** Merge clusters that share ≥ 3 top-10 URLs. Cuts SERP cost 5–20× vs SERP-first. */
-export function confirmSerpMerges(clusters: Cluster[], serp: Map<string, string[]>): Cluster[] {
+export function confirmSerpMerges(
+  clusters: Cluster[],
+  serp: Map<string, string[]>,
+): Cluster[] {
   const urlSet = (members: string[]) => {
     const s = new Set<string>();
     for (const m of members) {
@@ -117,5 +120,8 @@ function normalizeUrl(url: string): string {
 }
 
 function labelOf(members: string[]): string {
-  return members.toSorted((a, b) => a.length - b.length || a.localeCompare(b))[0] ?? "cluster";
+  return (
+    members.toSorted((a, b) => a.length - b.length || a.localeCompare(b))[0] ??
+    "cluster"
+  );
 }

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| **Repo** | `github.com/seanhq/sean` |
+| **Repo** | `github.com/seziro-team/agentsean` |
 | **Install** | `npx agentsean` |
 | **License** | `AGPL-3.0-only` (daemon) · `GPL-2.0-or-later` (WordPress plugin) · `Apache-2.0` (connector SDK) |
 | **Stack** | TypeScript · Node ≥ 22.19 · SQLite (WAL) · Fastify · React/Vite · Vercel AI SDK 7 |

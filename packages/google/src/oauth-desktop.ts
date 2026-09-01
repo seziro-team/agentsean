@@ -100,7 +100,8 @@ export async function exchangeByoCode(opts: {
     refresh_token_expires_in?: number;
     id_token?: string;
   };
-  if (!json.access_token) throw new GscTokenError("Token response missing access_token.");
+  if (!json.access_token)
+    throw new GscTokenError("Token response missing access_token.");
   return grantFromTokenResponse(
     { ...json, access_token: json.access_token },
     opts.prev ?? null,

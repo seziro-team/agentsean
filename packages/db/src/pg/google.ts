@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { sites } from "./schema.js";
 
 /** Phase 2 — Google connections. Dual-dialect; keep in lockstep with sqlite/google.ts. */
@@ -109,12 +102,7 @@ export const gscQueryDaily = pgTable(
     position: real("position"),
   },
   (t) => [
-    uniqueIndex("gsc_query_daily_uidx").on(
-      t.siteId,
-      t.date,
-      t.query,
-      t.searchType,
-    ),
+    uniqueIndex("gsc_query_daily_uidx").on(t.siteId, t.date, t.query, t.searchType),
     index("gsc_query_daily_site_date_idx").on(t.siteId, t.date),
   ],
 );
@@ -297,9 +285,7 @@ export const gscGa4Reconciliation = pgTable(
     ga4OrganicSessions: real("ga4_organic_sessions").notNull().default(0),
     residual: real("residual").notNull().default(0),
     residualPct: real("residual_pct"),
-    overlappingIncidentIds: text("overlapping_incident_ids")
-      .notNull()
-      .default("[]"),
+    overlappingIncidentIds: text("overlapping_incident_ids").notNull().default("[]"),
     notes: text("notes"),
   },
   (t) => [
@@ -323,9 +309,7 @@ export const siteVerifications = pgTable(
     error: text("error"),
     createdAt: text("created_at").notNull(),
   },
-  (t) => [
-    uniqueIndex("site_verifications_uidx").on(t.siteId, t.method, t.identifier),
-  ],
+  (t) => [uniqueIndex("site_verifications_uidx").on(t.siteId, t.method, t.identifier)],
 );
 
 export const quotaUsage = pgTable(
@@ -341,12 +325,7 @@ export const quotaUsage = pgTable(
     updatedAt: text("updated_at").notNull(),
   },
   (t) => [
-    uniqueIndex("quota_usage_uidx").on(
-      t.api,
-      t.scopeKey,
-      t.windowKind,
-      t.windowStart,
-    ),
+    uniqueIndex("quota_usage_uidx").on(t.api, t.scopeKey, t.windowKind, t.windowStart),
     index("quota_usage_api_idx").on(t.api, t.windowStart),
   ],
 );

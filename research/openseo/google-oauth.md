@@ -1,6 +1,6 @@
 # OpenSEO teardown — Google integration (GSC, GA4, OAuth for self-hosters)
 
-Repo: `/home/vp2722/seoe/reference/open-seo` (MIT, every-app/open-seo). All paths below are
+Repo: `/reference/open-seo` (MIT, every-app/open-seo). All paths below are
 relative to that root unless absolute.
 
 ---

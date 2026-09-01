@@ -1,6 +1,8 @@
 import { isHostedMode } from "./plans.js";
 
-export function hostedPublicOrigin(env: NodeJS.ProcessEnv = process.env): string | null {
+export function hostedPublicOrigin(
+  env: NodeJS.ProcessEnv = process.env,
+): string | null {
   const raw = env["SEAN_PUBLIC_ORIGIN"]?.trim();
   if (!raw) return null;
   try {
@@ -12,14 +14,20 @@ export function hostedPublicOrigin(env: NodeJS.ProcessEnv = process.env): string
   }
 }
 
-export function hostedOauthRedirectUri(env: NodeJS.ProcessEnv = process.env, path = "/oauth/callback"): string | null {
+export function hostedOauthRedirectUri(
+  env: NodeJS.ProcessEnv = process.env,
+  path = "/oauth/callback",
+): string | null {
   const origin = hostedPublicOrigin(env);
   if (!origin) return null;
   return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 /** Self-host broker stays loopback-only. Hosted OAuth is a web client on our origin. */
-export function assertOauthRedirect(uri: string, env: NodeJS.ProcessEnv = process.env): void {
+export function assertOauthRedirect(
+  uri: string,
+  env: NodeJS.ProcessEnv = process.env,
+): void {
   if (isHostedMode(env)) {
     const origin = hostedPublicOrigin(env);
     if (!origin || !uri.startsWith(origin)) {

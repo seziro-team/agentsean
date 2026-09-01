@@ -36,7 +36,9 @@ function candidatesFor(repoRoot: string, pathname: string): string[] {
   const roots = ["", "src"];
   for (const src of roots) {
     const app = src ? path.join(repoRoot, src, "app") : path.join(repoRoot, "app");
-    const pages = src ? path.join(repoRoot, src, "pages") : path.join(repoRoot, "pages");
+    const pages = src
+      ? path.join(repoRoot, src, "pages")
+      : path.join(repoRoot, "pages");
     if (pathname === "/") {
       for (const f of PAGE_FILES) {
         out.push(path.join(app, f));
@@ -77,7 +79,9 @@ export function resolvePageFile(repoRoot: string, pageUrl: string): string | nul
   return null;
 }
 
-export function detectFramework(repoRoot: string): "next" | "astro" | "hugo" | "jekyll" | "docusaurus" | "unknown" {
+export function detectFramework(
+  repoRoot: string,
+): "next" | "astro" | "hugo" | "jekyll" | "docusaurus" | "unknown" {
   const pkgPath = path.join(repoRoot, "package.json");
   if (exists(pkgPath)) {
     try {
@@ -93,11 +97,17 @@ export function detectFramework(repoRoot: string): "next" | "astro" | "hugo" | "
       /* ignore */
     }
   }
-  if (exists(path.join(repoRoot, "hugo.toml")) || exists(path.join(repoRoot, "config.toml"))) {
+  if (
+    exists(path.join(repoRoot, "hugo.toml")) ||
+    exists(path.join(repoRoot, "config.toml"))
+  ) {
     return "hugo";
   }
   if (exists(path.join(repoRoot, "_config.yml"))) return "jekyll";
-  if (fs.existsSync(path.join(repoRoot, "app")) || fs.existsSync(path.join(repoRoot, "src/app"))) {
+  if (
+    fs.existsSync(path.join(repoRoot, "app")) ||
+    fs.existsSync(path.join(repoRoot, "src/app"))
+  ) {
     return "next";
   }
   return "unknown";

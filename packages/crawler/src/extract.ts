@@ -10,9 +10,15 @@ import type {
   PageExtract,
 } from "./types.js";
 
-const BODY_FORCING = /<(?:img|div|iframe|p|table|h[1-6]|section|article|header|footer)\b/i;
+const BODY_FORCING =
+  /<(?:img|div|iframe|p|table|h[1-6]|section|article|header|footer)\b/i;
 
-export function extractPage(html: string, pageUrl: string, headerCanonical: string[] = [], xRobots: string | null = null): PageExtract {
+export function extractPage(
+  html: string,
+  pageUrl: string,
+  headerCanonical: string[] = [],
+  xRobots: string | null = null,
+): PageExtract {
   const dom = parseDocument(html);
   const $ = load(dom);
   const origin = originOf(pageUrl);
@@ -158,9 +164,10 @@ export function extractPage(html: string, pageUrl: string, headerCanonical: stri
   const first1024 = html.slice(0, 1024);
   const charsetInFirst1024 = /<meta[^>]+charset/i.test(first1024);
 
-  const spaRootEmpty = /<(?:div|app-root)[^>]+\b(?:id=["'](?:root|app|__next)["']|data-reactroot|ng-version)/i.test(
-    html,
-  ) && main.wordCount < 30;
+  const spaRootEmpty =
+    /<(?:div|app-root)[^>]+\b(?:id=["'](?:root|app|__next)["']|data-reactroot|ng-version)/i.test(
+      html,
+    ) && main.wordCount < 30;
 
   return {
     title: titles[0] ?? null,
@@ -271,9 +278,7 @@ function extractImages($: CheerioAPI, pageUrl: string): ExtractedImage[] {
     });
 }
 
-function classifyPosition(
-  node: ReturnType<CheerioAPI>,
-): ExtractedLink["position"] {
+function classifyPosition(node: ReturnType<CheerioAPI>): ExtractedLink["position"] {
   if (node.closest("nav, [role='navigation']").length) return "nav";
   if (node.closest("header").length) return "header";
   if (node.closest("footer").length) return "footer";

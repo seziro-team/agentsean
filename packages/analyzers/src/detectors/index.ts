@@ -1,8 +1,4 @@
-export {
-  detectAll,
-  detectorFor,
-  FAMILY_DETECTORS,
-} from "./all.js";
+export { detectAll, detectorFor, FAMILY_DETECTORS } from "./all.js";
 export { detectResp } from "./resp.js";
 export { detectCanon } from "./canon.js";
 export { detectRobots } from "./robots.js";

@@ -21,7 +21,11 @@ export const EXPERIMENT_STATUSES = [
 ] as const;
 export type ExperimentStatus = (typeof EXPERIMENT_STATUSES)[number];
 
-export const EXPERIMENT_DESIGNS = ["split_cohort", "its_with_control_pool", "uncontrolled"] as const;
+export const EXPERIMENT_DESIGNS = [
+  "split_cohort",
+  "its_with_control_pool",
+  "uncontrolled",
+] as const;
 export type ExperimentDesign = (typeof EXPERIMENT_DESIGNS)[number];
 
 export const EXPERIMENT_UNITS = ["page_group", "template", "section"] as const;

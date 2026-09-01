@@ -41,7 +41,9 @@ describe("free stack clients", () => {
       }
       if (url.includes("wikidata.org")) {
         return json({
-          search: [{ id: "Q123", label: "SEO", description: "search engine optimization" }],
+          search: [
+            { id: "Q123", label: "SEO", description: "search engine optimization" },
+          ],
         });
       }
       if (url.includes("r.jina.ai")) {

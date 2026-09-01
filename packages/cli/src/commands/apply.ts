@@ -48,7 +48,8 @@ export async function applyCommand(opts: {
       });
     }
     const cfg = loadGitConnection(db, site.id);
-    const repoPath = opts.repo ?? (typeof cfg?.["repoPath"] === "string" ? cfg["repoPath"] : null);
+    const repoPath =
+      opts.repo ?? (typeof cfg?.["repoPath"] === "string" ? cfg["repoPath"] : null);
     let adapter;
     try {
       adapter = adapterForSite(db, site.id);
@@ -61,14 +62,19 @@ export async function applyCommand(opts: {
         );
         return 2;
       }
-      const token = typeof cfg?.["token"] === "string" ? cfg["token"] : process.env["GITHUB_TOKEN"];
+      const token =
+        typeof cfg?.["token"] === "string" ? cfg["token"] : process.env["GITHUB_TOKEN"];
       adapter = createGitAdapter({
         repoPath,
         ...(token ? { token } : {}),
       });
     }
     const pageRows = db.select().from(pages).where(eq(pages.siteId, site.id)).all();
-    const findingRows = db.select().from(findings).where(eq(findings.siteId, site.id)).all();
+    const findingRows = db
+      .select()
+      .from(findings)
+      .where(eq(findings.siteId, site.id))
+      .all();
     const planned = planTitleActions({
       siteId: site.id,
       origin: site.origin,
@@ -114,7 +120,9 @@ export async function applyCommand(opts: {
     await startCommand({ json: opts.json, foreground: false, home, quiet: true });
     const applied = results.filter((r) => r.status === "applied").length;
     const queued = results.filter((r) => r.status === "queued").length;
-    const rejected = results.filter((r) => r.status === "rejected" || r.status === "failed").length;
+    const rejected = results.filter(
+      (r) => r.status === "rejected" || r.status === "failed",
+    ).length;
     emit(
       opts.json,
       {

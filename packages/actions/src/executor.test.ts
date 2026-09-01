@@ -86,8 +86,24 @@ describe("executor + git adapter", () => {
     const planned = planTitleActions({
       siteId,
       origin: "https://example.com",
-      pages: [{ id: pageId, url: "https://example.com/", title: "Hi", metaDescription: null, h1: "Hello from Example" }],
-      findings: [{ id: findingId, siteId, pageId, ruleId: "ONP.TITLE_TOO_SHORT", status: "open" }],
+      pages: [
+        {
+          id: pageId,
+          url: "https://example.com/",
+          title: "Hi",
+          metaDescription: null,
+          h1: "Hello from Example",
+        },
+      ],
+      findings: [
+        {
+          id: findingId,
+          siteId,
+          pageId,
+          ruleId: "ONP.TITLE_TOO_SHORT",
+          status: "open",
+        },
+      ],
     });
     expect(planned).toHaveLength(1);
     const action = planned[0]!;
@@ -108,7 +124,9 @@ describe("executor + git adapter", () => {
       sqlite.close();
       return;
     }
-    expect(fs.readFileSync(path.join(repo, "app/page.tsx"), "utf8")).toContain(action.payload && "title" in action.payload ? action.payload.title : "nope");
+    expect(fs.readFileSync(path.join(repo, "app/page.tsx"), "utf8")).toContain(
+      action.payload && "title" in action.payload ? action.payload.title : "nope",
+    );
     const stored = loadChange(db, result.changeId);
     expect(stored?.before).toContain('title: "Hi"');
     expect(stored?.after).toContain("Hello from Example");
@@ -116,7 +134,9 @@ describe("executor + git adapter", () => {
     const reverted = await revertChange({ db, change: stored!, adapter });
     expect(reverted.ok).toBe(true);
     markReverted(db, result.changeId);
-    expect(fs.readFileSync(path.join(repo, "app/page.tsx"), "utf8")).toContain('title: "Hi"');
+    expect(fs.readFileSync(path.join(repo, "app/page.tsx"), "utf8")).toContain(
+      'title: "Hi"',
+    );
     sqlite.close();
   });
 });

@@ -46,7 +46,9 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
   function fileFor(target: ActionTarget): string {
     const file = resolvePageFile(repo, target.url);
     if (!file) {
-      throw new Error(`no source file for ${target.url} in ${repo} (${detectFramework(repo)})`);
+      throw new Error(
+        `no source file for ${target.url} in ${repo} (${detectFramework(repo)})`,
+      );
     }
     return file;
   }
@@ -56,7 +58,12 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
     return path.join(repo, "content", `${rel}.md`);
   }
 
-  function plan(action: Action): { file: string; before: string; after: string; summary: string } {
+  function plan(action: Action): {
+    file: string;
+    before: string;
+    after: string;
+    summary: string;
+  } {
     if (action.kind === "create_page" && "path" in action.payload) {
       const file = newPageFile(action.payload.path);
       const before = fs.existsSync(file) ? readFile(file) : "";
@@ -94,7 +101,13 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
   const adapter: SiteAdapter = {
     kind: "git",
     capabilities(): AdapterCapabilities {
-      return { kind: "git", reads: true, writes: true, pullRequests: true, rollback: true };
+      return {
+        kind: "git",
+        reads: true,
+        writes: true,
+        pullRequests: true,
+        rollback: true,
+      };
     },
     async read(target: ActionTarget): Promise<AdapterRead> {
       const file = fileFor(target);
@@ -129,7 +142,11 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
       }
       fs.mkdirSync(path.dirname(file), { recursive: true });
       writeFile(file, planned.after);
-      const sha = commitAll(run, repo, `seo: ${planned.summary}\n\nAction ${action.id}`);
+      const sha = commitAll(
+        run,
+        repo,
+        `seo: ${planned.summary}\n\nAction ${action.id}`,
+      );
       const diff = unifiedDiff(planned.before, planned.after, rel);
       let prUrl: string | undefined;
       const remote = currentRemote(run, repo);
@@ -180,7 +197,8 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
       } catch (e) {
         return { ok: false, detail: e instanceof Error ? e.message : String(e) };
       }
-      if (live === change.after) return { ok: true, detail: "file matches after snapshot" };
+      if (live === change.after)
+        return { ok: true, detail: "file matches after snapshot" };
       const expected = titleInSource(change.after);
       const got = titleInSource(live);
       if (expected && got === expected) {
@@ -211,7 +229,11 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
         }
       }
       writeFile(file, change.before);
-      const sha = commitAll(run, repo, `seo: revert ${change.targetRef}\n\nChange ${change.id}`);
+      const sha = commitAll(
+        run,
+        repo,
+        `seo: revert ${change.targetRef}\n\nChange ${change.id}`,
+      );
       return {
         targetRef: change.targetRef,
         before: liveBefore,

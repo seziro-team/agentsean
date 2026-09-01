@@ -19,7 +19,8 @@ export async function autocomplete(
     const rows = Array.isArray(json) ? json : [];
     return rows
       .map((row) => {
-        const rec = row && typeof row === "object" ? (row as { phrase?: string }) : null;
+        const rec =
+          row && typeof row === "object" ? (row as { phrase?: string }) : null;
         return rec?.phrase?.trim() ?? "";
       })
       .filter(Boolean)
@@ -40,7 +41,13 @@ export function autocompleteCall(
   opts?: { fetch?: typeof fetch; endpoint?: "google" | "duckduckgo" },
 ): ProviderCall<KeywordRow[]> {
   return {
-    estimate: freeEstimate("autocomplete", "keywords", "suggest", 1, "public suggest endpoint"),
+    estimate: freeEstimate(
+      "autocomplete",
+      "keywords",
+      "suggest",
+      1,
+      "public suggest endpoint",
+    ),
     run: () => autocomplete(seed, opts),
   };
 }

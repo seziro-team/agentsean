@@ -1,6 +1,10 @@
 import { createHmac } from "node:crypto";
 
-export function stripeSignatureValid(payload: string, header: string, secret: string): boolean {
+export function stripeSignatureValid(
+  payload: string,
+  header: string,
+  secret: string,
+): boolean {
   const parts = Object.fromEntries(
     header.split(",").map((p) => {
       const [k, ...rest] = p.split("=");
@@ -10,7 +14,9 @@ export function stripeSignatureValid(payload: string, header: string, secret: st
   const ts = parts["t"];
   const v1 = parts["v1"];
   if (!ts || !v1) return false;
-  const expected = createHmac("sha256", secret).update(`${ts}.${payload}`).digest("hex");
+  const expected = createHmac("sha256", secret)
+    .update(`${ts}.${payload}`)
+    .digest("hex");
   return expected === v1;
 }
 

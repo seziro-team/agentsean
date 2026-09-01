@@ -182,13 +182,18 @@ export function createGscClient(opts: {
         rows?: GscSearchAnalyticsRow[];
         responseAggregationType?: string;
         metadata?: { firstIncompleteDate?: string };
-      }>("gsc.searchAnalytics", siteUrl, `${GSC_API_BASE}/sites/${encodeSiteUrl(siteUrl)}/searchAnalytics/query`, {
-        method: "POST",
-        body: {
-          ...body,
-          rowLimit: Math.min(body.rowLimit ?? GSC_ROW_LIMIT_MAX, GSC_ROW_LIMIT_MAX),
+      }>(
+        "gsc.searchAnalytics",
+        siteUrl,
+        `${GSC_API_BASE}/sites/${encodeSiteUrl(siteUrl)}/searchAnalytics/query`,
+        {
+          method: "POST",
+          body: {
+            ...body,
+            rowLimit: Math.min(body.rowLimit ?? GSC_ROW_LIMIT_MAX, GSC_ROW_LIMIT_MAX),
+          },
         },
-      });
+      );
       return {
         rows: data.rows ?? [],
         firstIncompleteDate: data.metadata?.firstIncompleteDate ?? null,
@@ -257,21 +262,35 @@ export function subtractUtcMonths(date: Date, months: number): Date {
 }
 
 /** final data trails ~2–3 days. Never hardcode lag when metadata is present. */
-export function defaultGscWindow(today = new Date()): { startDate: string; endDate: string } {
+export function defaultGscWindow(today = new Date()): {
+  startDate: string;
+  endDate: string;
+} {
   const end = subtractUtcDays(today, 3);
   const start = subtractUtcMonths(end, 16);
   return { startDate: ymd(start), endDate: ymd(end) };
 }
 
-export function monthChunks(startDate: string, endDate: string): { startDate: string; endDate: string }[] {
+export function monthChunks(
+  startDate: string,
+  endDate: string,
+): { startDate: string; endDate: string }[] {
   const chunks: { startDate: string; endDate: string }[] = [];
   let cursor = new Date(`${startDate}T00:00:00Z`);
   const end = new Date(`${endDate}T00:00:00Z`);
   while (cursor <= end) {
-    const monthEnd = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 0));
+    const monthEnd = new Date(
+      Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 0),
+    );
     const sliceEnd = monthEnd < end ? monthEnd : end;
     chunks.push({ startDate: ymd(cursor), endDate: ymd(sliceEnd) });
-    cursor = new Date(Date.UTC(sliceEnd.getUTCFullYear(), sliceEnd.getUTCMonth(), sliceEnd.getUTCDate() + 1));
+    cursor = new Date(
+      Date.UTC(
+        sliceEnd.getUTCFullYear(),
+        sliceEnd.getUTCMonth(),
+        sliceEnd.getUTCDate() + 1,
+      ),
+    );
   }
   return chunks;
 }

@@ -64,7 +64,12 @@ function parseXml(
   let error: string | null = null;
   let path: string[] = [];
   let text = "";
-  let current: Partial<SitemapUrl> & { images: string[]; hreflang: { lang: string; href: string }[] } | null = null;
+  let current:
+    | (Partial<SitemapUrl> & {
+        images: string[];
+        hreflang: { lang: string; href: string }[];
+      })
+    | null = null;
   let videoFields: Record<string, string> = {};
 
   parser.on("error", (e) => {
@@ -112,9 +117,9 @@ function parseXml(
         const videoValid = Object.keys(videoFields).length
           ? Boolean(
               videoFields["thumbnail_loc"] &&
-                videoFields["title"] &&
-                videoFields["description"] &&
-                (videoFields["content_loc"] || videoFields["player_loc"]),
+              videoFields["title"] &&
+              videoFields["description"] &&
+              (videoFields["content_loc"] || videoFields["player_loc"]),
             )
           : null;
         urls.push({

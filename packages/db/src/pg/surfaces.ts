@@ -1,11 +1,4 @@
-import {
-  index,
-  integer,
-  pgTable,
-  real,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTable, real, text, uniqueIndex } from "drizzle-orm/pg-core";
 import { sites } from "./schema.js";
 
 /** Phase 9 — AI visibility, local, off-page, verticals. Dual-dialect with sqlite/surfaces.ts. */
@@ -24,7 +17,10 @@ export const aiRuns = pgTable(
     estimatedUsd: real("estimated_usd").notNull().default(0),
     ranAt: text("ran_at").notNull(),
   },
-  (t) => [index("ai_runs_site_idx").on(t.siteId), index("ai_runs_ran_idx").on(t.siteId, t.ranAt)],
+  (t) => [
+    index("ai_runs_site_idx").on(t.siteId),
+    index("ai_runs_ran_idx").on(t.siteId, t.ranAt),
+  ],
 );
 
 export const aiCitations = pgTable(
@@ -105,7 +101,10 @@ export const mentions = pgTable(
     kind: text("kind").notNull(),
     createdAt: text("created_at").notNull(),
   },
-  (t) => [index("mentions_site_idx").on(t.siteId), uniqueIndex("mentions_uidx").on(t.siteId, t.url, t.kind)],
+  (t) => [
+    index("mentions_site_idx").on(t.siteId),
+    uniqueIndex("mentions_uidx").on(t.siteId, t.url, t.kind),
+  ],
 );
 
 export const inbound404s = pgTable(

@@ -17,11 +17,19 @@ export type TenantCost = {
   byok: boolean;
 };
 
-export function tenantCostVisibility(db: SqliteDatabase, tenantId: string, now = new Date()): TenantCost {
+export function tenantCostVisibility(
+  db: SqliteDatabase,
+  tenantId: string,
+  now = new Date(),
+): TenantCost {
   const tenant = getTenant(db, tenantId);
   if (!tenant) throw new Error("unknown_tenant");
   const plan = planOf(tenant.plan);
-  const links = db.select().from(tenantSites).where(eq(tenantSites.tenantId, tenantId)).all();
+  const links = db
+    .select()
+    .from(tenantSites)
+    .where(eq(tenantSites.tenantId, tenantId))
+    .all();
   const siteIds = new Set(links.map((l) => l.siteId));
   let ledgerUsd = 0;
   for (const row of db.select().from(costLedger).all()) {

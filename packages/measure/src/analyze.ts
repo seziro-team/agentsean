@@ -1,10 +1,22 @@
 import { changepointsOverlapping } from "@agentsean/google";
 import type { SqliteDatabase } from "@agentsean/db";
-import { assignEvidenceTier, claimCausation, statementFor, TIER_A_MDE_MAX, UNDERPOWERED_MDE } from "./ladder.js";
+import {
+  assignEvidenceTier,
+  claimCausation,
+  statementFor,
+  TIER_A_MDE_MAX,
+  UNDERPOWERED_MDE,
+} from "./ladder.js";
 import { estimateLift } from "./estimator.js";
 import { suppress } from "./suppress.js";
 import { guardPeeking } from "./peek.js";
-import { getExperiment, overlappingAnomalies, saveClaim, saveResult, setExperimentStatus } from "./persist.js";
+import {
+  getExperiment,
+  overlappingAnomalies,
+  saveClaim,
+  saveResult,
+  setExperimentStatus,
+} from "./persist.js";
 import { splitMde, prePostMde } from "./power.js";
 import type { AnalysisInput, EvidenceTier, ExperimentDesign } from "./types.js";
 
@@ -24,15 +36,22 @@ export type AnalysisResult = {
   suppressedBy: string[];
 };
 
-export function analyzeExperiment(db: SqliteDatabase, input: AnalysisInput): AnalysisResult {
+export function analyzeExperiment(
+  db: SqliteDatabase,
+  input: AnalysisInput,
+): AnalysisResult {
   const exp = getExperiment(db, input.experimentId);
   if (!exp) throw new Error(`unknown experiment ${input.experimentId}`);
   const peek = guardPeeking(exp.plannedEnd, input.now, exp.peekingBlocked === 1);
   const metric = input.metric ?? exp.primaryMetric;
   const hasControl = input.control.length > 0 && exp.design !== "uncontrolled";
   const incidents = changepointsOverlapping(db, exp.preStart, exp.plannedEnd);
-  const ranking = incidents.some((c) => /core|spam|ranking|update/i.test(c.title) || c.kind === "RANKING_UPDATE");
-  const anomalies = input.overlappingAnomalies ?? overlappingAnomalies(db, exp.preStart, exp.plannedEnd);
+  const ranking = incidents.some(
+    (c) => /core|spam|ranking|update/i.test(c.title) || c.kind === "RANKING_UPDATE",
+  );
+  const anomalies =
+    input.overlappingAnomalies ??
+    overlappingAnomalies(db, exp.preStart, exp.plannedEnd);
   const realisedMde = hasControl
     ? splitMde({
         monthlyClicks: monthlyFromSeries(input.treatment, input.control),
@@ -75,9 +94,13 @@ export function analyzeExperiment(db: SqliteDatabase, input: AnalysisInput): Ana
 
   const est =
     input.treatment.length > 0
-      ? estimateLift(input.treatment, hasControl ? input.control : zeroControl(input.treatment), {
-          seed: exp.randomisationSeed,
-        })
+      ? estimateLift(
+          input.treatment,
+          hasControl ? input.control : zeroControl(input.treatment),
+          {
+            seed: exp.randomisationSeed,
+          },
+        )
       : null;
   const lift = est?.lift ?? null;
   const tier = assignEvidenceTier({
@@ -171,5 +194,9 @@ function monthlyFromSeries(
 }
 
 function zeroControl(treatment: AnalysisInput["treatment"]): AnalysisInput["control"] {
-  return treatment.map((r) => ({ url: `control:${r.url}`, preClicks: r.preClicks, postClicks: r.preClicks }));
+  return treatment.map((r) => ({
+    url: `control:${r.url}`,
+    preClicks: r.preClicks,
+    postClicks: r.preClicks,
+  }));
 }

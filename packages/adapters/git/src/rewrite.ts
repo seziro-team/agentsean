@@ -1,4 +1,7 @@
-const TITLE_PATTERNS: { re: RegExp; wrap: (title: string, match: RegExpExecArray) => string }[] = [
+const TITLE_PATTERNS: {
+  re: RegExp;
+  wrap: (title: string, match: RegExpExecArray) => string;
+}[] = [
   {
     re: /title:\s*\{[^{}]*default:\s*(["'`])([\s\S]*?)\1/,
     wrap: (title, m) => m[0]!.replace(m[2]!, title),
@@ -13,12 +16,18 @@ const TITLE_PATTERNS: { re: RegExp; wrap: (title: string, match: RegExpExecArray
   },
 ];
 
-export function rewriteTitle(source: string, next: string): { ok: true; after: string } | { ok: false; error: string } {
+export function rewriteTitle(
+  source: string,
+  next: string,
+): { ok: true; after: string } | { ok: false; error: string } {
   for (const p of TITLE_PATTERNS) {
     p.re.lastIndex = 0;
     const m = p.re.exec(source);
     if (m) {
-      const after = source.slice(0, m.index) + p.wrap(next, m) + source.slice(m.index + m[0].length);
+      const after =
+        source.slice(0, m.index) +
+        p.wrap(next, m) +
+        source.slice(m.index + m[0].length);
       return { ok: true, after };
     }
   }
@@ -32,7 +41,10 @@ export function rewriteTitle(source: string, next: string): { ok: true; after: s
   return { ok: false, error: "no title field found in file" };
 }
 
-export function rewriteBody(source: string, next: string): { ok: true; after: string } | { ok: false; error: string } {
+export function rewriteBody(
+  source: string,
+  next: string,
+): { ok: true; after: string } | { ok: false; error: string } {
   const fm = source.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
   if (fm) {
     return { ok: true, after: fm[0] + next.replace(/^\n/, "") };
@@ -40,14 +52,19 @@ export function rewriteBody(source: string, next: string): { ok: true; after: st
   const main = /(<main[^>]*>)([\s\S]*?)(<\/main>)/i.exec(source);
   if (main && main.index !== undefined) {
     const inner = markdownToHtml(next);
-    const after = source.slice(0, main.index) + `${main[1]}${inner}${main[3]}` + source.slice(main.index + main[0].length);
+    const after =
+      source.slice(0, main.index) +
+      `${main[1]}${inner}${main[3]}` +
+      source.slice(main.index + main[0].length);
     return { ok: true, after };
   }
   const article = /(<article[^>]*>)([\s\S]*?)(<\/article>)/i.exec(source);
   if (article && article.index !== undefined) {
     const inner = markdownToHtml(next);
     const after =
-      source.slice(0, article.index) + `${article[1]}${inner}${article[3]}` + source.slice(article.index + article[0].length);
+      source.slice(0, article.index) +
+      `${article[1]}${inner}${article[3]}` +
+      source.slice(article.index + article[0].length);
     return { ok: true, after };
   }
   if (/^#\s+/m.test(source) || source.trim().length < 40) {
@@ -57,10 +74,7 @@ export function rewriteBody(source: string, next: string): { ok: true; after: st
 }
 
 function markdownToHtml(md: string): string {
-  const escaped = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   return `\n${escaped}\n`;
 }
 

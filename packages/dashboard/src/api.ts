@@ -45,6 +45,7 @@ export async function establishSession(): Promise<boolean> {
   const headers: Record<string, string> = {};
   if (token) headers["x-sean-token"] = token;
   const res = await fetch("/api/session", { headers });
-  if (token && res.ok) history.replaceState(null, "", location.pathname + location.search);
+  if (token && res.ok)
+    history.replaceState(null, "", location.pathname + location.search);
   return res.ok;
 }

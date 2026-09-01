@@ -3,10 +3,17 @@ import { createGhostAdapter, createWebflowAdapter, createWixAdapter } from "./in
 
 describe("saas adapters", () => {
   it("constructs webflow, ghost, and wix adapters", () => {
-    expect(createWebflowAdapter({ origin: "https://api.webflow.com", token: "t" }).kind).toBe("webflow");
     expect(
-      createGhostAdapter({ origin: "https://blog.example", adminKey: "id:" + "ab".repeat(32) }).kind,
+      createWebflowAdapter({ origin: "https://api.webflow.com", token: "t" }).kind,
+    ).toBe("webflow");
+    expect(
+      createGhostAdapter({
+        origin: "https://blog.example",
+        adminKey: "id:" + "ab".repeat(32),
+      }).kind,
     ).toBe("ghost");
-    expect(createWixAdapter({ origin: "https://www.wixapis.com", token: "t" }).kind).toBe("wix");
+    expect(
+      createWixAdapter({ origin: "https://www.wixapis.com", token: "t" }).kind,
+    ).toBe("wix");
   });
 });

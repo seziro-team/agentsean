@@ -16,7 +16,11 @@ export async function localCommand(opts: {
       ? db.select().from(sites).where(eq(sites.origin, opts.target)).get()
       : db.select().from(sites).all()[0];
     if (!site) {
-      emitError(opts.json, { command: "local", error: "unknown_site" }, "No site. Run sean audit first.");
+      emitError(
+        opts.json,
+        { command: "local", error: "unknown_site" },
+        "No site. Run sean audit first.",
+      );
       return 2;
     }
     const locations = listGbpLocations(db, site.id);

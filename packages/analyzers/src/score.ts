@@ -63,11 +63,15 @@ export function computeSiteScore(
   const onpage = onpagePass / n;
 
   const schemaPages = htmlPages.filter((p) => (p.extract?.jsonLd.length ?? 0) > 0);
-  const schemaErrors = findings.filter((f) => f.ruleId.startsWith("SD.") && f.severity === "critical").length;
+  const schemaErrors = findings.filter(
+    (f) => f.ruleId.startsWith("SD.") && f.severity === "critical",
+  ).length;
   const structured =
     htmlPages.length === 0
       ? 0
-      : clamp01(schemaPages.length / n - schemaErrors / Math.max(1, schemaPages.length));
+      : clamp01(
+          schemaPages.length / n - schemaErrors / Math.max(1, schemaPages.length),
+        );
 
   const orphans = findings.find((f) => f.ruleId === "CRAWL.ORPHAN")?.urls.length ?? 0;
   const deep = htmlPages.filter((p) => p.depth > 3).length;
@@ -75,11 +79,14 @@ export function computeSiteScore(
 
   let performance = 0.7;
   let performanceApplied = false;
-  let performanceNote: string | null = "No CrUX or Lighthouse data; using crawl TTFB proxy.";
+  let performanceNote: string | null =
+    "No CrUX or Lighthouse data; using crawl TTFB proxy.";
   if (opts?.hasCrux) {
     performanceApplied = true;
     performanceNote = null;
-    const fail = ["CWV.LCP_FAIL", "CWV.INP_FAIL", "CWV.CLS_FAIL"].filter((id) => ids.has(id)).length;
+    const fail = ["CWV.LCP_FAIL", "CWV.INP_FAIL", "CWV.CLS_FAIL"].filter((id) =>
+      ids.has(id),
+    ).length;
     performance = clamp01(1 - fail / 3);
   } else {
     const slow = crawl.pages.filter((p) => p.ttfbMs > 800).length;
@@ -93,14 +100,43 @@ export function computeSiteScore(
   const aiBlocked = ids.has("ROBOTS.BLOCKS_AI_UNINTENDED");
   const ai = aiBlocked ? 0.3 : 0.8;
 
-  const thin = findings.find((f) => f.ruleId === "THIN.LOW_WORDCOUNT")?.urls.length ?? 0;
+  const thin =
+    findings.find((f) => f.ruleId === "THIN.LOW_WORDCOUNT")?.urls.length ?? 0;
   const content = clamp01(1 - thin / n);
 
   const raw: PillarScore[] = [
-    { id: "indexability", name: PILLARS[0]!.name, weight: 0.25, score: indexability, applied: true, note: null },
-    { id: "onpage", name: PILLARS[1]!.name, weight: 0.2, score: onpage, applied: true, note: null },
-    { id: "structured", name: PILLARS[2]!.name, weight: 0.1, score: structured, applied: true, note: null },
-    { id: "linking", name: PILLARS[3]!.name, weight: 0.1, score: linking, applied: true, note: null },
+    {
+      id: "indexability",
+      name: PILLARS[0]!.name,
+      weight: 0.25,
+      score: indexability,
+      applied: true,
+      note: null,
+    },
+    {
+      id: "onpage",
+      name: PILLARS[1]!.name,
+      weight: 0.2,
+      score: onpage,
+      applied: true,
+      note: null,
+    },
+    {
+      id: "structured",
+      name: PILLARS[2]!.name,
+      weight: 0.1,
+      score: structured,
+      applied: true,
+      note: null,
+    },
+    {
+      id: "linking",
+      name: PILLARS[3]!.name,
+      weight: 0.1,
+      score: linking,
+      applied: true,
+      note: null,
+    },
     {
       id: "performance",
       name: PILLARS[4]!.name,
@@ -117,8 +153,22 @@ export function computeSiteScore(
       applied: searchApplied,
       note: searchApplied ? null : "No GSC data; weight redistributed.",
     },
-    { id: "ai", name: PILLARS[6]!.name, weight: 0.05, score: ai, applied: true, note: "AI-crawler robots.txt only (Phase 1)." },
-    { id: "content", name: PILLARS[7]!.name, weight: 0.05, score: content, applied: true, note: null },
+    {
+      id: "ai",
+      name: PILLARS[6]!.name,
+      weight: 0.05,
+      score: ai,
+      applied: true,
+      note: "AI-crawler robots.txt only (Phase 1).",
+    },
+    {
+      id: "content",
+      name: PILLARS[7]!.name,
+      weight: 0.05,
+      score: content,
+      applied: true,
+      note: null,
+    },
   ];
 
   const applied = raw.filter((p) => p.applied);
@@ -133,7 +183,8 @@ export function computeSiteScore(
   const provisional = crawl.pages.length < 50;
   if (partial) notes.push("Partial score: Search Console is not connected.");
   if (provisional) notes.push("Provisional: fewer than 50 URLs crawled.");
-  if (!opts?.hasCrux) notes.push("Performance pillar uses crawl TTFB until CrUX is connected.");
+  if (!opts?.hasCrux)
+    notes.push("Performance pillar uses crawl TTFB until CrUX is connected.");
 
   return {
     version: SITE_SCORE_VERSION,
@@ -157,5 +208,3 @@ function clamp01(n: number): number {
   if (Number.isNaN(n)) return 0;
   return Math.max(0, Math.min(1, n));
 }
-
-

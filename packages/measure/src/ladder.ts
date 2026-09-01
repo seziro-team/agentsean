@@ -49,9 +49,16 @@ export function assignEvidenceTier(input: LadderInput): EvidenceTier {
   const effect = input.lift;
   const mde = input.realisedMde;
   const exceedsMde =
-    effect !== null && mde !== null && Number.isFinite(effect) && Number.isFinite(mde) && Math.abs(effect) >= mde;
+    effect !== null &&
+    mde !== null &&
+    Number.isFinite(effect) &&
+    Number.isFinite(mde) &&
+    Math.abs(effect) >= mde;
   const directional =
-    effect !== null && Number.isFinite(effect) && effect !== 0 && (mde === null || Math.abs(effect) < mde);
+    effect !== null &&
+    Number.isFinite(effect) &&
+    effect !== 0 &&
+    (mde === null || Math.abs(effect) < mde);
 
   if (
     input.hasControl &&
@@ -88,15 +95,22 @@ export function refuseUrlAttribution(url: string): never {
   );
 }
 
-export function statementFor(tier: EvidenceTier, opts?: {
-  lift?: number | null | undefined;
-  realisedMde?: number | null | undefined;
-  incidentTitles?: string[] | undefined;
-  monthlyClicks?: number | undefined;
-  neededClicksPerArm?: number | undefined;
-}): string {
-  const liftPct = opts?.lift !== null && opts?.lift !== undefined ? pct(opts.lift) : null;
-  const mdePct = opts?.realisedMde !== null && opts?.realisedMde !== undefined ? pct(opts.realisedMde) : null;
+export function statementFor(
+  tier: EvidenceTier,
+  opts?: {
+    lift?: number | null | undefined;
+    realisedMde?: number | null | undefined;
+    incidentTitles?: string[] | undefined;
+    monthlyClicks?: number | undefined;
+    neededClicksPerArm?: number | undefined;
+  },
+): string {
+  const liftPct =
+    opts?.lift !== null && opts?.lift !== undefined ? pct(opts.lift) : null;
+  const mdePct =
+    opts?.realisedMde !== null && opts?.realisedMde !== undefined
+      ? pct(opts.realisedMde)
+      : null;
   switch (tier) {
     case "A":
       return liftPct
@@ -117,7 +131,10 @@ export function statementFor(tier: EvidenceTier, opts?: {
       const need = opts?.neededClicksPerArm
         ? ` We'd need roughly ${Math.round(opts.neededClicksPerArm)} clicks per group over 8 weeks`
         : " We'd need roughly 1,900 clicks per group over 8 weeks";
-      const have = opts?.monthlyClicks !== undefined ? ` and this site has ~${Math.round(opts.monthlyClicks)} clicks/month.` : ".";
+      const have =
+        opts?.monthlyClicks !== undefined
+          ? ` and this site has ~${Math.round(opts.monthlyClicks)} clicks/month.`
+          : ".";
       return `Applied. Not measurable at this site's traffic volume.${need}${have} This is true of every SEO tool; only Sean says so.`;
     }
   }

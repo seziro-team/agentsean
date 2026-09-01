@@ -54,7 +54,10 @@ export function estimateCostUsd(
   outputTokens: number,
 ): number {
   const rates = CLASS_RATES[modelClass];
-  return (inputTokens / 1_000_000) * rates.inputPerMTok + (outputTokens / 1_000_000) * rates.outputPerMTok;
+  return (
+    (inputTokens / 1_000_000) * rates.inputPerMTok +
+    (outputTokens / 1_000_000) * rates.outputPerMTok
+  );
 }
 
 export function taskClass(task: "classify" | "draft" | "strategy"): ModelClass {

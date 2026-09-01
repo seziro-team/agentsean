@@ -18,7 +18,10 @@ export function createOpenSeoClient(opts: {
   const fetchFn = opts.fetch ?? fetch;
   let nextId = 1;
 
-  async function rpc(method: string, params?: Record<string, unknown>): Promise<unknown> {
+  async function rpc(
+    method: string,
+    params?: Record<string, unknown>,
+  ): Promise<unknown> {
     const headers: Record<string, string> = {
       "content-type": "application/json",
       accept: "application/json, text/event-stream",
@@ -35,7 +38,10 @@ export function createOpenSeoClient(opts: {
       }),
     });
     if (!res.ok) throw new Error(`OpenSEO MCP HTTP ${res.status}`);
-    const json = (await res.json()) as { result?: unknown; error?: { message?: string } };
+    const json = (await res.json()) as {
+      result?: unknown;
+      error?: { message?: string };
+    };
     if (json.error) throw new Error(json.error.message ?? "OpenSEO MCP error");
     return json.result;
   }
@@ -43,7 +49,9 @@ export function createOpenSeoClient(opts: {
   return {
     url: opts.url,
     async listTools() {
-      const result = (await rpc("tools/list")) as { tools?: Array<{ name: string; description?: string }> };
+      const result = (await rpc("tools/list")) as {
+        tools?: Array<{ name: string; description?: string }>;
+      };
       return result.tools ?? [];
     },
     async callTool(name, args) {

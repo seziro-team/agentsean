@@ -23,14 +23,7 @@ describe("cli", () => {
       return true;
     }) as typeof process.stderr.write;
     try {
-      const code = await run([
-        "node",
-        "sean",
-        "status",
-        "--json",
-        "--home",
-        home,
-      ]);
+      const code = await run(["node", "sean", "status", "--json", "--home", home]);
       expect(code).toBe(1);
       const parsed = JSON.parse(chunks.join("").trim()) as {
         running: boolean;

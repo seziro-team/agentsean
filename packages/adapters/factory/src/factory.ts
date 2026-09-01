@@ -1,4 +1,8 @@
-import { loadAdapterConnection, listAdapterConnections, type SiteAdapter } from "@agentsean/actions";
+import {
+  loadAdapterConnection,
+  listAdapterConnections,
+  type SiteAdapter,
+} from "@agentsean/actions";
 import type { SqliteDatabase } from "@agentsean/db";
 import { createGitAdapter } from "@agentsean/adapter-git";
 import { createWordpressAdapter } from "@agentsean/adapter-wordpress";
@@ -76,7 +80,8 @@ export function createSiteAdapter(
     case "shopify": {
       const shop = str(config, "shop") ?? str(config, "origin");
       const accessToken = str(config, "accessToken") ?? str(config, "token");
-      if (!shop || !accessToken) throw new Error("shopify adapter requires shop and accessToken");
+      if (!shop || !accessToken)
+        throw new Error("shopify adapter requires shop and accessToken");
       const storefrontOrigin = str(config, "storefrontOrigin");
       return createShopifyAdapter({
         shop,
@@ -97,13 +102,22 @@ export function createSiteAdapter(
       const origin = str(config, "origin") ?? "https://api.webflow.com";
       const token = str(config, "token");
       if (!token) throw new Error("webflow adapter requires token");
-      return createWebflowAdapter({ origin, token, ...(fetchFn ? { fetch: fetchFn } : {}) });
+      return createWebflowAdapter({
+        origin,
+        token,
+        ...(fetchFn ? { fetch: fetchFn } : {}),
+      });
     }
     case "ghost": {
       const origin = str(config, "origin");
       const adminKey = str(config, "adminKey") ?? str(config, "token");
-      if (!origin || !adminKey) throw new Error("ghost adapter requires origin and adminKey");
-      return createGhostAdapter({ origin, adminKey, ...(fetchFn ? { fetch: fetchFn } : {}) });
+      if (!origin || !adminKey)
+        throw new Error("ghost adapter requires origin and adminKey");
+      return createGhostAdapter({
+        origin,
+        adminKey,
+        ...(fetchFn ? { fetch: fetchFn } : {}),
+      });
     }
     case "wix": {
       const origin = str(config, "origin") ?? "https://www.wixapis.com";
@@ -120,8 +134,13 @@ export function createSiteAdapter(
     case "bigcommerce": {
       const storeHash = str(config, "storeHash");
       const token = str(config, "token");
-      if (!storeHash || !token) throw new Error("bigcommerce adapter requires storeHash and token");
-      return createBigCommerceAdapter({ storeHash, token, ...(fetchFn ? { fetch: fetchFn } : {}) });
+      if (!storeHash || !token)
+        throw new Error("bigcommerce adapter requires storeHash and token");
+      return createBigCommerceAdapter({
+        storeHash,
+        token,
+        ...(fetchFn ? { fetch: fetchFn } : {}),
+      });
     }
     case "contentful":
     case "sanity":
@@ -129,7 +148,8 @@ export function createSiteAdapter(
     case "payload": {
       const endpoint = str(config, "endpoint") ?? str(config, "origin");
       const token = str(config, "token");
-      if (!endpoint || !token) throw new Error(`${kind} adapter requires endpoint and token`);
+      if (!endpoint || !token)
+        throw new Error(`${kind} adapter requires endpoint and token`);
       return createHeadlessAdapter({
         kind,
         endpoint,
@@ -152,7 +172,16 @@ export function adapterForSite(
     if (cfg) return createSiteAdapter(opts.prefer, cfg, opts);
   }
   const rows = listAdapterConnections(db, siteId);
-  const order = ["wordpress", "shopify", "git", "cloudflare", "webflow", "ghost", "wix", "bigcommerce"];
+  const order = [
+    "wordpress",
+    "shopify",
+    "git",
+    "cloudflare",
+    "webflow",
+    "ghost",
+    "wix",
+    "bigcommerce",
+  ];
   for (const kind of order) {
     const row = rows.find((r) => r.kind === kind);
     if (row) return createSiteAdapter(row.kind, row.config, opts);

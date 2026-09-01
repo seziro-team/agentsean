@@ -93,7 +93,12 @@ export function splitMde(opts: {
 }): number {
   const windowDays = opts.windowDays ?? DEFAULT_WINDOW_DAYS;
   const pagesPerArm = opts.pagesPerArm ?? Math.floor(opts.pageCount / 2);
-  const clicks = clicksPerArmInWindow(opts.monthlyClicks, windowDays, pagesPerArm, opts.pageCount);
+  const clicks = clicksPerArmInWindow(
+    opts.monthlyClicks,
+    windowDays,
+    pagesPerArm,
+    opts.pageCount,
+  );
   const fromClicks = lerpTable(CLICKS_ARM_MDE, clicks);
   const fromPages = lerpTable(PAGES_ARM_MDE, Math.max(pagesPerArm, 1));
   let mde = Math.max(fromClicks, fromPages);

@@ -18,7 +18,8 @@ export async function checkUpdate(opts: {
   const channel: Channel = opts.channel ?? "stable";
   const current = opts.current ?? VERSION;
   const fetchFn = opts.fetch ?? globalThis.fetch;
-  const tag = channel === "stable" ? "latest" : channel === "dev" ? "beta" : "extended-stable";
+  const tag =
+    channel === "stable" ? "latest" : channel === "dev" ? "beta" : "extended-stable";
   try {
     const res = await fetchFn(REGISTRY);
     if (res.status === 404) {

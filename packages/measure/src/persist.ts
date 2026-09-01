@@ -69,7 +69,11 @@ const HARDCODED_ANOMALIES: Array<{
 export function seedDataAnomalies(db: SqliteDatabase): number {
   let n = 0;
   for (const row of HARDCODED_ANOMALIES) {
-    const existing = db.select().from(dataAnomalies).where(eq(dataAnomalies.id, row.id)).get();
+    const existing = db
+      .select()
+      .from(dataAnomalies)
+      .where(eq(dataAnomalies.id, row.id))
+      .get();
     const values = {
       description: row.description,
       startDate: row.startDate,
@@ -81,7 +85,9 @@ export function seedDataAnomalies(db: SqliteDatabase): number {
     if (existing) {
       db.update(dataAnomalies).set(values).where(eq(dataAnomalies.id, row.id)).run();
     } else {
-      db.insert(dataAnomalies).values({ id: row.id, ...values }).run();
+      db.insert(dataAnomalies)
+        .values({ id: row.id, ...values })
+        .run();
     }
     n++;
   }
@@ -153,7 +159,10 @@ export function getExperiment(db: SqliteDatabase, id: string): StoredExperiment 
   return row ?? null;
 }
 
-export function listExperiments(db: SqliteDatabase, siteId: string): StoredExperiment[] {
+export function listExperiments(
+  db: SqliteDatabase,
+  siteId: string,
+): StoredExperiment[] {
   return db.select().from(experiments).where(eq(experiments.siteId, siteId)).all();
 }
 
@@ -161,7 +170,10 @@ export function setExperimentStatus(
   db: SqliteDatabase,
   id: string,
   status: string,
-  extra?: { evidenceTier?: string | null | undefined; concludedAt?: string | null | undefined },
+  extra?: {
+    evidenceTier?: string | null | undefined;
+    concludedAt?: string | null | undefined;
+  },
 ): void {
   const patch: {
     status: string;
@@ -221,15 +233,23 @@ export function saveResult(
     analysedAt: row.analysedAt,
   };
   if (existing) {
-    db.update(experimentResults).set(values).where(eq(experimentResults.experimentId, experimentId)).run();
+    db.update(experimentResults)
+      .set(values)
+      .where(eq(experimentResults.experimentId, experimentId))
+      .run();
     return;
   }
-  db.insert(experimentResults).values({ experimentId, ...values }).run();
+  db.insert(experimentResults)
+    .values({ experimentId, ...values })
+    .run();
 }
 
 export function saveClaim(
   db: SqliteDatabase,
-  row: Omit<ClaimRecord, "id" | "createdAt"> & { id?: string | undefined; createdAt?: string | undefined },
+  row: Omit<ClaimRecord, "id" | "createdAt"> & {
+    id?: string | undefined;
+    createdAt?: string | undefined;
+  },
 ): ClaimRecord {
   const id = row.id ?? randomUUID();
   const createdAt = row.createdAt ?? new Date().toISOString();
@@ -244,7 +264,9 @@ export function saveClaim(
     refusedReason: row.refusedReason,
     createdAt,
   };
-  db.insert(claims).values({ id, ...values }).run();
+  db.insert(claims)
+    .values({ id, ...values })
+    .run();
   return {
     id,
     siteId: row.siteId,
@@ -279,7 +301,10 @@ export function listClaims(db: SqliteDatabase, siteId: string): ClaimRecord[] {
     }));
 }
 
-export function claimForChange(db: SqliteDatabase, changeId: string): ClaimRecord | null {
+export function claimForChange(
+  db: SqliteDatabase,
+  changeId: string,
+): ClaimRecord | null {
   const row = db.select().from(claims).where(eq(claims.changeId, changeId)).get();
   if (!row) return null;
   return {
@@ -300,10 +325,22 @@ export function listCohortUrls(
   db: SqliteDatabase,
   experimentId: string,
 ): { treatment: string[]; control: string[]; reserve: string[] } {
-  const rows = db.select().from(cohorts).where(eq(cohorts.experimentId, experimentId)).all();
-  const out = { treatment: [] as string[], control: [] as string[], reserve: [] as string[] };
+  const rows = db
+    .select()
+    .from(cohorts)
+    .where(eq(cohorts.experimentId, experimentId))
+    .all();
+  const out = {
+    treatment: [] as string[],
+    control: [] as string[],
+    reserve: [] as string[],
+  };
   for (const c of rows) {
-    const members = db.select().from(cohortMembers).where(eq(cohortMembers.cohortId, c.id)).all();
+    const members = db
+      .select()
+      .from(cohortMembers)
+      .where(eq(cohortMembers.cohortId, c.id))
+      .all();
     const urls = members.map((m) => m.url);
     if (c.arm === "treatment") out.treatment.push(...urls);
     else if (c.arm === "control") out.control.push(...urls);

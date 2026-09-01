@@ -1,6 +1,6 @@
 # OpenSEO teardown — Keyword research, rank tracking & the DataForSEO layer
 
-Repo: `/home/vp2722/seoe/reference/open-seo` (MIT, every-app / Ben Senescu).
+Repo: `/reference/open-seo` (MIT, every-app / Ben Senescu).
 Scope assigned: `src/server/features/keywords/**`, `src/server/features/rank-tracking/**`,
 `src/server/workflows/RankCheckWorkflow.ts`, `src/server/workflows/rankCheckPaths.ts`,
 `specs/0004-keyword-data-source-routing.md`, `specs/0008-local-rank-tracking-locations.md`.

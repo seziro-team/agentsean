@@ -52,7 +52,8 @@ function decodeBrokerState(secrets: BrokerSecrets, state: string): BrokerState {
   if (dot <= 0) throw new Error("invalid broker state");
   const payload = state.slice(0, dot);
   const sig = state.slice(dot + 1);
-  if (sig !== signState(secrets.stateKey, payload)) throw new Error("bad broker state signature");
+  if (sig !== signState(secrets.stateKey, payload))
+    throw new Error("bad broker state signature");
   const inner = fromB64urlJson<BrokerState>(payload);
   if (inner.exp < Date.now()) throw new Error("broker state expired");
   return inner;
@@ -130,7 +131,9 @@ export async function brokerHandleGoogleCallback(opts: {
   });
   if (!response.ok) {
     const text = await response.text().catch(() => "");
-    throw new Error(`token exchange failed (${response.status}): ${text.slice(0, 200)}`);
+    throw new Error(
+      `token exchange failed (${response.status}): ${text.slice(0, 200)}`,
+    );
   }
   const json = (await response.json()) as Record<string, unknown>;
   const wrapKey = Buffer.from(inner.wrapKeyB64, "base64url");
@@ -166,7 +169,9 @@ export async function brokerHandleRefresh(opts: {
   return { payload: seal(wrapKey, JSON.stringify(json)) };
 }
 
-export function loadBrokerSecrets(env: NodeJS.ProcessEnv = process.env): BrokerSecrets | null {
+export function loadBrokerSecrets(
+  env: NodeJS.ProcessEnv = process.env,
+): BrokerSecrets | null {
   const clientId = env["GOOGLE_CLIENT_ID"]?.trim();
   const clientSecret = env["GOOGLE_CLIENT_SECRET"]?.trim();
   const stateSecret = env["SEAN_BROKER_STATE_KEY"]?.trim();

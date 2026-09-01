@@ -584,4 +584,4 @@ All accessed **2026-09-01** unless noted.
 - llms.txt adoption data (**agency/vendor blogs only — unverified**): https://www.digitalapplied.com/blog/llms-txt-in-practice-adoption-evidence-2026 , https://geojacker.com/llms-txt
 
 **Own measurements (2026-09-01)**
-- Extraction matrix, §1.1 — `cheerio@1.2.0`, `jsdom@29.1.1`, `@mozilla/readability@0.6.0`, `turndown@7.2.4`, `html-to-text@10.0.1`, `playwright@1.62.1` (Chromium). Scripts and fixture at `/tmp/claude-1000/-home-vp2722-seoe/4911f4ca-31de-4720-8fa6-0f77468cd773/scratchpad/extract/`. **Port these into the repo as `test/redteam/` before they are lost.**
+- Extraction matrix, §1.1 — `cheerio@1.2.0`, `jsdom@29.1.1`, `@mozilla/readability@0.6.0`, `turndown@7.2.4`, `html-to-text@10.0.1`, `playwright@1.62.1` (Chromium). Scripts and fixture at `extract/`. **Port these into the repo as `test/redteam/` before they are lost.**

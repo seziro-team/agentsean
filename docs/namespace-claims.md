@@ -1,33 +1,43 @@
-# Day-0 clock: namespace claims
+# Namespace claims
 
-Claim these before the name leaks. "Sean" is a common first name; short social
-handles are taken by actual Seans. `agentsean` and `seanhq` are the consistent
-pair.
+"Sean" is a common first name, so short social handles are mostly taken by
+actual Seans. `agentsean` is the consistent handle to claim everywhere.
 
-| Surface | Target | Status (2026-09-01) |
+| Surface | Target | Status (2026-09-02) |
 | --- | --- | --- |
-| GitHub repo | `github.com/seanhq/sean` | **Parked at [`vp2722/sean`](https://github.com/vp2722/sean).** Org `seanhq` does not exist yet; creating a GitHub org requires a browser session and cannot be done with the current `repo`/`read:org` token. Transfer the repo after the org is created. |
-| GitHub org | `seanhq` | **Not created.** Do this in the GitHub UI. |
-| npm package | `agentsean` | **Name is free** (registry 404 as of 2026-09-01). This machine is **not logged in** (`npm whoami` → ENEEDAUTH). Publish after `git push` CI is green. |
-| npm org | `@agentsean/*` | **Not created.** `npm org create agentsean` after login. Packages: `@agentsean/daemon`, `@agentsean/db`, `@agentsean/credentials`, `@agentsean/ee`. |
-| Domain | `agentsean.com` | **Not registered.** Needed for OAuth consent screen. |
-| Domain | `agentsean.ai` | **Not registered.** |
-| Domain | `seanhq.com` | **Not registered.** |
-| Discord | `agentsean` / `seanhq` | **Not claimed.** |
-| X | `@agentsean` / `@seanhq` | **Not claimed.** Short handles are likely taken; `agentsean` is the one to try. |
+| GitHub repo | [`seziro-team/agentsean`](https://github.com/seziro-team/agentsean) | **Live.** Canonical source. |
+| npm package | `agentsean` | **Claimed.** Published from CI with Sigstore provenance. |
+| npm scope | `@agentsean/*` | **Claimed.** Workspace packages publish under it. |
+| Domain | `agentsean.com` | **Available.** Primary. Needed for the Google OAuth consent screen. |
+| Domain | `agentsean.dev` / `.ai` / `.io` | **Available.** Defensive registrations. |
+| Website | `seziro-team.github.io/agentsean` | **Live** on GitHub Pages until the domain resolves. |
+| Discord | `agentsean` | Not claimed. |
+| X | `@agentsean` | Not claimed. Fallbacks: `@agentseanapp`, `@seziro`. |
+| WordPress.org plugin slug | `agent-sean-bridge` | Not submitted. See [`docs/launch/wordpress-directory.md`](launch/wordpress-directory.md). |
 
-## After you have a browser session
+## Remaining manual steps
 
-1. Create GitHub org `seanhq` (free plan is enough). Transfer `vp2722/sean` to
-   `seanhq/sean`. Update README, CLA bot `path-to-document`, and npm
-   `repository` fields.
-2. `npm login` → `npm org create agentsean` → publish nothing yet, or publish
-   `agentsean@0.0.0` with `"private": false` and a placeholder README to hold
-   the name. Prefer waiting for a real `0.0.1` that runs `npx agentsean start`.
-3. Register `agentsean.com` (primary), then `agentsean.ai` and `seanhq.com`.
-   Point A/AAAA at a placeholder, serve the privacy policy + TOS the OAuth
-   consent screen needs.
-4. Create Discord server `Agent Sean`, vanity if eligible.
-5. Claim X `@agentsean`. If taken, `@seanhq` then `@agentseanapp`.
+These need a browser session and cannot be done from CI.
 
-Update the table above when each row flips.
+1. **Register `agentsean.com`.** Point `CNAME` at `seziro-team.github.io` (or
+   the app host). Add the domain in **Settings → Pages → Custom domain** and
+   enable *Enforce HTTPS*. The `web/CNAME` file is already staged for this.
+2. **Provision mail** on the domain: `security@`, `privacy@`, `conduct@`,
+   `sales@`, `support@`. `SECURITY.md`, `CODE_OF_CONDUCT.md`, and the privacy
+   policy reference these; GitHub Security Advisories is the working channel
+   until they resolve.
+3. **Google Cloud OAuth** — see [`docs/oauth-verification.md`](oauth-verification.md).
+   The consent screen requires a verified domain, a homepage, and a hosted
+   privacy policy, all of which depend on step 1.
+4. **Discord + X.** Optional at launch; the GitHub Discussions board is the
+   primary community surface.
+
+## Optional: move to a dedicated org
+
+The repo currently lives on the `seziro-team` account. If you later create a
+GitHub organization (`agentsean` or `seanhq`), transferring the repo preserves
+stars, issues, and forks, and GitHub serves permanent redirects from the old
+path — so existing clones and the `curl | sh` installer keep working. Update
+afterwards: `README.md` badges, `package.json` `repository` fields, the CLA bot
+`path-to-document`, the crawler user-agent in `packages/crawler/src/ua.ts`, and
+`Formula/agentsean.rb`.

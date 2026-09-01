@@ -2,7 +2,12 @@ import { eq } from "drizzle-orm";
 import { openSqlite, sites } from "@agentsean/db";
 import { loadLlmConfig } from "@agentsean/llm";
 import { runSurfacesJob } from "@agentsean/surfaces";
-import { dbPath, defaultSeanHome, ensureSeanHome, openDaemonStore } from "@agentsean/daemon";
+import {
+  dbPath,
+  defaultSeanHome,
+  ensureSeanHome,
+  openDaemonStore,
+} from "@agentsean/daemon";
 import { emit, emitError } from "../output.js";
 
 export async function visibilityCommand(opts: {
@@ -17,7 +22,11 @@ export async function visibilityCommand(opts: {
       ? db.select().from(sites).where(eq(sites.origin, opts.target)).get()
       : db.select().from(sites).all()[0];
     if (!site) {
-      emitError(opts.json, { command: "visibility", error: "unknown_site" }, "No site. Run sean audit first.");
+      emitError(
+        opts.json,
+        { command: "visibility", error: "unknown_site" },
+        "No site. Run sean audit first.",
+      );
       return 2;
     }
     const store = openDaemonStore(home);

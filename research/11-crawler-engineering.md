@@ -1303,7 +1303,7 @@ All accessed **2026-08-31** unless stated.
 - Headless Chrome at scale (resource blocking 40–60% savings), Medium, 2026-06 — https://medium.com/@zlata_18516/headless-chrome-at-scale-cpu-ram-and-cost-optimization-strategies-caea743245c4 — **the "≈250 MB/page" figure previously attributed to the datawookie post is not in that post and is refuted by measurement; see §8.2**
 - Playwright memory-growth reports — https://github.com/microsoft/playwright/issues/29163 (single user report, closed with no maintainer root-cause; source of the "1,000–1,500 pages" figure) and https://github.com/microsoft/playwright/issues/38489 (unverified "~20 GB" outlier, Chrome for Testing, 1.57)
 - Playwright memory discussion — https://github.com/microsoft/playwright/issues/33566
-- **Local primary measurement**, Playwright 1.60.0 + `chromium-headless-shell` on Linux: sum-of-RSS vs `/proc/[pid]/smaps_rollup` PSS across the full process tree, real sites (Wikipedia, Hacker News, python.org). Scripts: `/tmp/claude-1000/-home-vp2722-seoe/4911f4ca-31de-4720-8fa6-0f77468cd773/scratchpad/bench.py` and `bench2.py`
+- **Local primary measurement**, Playwright 1.60.0 + `chromium-headless-shell` on Linux: sum-of-RSS vs `/proc/[pid]/smaps_rollup` PSS across the full process tree, real sites (Wikipedia, Hacker News, python.org). Scripts: `bench.py` and `bench2.py`
 - cheerio issue #1259 "parse5 is about half the performance of htmlparser2" — https://github.com/cheeriojs/cheerio/issues/1259
 - jsdom vs cheerio benchmark (517.16 ms vs 300.95 ms), ZenRows — https://www.zenrows.com/blog/jsdom-vs-cheerio
 - Manku, Jain, Das Sarma, "Detecting Near-Duplicates for Web Crawling" (WWW 2007) — https://research.google.com/pubs/archive/33026.pdf  **(2007 — old, but still the operative reference)**

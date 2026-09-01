@@ -57,7 +57,10 @@ export function suppress(input: SuppressInput): SuppressionRule[] {
   ) {
     rules.push("S2");
   }
-  if ((metric === "impressions" || metric === "position") && num100Straddle(windowStart, windowEnd)) {
+  if (
+    (metric === "impressions" || metric === "position") &&
+    num100Straddle(windowStart, windowEnd)
+  ) {
     rules.push("S3");
   }
   if (!input.hasControl) {

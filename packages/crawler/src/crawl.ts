@@ -71,7 +71,9 @@ export async function crawlSite(options: CrawlOptions): Promise<CrawlResult> {
     }
   }
 
-  const sitemapLocs = new Set(sitemaps.flatMap((s) => s.urls.map((u) => normalizeUrlSafe(u.loc))));
+  const sitemapLocs = new Set(
+    sitemaps.flatMap((s) => s.urls.map((u) => normalizeUrlSafe(u.loc))),
+  );
   const pages: CrawledPage[] = [];
   const inlinks = new Map<string, number>();
   const followInlinks = new Map<string, number>();
@@ -213,18 +215,25 @@ async function crawlOne(opts: {
     userAgent: opts.userAgent,
     timeoutMs: opts.timeoutMs,
   });
-  const isHtml = /html|xml|xhtml/i.test(fetched.contentType) || looksLikeHtml(fetched.decoded);
+  const isHtml =
+    /html|xml|xhtml/i.test(fetched.contentType) || looksLikeHtml(fetched.decoded);
   const html = isHtml ? fetched.decoded.toString("utf8") : null;
   const headerCanonical = parseLinkHeaderCanonicals(fetched.headers.link);
   const xRobots = fetched.headers["x-robots-tag"] ?? null;
-  const extract = html ? extractPage(html, fetched.finalUrl, headerCanonical, xRobots) : null;
+  const extract = html
+    ? extractPage(html, fetched.finalUrl, headerCanonical, xRobots)
+    : null;
   const hash = fetched.decoded.length ? contentHash(fetched.decoded) : null;
   const sh = extract ? simhashHex(extract.mainText || extract.allText) : null;
   const jsScore = html && extract ? scoreFromHtml(html, extract) : 0;
   const tmpl = templateKey(opts.url);
 
   let supports304: boolean | null = null;
-  if (opts.check304 && fetched.statusCode === 200 && (fetched.etag || fetched.lastModified)) {
+  if (
+    opts.check304 &&
+    fetched.statusCode === 200 &&
+    (fetched.etag || fetched.lastModified)
+  ) {
     const again = await fetchUrl(opts.url, {
       agent: opts.agent,
       userAgent: opts.userAgent,
@@ -369,7 +378,9 @@ async function fetchSitemaps(
 
 function looksLikeHtml(buf: Buffer): boolean {
   const head = buf.slice(0, 256).toString("utf8").toLowerCase();
-  return head.includes("<html") || head.includes("<!doctype html") || head.includes("<head");
+  return (
+    head.includes("<html") || head.includes("<!doctype html") || head.includes("<head")
+  );
 }
 
 function normalizeUrlSafe(url: string): string {
