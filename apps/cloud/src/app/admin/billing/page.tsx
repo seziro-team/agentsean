@@ -7,7 +7,7 @@ import { CopyField } from "@/components/ui/copy-button";
 import { getAdminSetting } from "@/lib/admin-api";
 import { isEncryptionConfigured } from "@/lib/crypto/envelope";
 import { getBillingProvider } from "@/lib/billing";
-import { appUrl } from "@/lib/env";
+import { webhookUrl } from "@/lib/urls";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Billing — Admin" };
@@ -63,7 +63,7 @@ export default async function AdminBillingPage() {
               <p className="mb-1 text-xs font-medium text-[var(--color-muted)]">
                 Webhook URL (paste into your provider dashboard)
               </p>
-              <CopyField value={`${appUrl()}/api/webhooks/billing`} label="Copy URL" />
+              <CopyField value={webhookUrl()} label="Copy URL" />
               <p className="mt-2 text-xs text-[var(--color-faint)]">
                 The endpoint verifies the signature on the raw body before processing
                 and is idempotent, so provider retries are safe.

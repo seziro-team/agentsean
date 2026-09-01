@@ -89,8 +89,10 @@ export function TerminalView({
         const msg = (e as MessageEvent<string>).data;
         if (msg) term?.writeln(`\x1b[31m${msg}\x1b[0m`);
       });
-      source.onopen = () => setStatus((s) => (s === "connecting" ? "attached" : s));
-      source.onerror = () => setStatus("error");
+      source.addEventListener("open", () =>
+        setStatus((s) => (s === "connecting" ? "attached" : s)),
+      );
+      source.addEventListener("error", () => setStatus("error"));
 
       // Input only when interactive.
       if (interactive) {
