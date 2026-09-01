@@ -263,6 +263,7 @@ Missing yours?
 | [Security](docs/security.md) | [Keywords](docs/keywords.md) | [Google APIs](docs/google.md) |
 | [Priority formula](docs/priority.md) | [Evidence & measurement](docs/measure.md) | [Site score](docs/site-score.md) |
 | [Daemon](docs/daemon.md) | [Hosted tier](docs/hosted.md) | [Telemetry](TELEMETRY.md) |
+| [Billing providers](docs/billing.md) | [Governance](GOVERNANCE.md) | [Changelog](CHANGELOG.md) |
 | [Roadmap](ROADMAP.md) | [Contributing](CONTRIBUTING.md) | [Support](SUPPORT.md) |
 
 The 66k-word engineering plan this was built from is in [`PLAN.md`](PLAN.md), and
