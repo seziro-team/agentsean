@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/adapter-shopify",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
@@ -26,5 +26,25 @@
   "devDependencies": {
     "typescript": "~5.9.3",
     "vitest": "^4.1.11"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seziro-team/agentsean.git",
+    "directory": "packages/adapters/shopify"
+  },
+  "homepage": "https://github.com/seziro-team/agentsean#readme",
+  "bugs": {
+    "url": "https://github.com/seziro-team/agentsean/issues"
+  },
+  "author": "Seziro (https://seziro.com)",
+  "description": "Agent Sean — adapter-shopify module",
+  "keywords": [
+    "seo",
+    "agent",
+    "agentsean",
+    "seo-automation"
+  ]
 }

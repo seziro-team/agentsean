@@ -70,7 +70,7 @@ importers:
       '@agentsean/adapter-shopify':
         specifier: workspace:*
         version: link:../shopify
-      '@agentsean/adapter-wordpress':
+      '@agentsean/adapter-wp':
         specifier: workspace:*
         version: link:../wordpress
       '@agentsean/db':
@@ -333,7 +333,7 @@ importers:
       '@agentsean/adapter-shopify':
         specifier: workspace:*
         version: link:../adapters/shopify
-      '@agentsean/adapter-wordpress':
+      '@agentsean/adapter-wp':
         specifier: workspace:*
         version: link:../adapters/wordpress
       '@agentsean/analyzers':

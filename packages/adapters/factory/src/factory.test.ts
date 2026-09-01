@@ -12,7 +12,7 @@ import {
   type AppliedChange,
 } from "@agentsean/actions";
 import { createGitAdapter } from "@agentsean/adapter-git";
-import { createWordpressAdapter } from "@agentsean/adapter-wordpress";
+import { createWordpressAdapter } from "@agentsean/adapter-wp";
 import { createShopifyAdapter, refuseThemeFileWrite } from "@agentsean/adapter-shopify";
 import { createCloudflareAdapter } from "@agentsean/adapter-cloudflare";
 import { createSiteAdapter } from "./factory.js";

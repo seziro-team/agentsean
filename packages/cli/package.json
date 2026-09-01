@@ -1,6 +1,6 @@
 {
   "name": "agentsean",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "license": "AGPL-3.0-only",
   "description": "Agent Sean — the self-hosted autonomous SEO engineer",
   "type": "module",
@@ -13,7 +13,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seziro-team/agentsean.git"
+    "url": "git+https://github.com/seziro-team/agentsean.git",
+    "directory": "packages/cli"
   },
   "engines": {
     "node": ">=22.19.0"
@@ -49,5 +50,19 @@
   "devDependencies": {
     "typescript": "~5.9.3",
     "vitest": "^4.1.11"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/seziro-team/agentsean#readme",
+  "bugs": {
+    "url": "https://github.com/seziro-team/agentsean/issues"
+  },
+  "author": "Seziro (https://seziro.com)",
+  "keywords": [
+    "seo",
+    "agent",
+    "agentsean",
+    "seo-automation"
+  ]
 }

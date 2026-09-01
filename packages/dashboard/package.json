@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/dashboard",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
@@ -29,5 +29,25 @@
     "@vitejs/plugin-react": "^5.0.2",
     "typescript": "~5.9.3",
     "vite": "^7.1.5"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seziro-team/agentsean.git",
+    "directory": "packages/dashboard"
+  },
+  "homepage": "https://github.com/seziro-team/agentsean#readme",
+  "bugs": {
+    "url": "https://github.com/seziro-team/agentsean/issues"
+  },
+  "author": "Seziro (https://seziro.com)",
+  "description": "Agent Sean — dashboard module",
+  "keywords": [
+    "seo",
+    "agent",
+    "agentsean",
+    "seo-automation"
+  ]
 }

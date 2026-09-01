@@ -15,7 +15,7 @@ export default defineConfig({
       "@agentsean/google": path.join(root, "packages/google/src/index.ts"),
       "@agentsean/actions": path.join(root, "packages/actions/src/index.ts"),
       "@agentsean/adapter-git": path.join(root, "packages/adapters/git/src/index.ts"),
-      "@agentsean/adapter-wordpress": path.join(
+      "@agentsean/adapter-wp": path.join(
         root,
         "packages/adapters/wordpress/src/index.ts",
       ),

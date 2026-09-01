@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/daemon",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
@@ -31,7 +31,7 @@
     "@agentsean/actions": "workspace:*",
     "@agentsean/adapter-git": "workspace:*",
     "@agentsean/adapter-factory": "workspace:*",
-    "@agentsean/adapter-wordpress": "workspace:*",
+    "@agentsean/adapter-wp": "workspace:*",
     "@agentsean/adapter-shopify": "workspace:*",
     "@agentsean/adapter-cloudflare": "workspace:*",
     "@agentsean/adapter-saas": "workspace:*",
@@ -57,5 +57,25 @@
   "devDependencies": {
     "typescript": "~5.9.3",
     "vitest": "^4.1.11"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seziro-team/agentsean.git",
+    "directory": "packages/daemon"
+  },
+  "homepage": "https://github.com/seziro-team/agentsean#readme",
+  "bugs": {
+    "url": "https://github.com/seziro-team/agentsean/issues"
+  },
+  "author": "Seziro (https://seziro.com)",
+  "description": "Agent Sean — daemon module",
+  "keywords": [
+    "seo",
+    "agent",
+    "agentsean",
+    "seo-automation"
+  ]
 }
