@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireSuperadmin } from "../guard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
 import { isPlanId, type PlanId } from "@/lib/plans";
 import type { Tenant } from "@/lib/db/types";
@@ -240,10 +241,27 @@ export async function impersonateUser(formData: FormData): Promise<void> {
     maxAge: 60 * 60,
   });
 
-  // The generated link contains a token_hash we verify to establish the target
-  // session in this browser.
-  const props = link.properties;
-  redirect(
-    `/auth/confirm?token_hash=${encodeURIComponent(props.hashed_token)}&type=magiclink&next=/dashboard`,
-  );
+  // Exchange the token SERVER-SIDE. It must never appear in a URL.
+  //
+  // The previous implementation redirected the browser to
+  // /auth/confirm?token_hash=… , which put a fully valid bearer credential for
+  // the target account into a query string — where it lands in proxy and server
+  // access logs, in browser history, and in the Referer header of the next
+  // navigation. Anyone who could read a log could replay it and sign in as that
+  // user. /auth/confirm is also the generic magic-link route: it verifies any
+  // valid token for any email and performs no superadmin check, so the only
+  // thing protecting the session swap was the audit row.
+  //
+  // verifyOtp on the cookie-writing server client establishes the session here,
+  // so the token never leaves this process.
+  const supabase = await createClient();
+  const { error: verifyError } = await supabase.auth.verifyOtp({
+    type: "magiclink",
+    token_hash: link.properties.hashed_token,
+  });
+  if (verifyError) {
+    redirect("/admin/users?error=impersonation_failed");
+  }
+
+  redirect("/dashboard");
 }

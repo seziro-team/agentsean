@@ -31,6 +31,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   const ctx = await getSessionContext();
   if (!ctx) redirect("/login?next=/dashboard");
+  if (ctx.suspended) redirect("/suspended");
 
   return (
     <AppShell

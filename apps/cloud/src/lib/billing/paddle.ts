@@ -117,7 +117,10 @@ export class PaddleProvider implements BillingProvider {
             },
           },
         ],
-        custom_data: input.metadata ?? {},
+        custom_data: {
+          ...(input.inviteId ? { inviteId: input.inviteId } : {}),
+          ...input.metadata,
+        },
       },
     });
     return { id: res.data.id, url: res.data.checkout?.url ?? "" };
@@ -233,6 +236,8 @@ export class PaddleProvider implements BillingProvider {
         (rawType.startsWith("subscription.") ? (strval(data.id) ?? null) : null),
       status: strval(data.status) ?? null,
       amountCents: amount ? Number(amount) : null,
+      inviteId: strval(custom["inviteId"]) ?? null,
+      customerEmail: strval(data.customer_email) ?? null,
       currency:
         item?.price?.unit_price?.currency_code ?? strval(data.currency_code) ?? null,
     };
@@ -253,6 +258,7 @@ type PaddleSubscription = {
 type PaddleWebhookData = {
   id?: unknown;
   customer_id?: unknown;
+  customer_email?: unknown;
   subscription_id?: unknown;
   status?: unknown;
   currency_code?: unknown;

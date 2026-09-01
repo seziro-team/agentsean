@@ -18,20 +18,47 @@ export type AuthActionState = {
   message?: string;
 };
 
+/**
+ * Origin used to build the magic-link callback.
+ *
+ * This value ends up inside an email that carries a login token, so it must
+ * never be attacker-controlled. `Host` and `X-Forwarded-Host` are both
+ * client-supplied: an attacker who requests a link for a victim with a spoofed
+ * Host gets Supabase to mail that victim a real token pointing at the
+ * attacker's server. That is account takeover by way of a header.
+ *
+ * The configured origin therefore always wins. The request host is consulted
+ * only for the genuine local-dev case where NEXT_PUBLIC_APP_URL is unset, and
+ * even then only after being validated as loopback.
+ */
 async function originForRedirect(): Promise<string> {
-  // Prefer the configured public URL; fall back to the request origin so local
-  // dev and preview deployments work without extra config.
   const configured = appUrl();
   if (configured && configured !== "http://localhost:3000") return configured;
+
   try {
     const h = await headers();
     const host = h.get("x-forwarded-host") ?? h.get("host");
-    const proto = h.get("x-forwarded-proto") ?? "http";
-    if (host) return `${proto}://${host}`;
+    if (host && isLoopbackHost(host)) {
+      const proto = h.get("x-forwarded-proto") ?? "http";
+      return `${proto}://${host}`;
+    }
   } catch {
-    // ignore
+    // headers() outside a request scope — fall through to the configured value.
   }
   return configured;
+}
+
+/** localhost, 127.0.0.0/8, or ::1, with an optional port. Nothing else. */
+function isLoopbackHost(host: string): boolean {
+  const hostname = host
+    .replace(/:\d+$/, "")
+    .replace(/^\[|\]$/g, "")
+    .toLowerCase();
+  return (
+    hostname === "localhost" ||
+    hostname === "::1" ||
+    /^127(?:\.\d{1,3}){3}$/.test(hostname)
+  );
 }
 
 /** Send a passwordless magic link to the submitted email. */

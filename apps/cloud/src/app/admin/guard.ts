@@ -13,5 +13,10 @@ export async function requireSuperadmin(): Promise<SessionContext> {
   if (!ctx || !ctx.isSuperadmin) {
     throw new Error("forbidden: superadmin required");
   }
+  // A suspended operator is still suspended. Suspension has to outrank role,
+  // or revoking a compromised admin account does nothing.
+  if (ctx.suspended) {
+    throw new Error("forbidden: account suspended");
+  }
   return ctx;
 }

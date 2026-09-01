@@ -106,6 +106,7 @@ export class PolarProvider implements BillingProvider {
       currency: input.currency.toLowerCase(),
       customer_email: input.customerEmail,
       metadata: {
+        ...(input.inviteId ? { inviteId: input.inviteId } : {}),
         description: input.description,
         ...input.metadata,
       },
@@ -223,6 +224,9 @@ export class PolarProvider implements BillingProvider {
       status: strval(data.status) ?? null,
       amountCents: typeof data.amount === "number" ? data.amount : null,
       currency: typeof data.currency === "string" ? data.currency.toUpperCase() : null,
+      inviteId: strval(metadata["inviteId"]) ?? null,
+      customerEmail:
+        strval(data.customer_email) ?? strval(data.customer?.email) ?? null,
     };
   }
 }
@@ -240,7 +244,8 @@ type PolarSubscription = {
 type PolarWebhookData = {
   id?: unknown;
   customer_id?: unknown;
-  customer?: { id?: unknown };
+  customer_email?: unknown;
+  customer?: { id?: unknown; email?: unknown };
   subscription_id?: unknown;
   status?: unknown;
   amount?: unknown;

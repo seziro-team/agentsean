@@ -1,4 +1,5 @@
 "use server";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireSuperadmin } from "../guard";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -57,9 +58,16 @@ export async function createInvite(
     };
   }
 
+  // Mint the id before creating the link so the same value can be written into
+  // provider metadata AND used as the row's primary key. The webhook matches on
+  // it; letting the database generate the id after the fact would leave the
+  // payment with nothing reliable to match against.
+  const inviteId = randomUUID();
+
   let checkoutUrl: string;
   try {
     const result = await provider.createCustomAmountLink({
+      inviteId,
       amountCents,
       currency,
       customerEmail: email,
@@ -78,6 +86,7 @@ export async function createInvite(
   const { data: invite, error } = await db
     .from("payment_invites")
     .insert({
+      id: inviteId,
       email,
       amount_cents: amountCents,
       currency,

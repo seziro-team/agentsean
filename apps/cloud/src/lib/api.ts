@@ -28,6 +28,8 @@ export type CurrentContext = {
   profile: Profile | null;
   tenant: Tenant | null;
   isSuperadmin: boolean;
+  /** True when an operator has suspended this account. */
+  suspended: boolean;
 };
 
 /** Resolve the caller's profile + their primary tenant (owned), creating a
@@ -41,6 +43,7 @@ export async function getCurrentContext(): Promise<CurrentContext> {
       profile: null,
       tenant: null,
       isSuperadmin: false,
+      suspended: false,
     };
   }
   const ctx = await getSessionContext();
@@ -50,14 +53,30 @@ export async function getCurrentContext(): Promise<CurrentContext> {
       profile: null,
       tenant: null,
       isSuperadmin: false,
+      suspended: false,
     };
   }
+  if (ctx.suspended) {
+    // A suspended account resolves to no tenant, so every dashboard read and
+    // every server action that requires `ctx.tenant` stops. The layout also
+    // redirects, but the layout only guards rendering — server actions are
+    // separately invocable, so the block has to live here too.
+    return {
+      supabaseConfigured: true,
+      profile: ctx.profile,
+      tenant: null,
+      isSuperadmin: false,
+      suspended: true,
+    };
+  }
+
   const tenant = await getOrCreatePrimaryTenant(ctx.user.id, ctx.profile);
   return {
     supabaseConfigured: true,
     profile: ctx.profile,
     tenant,
     isSuperadmin: ctx.isSuperadmin,
+    suspended: false,
   };
 }
 

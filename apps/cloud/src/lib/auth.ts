@@ -10,7 +10,23 @@ export type SessionContext = {
   user: User;
   profile: Profile;
   isSuperadmin: boolean;
+  /**
+   * True when an operator has suspended this account.
+   *
+   * The admin console has always been able to *set* profiles.suspended, but
+   * nothing read it — so "suspend user" was a button that wrote a row and
+   * changed nothing. Callers must check this; `requireActiveUser()` does.
+   */
+  suspended: boolean;
 };
+
+/** Thrown when a suspended account tries to use the product. */
+export class SuspendedError extends Error {
+  constructor() {
+    super("account suspended");
+    this.name = "SuspendedError";
+  }
+}
 
 /**
  * Resolve the current authenticated user and their profile row.
@@ -70,6 +86,7 @@ export const getSessionContext = cache(async (): Promise<SessionContext | null> 
     user,
     profile,
     isSuperadmin: profile.role === "superadmin" || envSuper,
+    suspended: profile.suspended === true,
   };
 });
 
@@ -109,5 +126,17 @@ async function promoteToSuperadmin(userId: string, current: Profile): Promise<Pr
 export async function requireUser(): Promise<SessionContext> {
   const ctx = await getSessionContext();
   if (!ctx) throw new Error("unauthenticated");
+  return ctx;
+}
+
+/**
+ * Like requireUser, but also refuses suspended accounts.
+ *
+ * Use this in anything that acts on the product. A suspension that only blocks
+ * the dashboard render while server actions keep working is not a suspension.
+ */
+export async function requireActiveUser(): Promise<SessionContext> {
+  const ctx = await requireUser();
+  if (ctx.suspended) throw new SuspendedError();
   return ctx;
 }

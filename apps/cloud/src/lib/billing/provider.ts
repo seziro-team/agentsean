@@ -36,6 +36,15 @@ export type NormalizedEvent = {
   status: string | null;
   amountCents: number | null;
   currency: Currency | null;
+  /**
+   * Invite id echoed back from provider metadata, when the checkout came from
+   * an admin-issued payment link. This is the only reliable key for matching a
+   * payment to an invite — amount alone collides whenever two invites are for
+   * the same figure.
+   */
+  inviteId: string | null;
+  /** Buyer email from the verified payload; used only as a fallback matcher. */
+  customerEmail: string | null;
   /** Raw provider event name, kept for the audit trail. */
   rawType: string;
 };
@@ -48,6 +57,8 @@ export type CreateCheckoutInput = {
 };
 
 export type CreateCustomAmountInput = {
+  /** Written into provider metadata so the webhook can match it back. */
+  inviteId?: string | undefined;
   amountCents: number;
   currency: Currency;
   customerEmail: string;

@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { planOf } from "../plans";
+import { isPlanId, planOf } from "../plans";
 import type { Database, SubscriptionStatus } from "../db/types";
 import type { NormalizedEvent } from "./provider";
 
@@ -136,16 +136,48 @@ async function markInvitePaidForEvent(
   event: NormalizedEvent,
   now: string,
 ): Promise<boolean> {
-  // Best-effort: match the most recent pending invite for this amount/currency.
-  if (event.amountCents == null) return false;
-  const { data } = await db
-    .from("payment_invites")
-    .select("id, grant_plan, email")
-    .eq("status", "pending")
-    .eq("amount_cents", event.amountCents)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  // Match on the invite id carried in verified provider metadata.
+  //
+  // Matching on amount alone cross-contaminates: two pending invites for the
+  // same figure — the normal case, since invites are usually round numbers —
+  // resolved to whichever was created most recently, marking the wrong invite
+  // paid and granting its plan to the wrong tenant. The id is written into
+  // provider metadata server-side when the link is created and comes back in
+  // the signature-verified payload, so it is the only trustworthy key.
+  let row: { id: string; grant_plan: string | null; email: string } | null = null;
+
+  if (event.inviteId) {
+    const { data: byId } = await db
+      .from("payment_invites")
+      .select("id, grant_plan, email")
+      .eq("id", event.inviteId)
+      .eq("status", "pending")
+      .maybeSingle();
+    row = byId ?? null;
+  }
+
+  // Fallback for links created before metadata was threaded through: match on
+  // amount AND buyer email, and only when unambiguous. If two invites tie,
+  // do nothing and let an operator reconcile — guessing grants a paid plan to
+  // the wrong account.
+  if (!row && event.amountCents != null && event.customerEmail) {
+    const { data: candidates } = await db
+      .from("payment_invites")
+      .select("id, grant_plan, email")
+      .eq("status", "pending")
+      .eq("amount_cents", event.amountCents)
+      .ilike("email", event.customerEmail)
+      .limit(2);
+    if (candidates && candidates.length === 1) {
+      row = candidates[0] ?? null;
+    } else if (candidates && candidates.length > 1) {
+      console.warn(
+        `[billing] ${candidates.length} pending invites match ${event.amountCents} for ${event.customerEmail}; refusing to guess`,
+      );
+    }
+  }
+
+  const data = row;
   if (!data) return false;
   await db
     .from("payment_invites")
@@ -167,11 +199,18 @@ async function markInvitePaidForEvent(
         .order("created_at", { ascending: true })
         .limit(1)
         .maybeSingle();
-      if (tenant) {
+      // Validate the stored plan rather than trusting the column. An invite row
+      // carrying an unknown plan must grant nothing, not write a bogus value
+      // into tenants.plan that every entitlement check then has to cope with.
+      if (tenant && isPlanId(data.grant_plan)) {
         await db
           .from("tenants")
           .update({ plan: data.grant_plan, status: "active", updated_at: now })
           .eq("id", tenant.id);
+      } else if (tenant) {
+        console.warn(
+          `[billing] invite ${data.id} has unknown grant_plan ${String(data.grant_plan)}; not granting`,
+        );
       }
     }
   }
