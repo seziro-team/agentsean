@@ -7,7 +7,10 @@ const TITLE_PATTERNS: {
     wrap: (title, m) => m[0]!.replace(m[2]!, title),
   },
   {
-    re: /(<title[^>]*>)([\s\S]*?)(<\/title>)/i,
+    // Negated-close inner + `|$` fallback: disjoint branches cannot backtrack,
+    // and the fallback stops an unterminated <title> from forcing a rescan to
+    // end-of-input from every start position (js/polynomial-redos).
+    re: /(<title\b[^>]*>)((?:[^<]|<(?!\/title[\s>]))*)(<\/title[^>]*>|$)/i,
     wrap: (title, m) => `${m[1]}${title}${m[3]}`,
   },
   {
@@ -49,7 +52,9 @@ export function rewriteBody(
   if (fm) {
     return { ok: true, after: fm[0] + next.replace(/^\n/, "") };
   }
-  const main = /(<main[^>]*>)([\s\S]*?)(<\/main>)/i.exec(source);
+  const main = /(<main\b[^>]*>)((?:[^<]|<(?!\/main[\s>]))*)(<\/main[^>]*>|$)/i.exec(
+    source,
+  );
   if (main && main.index !== undefined) {
     const inner = markdownToHtml(next);
     const after =
@@ -58,7 +63,10 @@ export function rewriteBody(
       source.slice(main.index + main[0].length);
     return { ok: true, after };
   }
-  const article = /(<article[^>]*>)([\s\S]*?)(<\/article>)/i.exec(source);
+  const article =
+    /(<article\b[^>]*>)((?:[^<]|<(?!\/article[\s>]))*)(<\/article[^>]*>|$)/i.exec(
+      source,
+    );
   if (article && article.index !== undefined) {
     const inner = markdownToHtml(next);
     const after =

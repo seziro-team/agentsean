@@ -15,6 +15,27 @@ function walk(value: unknown, into: string[]): void {
   }
 }
 
+/**
+ * Strip trailing `)`, `,`, `.`, `;` — punctuation that follows a URL in prose
+ * rather than belonging to it.
+ *
+ * Done with a scan instead of `/[),.;]+$/`. An anchored `+` over a repeated
+ * class is quadratic: on a string of many such characters that never satisfies
+ * the anchor, the engine retries the run from each successive start position
+ * (CodeQL js/polynomial-redos). This walks backwards once, so it is linear no
+ * matter what the crawled page contains.
+ */
+function trimTrailingPunctuation(s: string): string {
+  let end = s.length;
+  while (end > 0) {
+    const c = s.charCodeAt(end - 1);
+    // ')' 41, ',' 44, '.' 46, ';' 59
+    if (c === 41 || c === 44 || c === 46 || c === 59) end--;
+    else break;
+  }
+  return s.slice(0, end);
+}
+
 export function extractUrls(value: unknown): string[] {
   const strings: string[] = [];
   walk(value, strings);
@@ -22,7 +43,7 @@ export function extractUrls(value: unknown): string[] {
   for (const s of strings) {
     for (const m of s.match(URL_RE) ?? []) {
       try {
-        const u = new URL(m.replace(/[),.;]+$/, ""));
+        const u = new URL(trimTrailingPunctuation(m));
         if (u.protocol === "http:" || u.protocol === "https:") out.add(u.href);
       } catch {
         /* ignore */

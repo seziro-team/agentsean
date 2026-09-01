@@ -46,8 +46,9 @@ export function assertPreviewNotIndexed(
   }
   const xrobots = header(input.headers, "x-robots-tag") ?? "";
   const meta = input.html
-    ? (/<meta\s+name=["']robots["'][^>]*content=["']([^"']+)/i.exec(input.html)?.[1] ??
-      "")
+    ? (/<meta\b[^>]*\bname=["']robots["'][^>]*?\bcontent=["']([^"']*)/i.exec(
+        input.html,
+      )?.[1] ?? "")
     : "";
   const noindex = /noindex/i.test(xrobots) || /noindex/i.test(meta);
   if (!noindex) {

@@ -1,3 +1,8 @@
+// Anchored on `<head` with a word boundary so the engine does not retry the
+// attribute run from every position in a document full of `<head`-alikes
+// (js/polynomial-redos).
+const HEAD_OPEN = /<head\b([^>]*)>/i;
+
 import type { StyleProfile } from "./types.js";
 
 export const HTML_COMMENT =
@@ -21,7 +26,7 @@ export function applyDisclosure(body: string, profile: StyleProfile): string {
   if (body.includes(mark) || body.includes("ai-generated")) return body;
   if (profile.disclosure === "meta") {
     if (/<head[\s>]/i.test(body)) {
-      return body.replace(/<head([^>]*)>/i, `<head$1>\n${mark}`);
+      return body.replace(HEAD_OPEN, (_m, attrs: string) => `<head${attrs}>\n${mark}`);
     }
     return `${mark}\n${body}`;
   }

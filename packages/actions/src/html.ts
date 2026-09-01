@@ -1,22 +1,40 @@
 /** Live HTML is the only verify surface. Never trust a 200 from a write API. */
 
+/**
+ * Matches a `<title>` element and captures its content.
+ *
+ * The inner is a negated-close class rather than a lazy `[\s\S]*?`. Its two
+ * branches — "not a `<`" and "a `<` that does not begin the close tag" — are
+ * disjoint at every position, so the engine has nothing to reconsider and
+ * cannot backtrack quadratically on crafted input full of `<`
+ * (CodeQL js/polynomial-redos).
+ *
+ * The `|$` fallback is what makes the whole match linear: without it an
+ * unterminated `<title` forces a rescan to end-of-input from every `<title`
+ * start, which is O(n²) across many starts.
+ *
+ * The close is `</title[^>]*>` because parsers ignore attributes on an end tag
+ * — `</title >` and `</title foo=bar>` both close the element. A stricter close
+ * leaves the real title unmatched, so we would "verify" a write against text
+ * that is not the title (js/bad-tag-filter).
+ *
+ * This runs on HTML fetched back from the customer's live site to confirm a
+ * write landed, so the input is not ours and may carry user-generated content.
+ */
+const TITLE_EL = /<title\b[^>]*>((?:[^<]|<(?!\/title[\s>]))*)(?:<\/title[^>]*>|$)/i;
+const HEAD_OPEN = /<head\b[^>]*>/i;
+
 export function htmlTitle(html: string): string | null {
-  const m = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
-  return m?.[1] ? m[1].trim() : null;
+  const inner = TITLE_EL.exec(html)?.[1]?.trim();
+  return inner ? inner : null;
 }
 
 export function patchHtmlTitle(html: string, title: string): string {
-  if (/<title[^>]*>[\s\S]*?<\/title>/i.test(html)) {
-    return html.replace(
-      /<title[^>]*>[\s\S]*?<\/title>/i,
-      `<title>${escapeHtml(title)}</title>`,
-    );
+  if (TITLE_EL.test(html)) {
+    return html.replace(TITLE_EL, `<title>${escapeHtml(title)}</title>`);
   }
-  if (/<head[^>]*>/i.test(html)) {
-    return html.replace(
-      /<head[^>]*>/i,
-      (h) => `${h}<title>${escapeHtml(title)}</title>`,
-    );
+  if (HEAD_OPEN.test(html)) {
+    return html.replace(HEAD_OPEN, (h) => `${h}<title>${escapeHtml(title)}</title>`);
   }
   return `<!doctype html><html><head><title>${escapeHtml(title)}</title></head><body></body></html>`;
 }
