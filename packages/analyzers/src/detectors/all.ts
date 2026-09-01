@@ -34,6 +34,16 @@ import {
 // attribute list is far under the bound.
 export const H1_WITH_LEADING_IMG = /<h1[^>]{0,2048}>\s*<img/i;
 
+// Matches a query param carrying an empty value (`?key=` or `&key=` at end or
+// before `&`). Runs over crawled URLs, so it must be linear. The key class
+// excludes `?` (`[^=&?]`, not `[^=&]`): with `?` allowed, a `&????…` string
+// lets the greedy key run and the leading `[?&]` both claim every `?`, and the
+// run backtracks from every start when the `=` never comes — O(n^2) (a 100k-`?`
+// URL took ~10s). Excluding `?` removes that overlap; the boolean result is
+// unchanged because a real query key never contains `?` (js/polynomial-redos).
+// Exported so the linearity is regression-tested directly (all.redos.test.ts).
+export const PARAM_EMPTY_VALUE = /[?&][^=&?]+=(&|$)/;
+
 const GENERIC_ANCHORS = new Set([
   "click here",
   "read more",
@@ -1343,7 +1353,7 @@ export function detectParam(ctx: AuditContext): FindingDraft[] {
   push(
     out,
     "PARAM.EMPTY_VALUE",
-    pages.filter((p) => /[?&][^=&]+=(&|$)/.test(p.url)).map((p) => p.url),
+    pages.filter((p) => PARAM_EMPTY_VALUE.test(p.url)).map((p) => p.url),
     {},
   );
   push(
