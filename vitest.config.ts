@@ -51,6 +51,7 @@ export default defineConfig({
       "@agentsean/measure": path.join(root, "packages/measure/src/index.ts"),
       "@agentsean/surfaces": path.join(root, "packages/surfaces/src/index.ts"),
       "@agentsean/hosted": path.join(root, "packages/hosted/src/index.ts"),
+      "@agentsean/launch": path.join(root, "packages/launch/src/index.ts"),
       "@agentsean/ee": path.join(root, "packages/ee/src/index.ts"),
       "@agentsean/daemon": path.join(root, "packages/daemon/src/index.ts"),
     },

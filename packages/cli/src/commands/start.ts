@@ -33,7 +33,7 @@ export async function startCommand(opts: {
   home?: string | undefined;
   quiet?: boolean | undefined;
 }): Promise<number> {
-  const host = opts.host ?? DEFAULT_HOST;
+  const host = opts.host ?? (process.env["SEAN_HOST"]?.trim() || DEFAULT_HOST);
   const port = opts.port ?? DEFAULT_PORT;
   const home = ensureSeanHome(opts.home ?? defaultSeanHome());
 

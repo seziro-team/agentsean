@@ -12,8 +12,13 @@ const SPA_PATHS = new Set([
   "/automations",
   "/content",
   "/search",
+  "/keywords",
+  "/evidence",
   "/ai",
+  "/local",
+  "/mentions",
   "/reports",
+  "/billing",
   "/settings",
   "/onboarding",
 ]);

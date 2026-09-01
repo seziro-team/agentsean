@@ -47,6 +47,7 @@
     "@agentsean/scheduler": "workspace:*",
     "@agentsean/surfaces": "workspace:*",
     "@agentsean/hosted": "workspace:*",
+    "@agentsean/launch": "workspace:*",
     "@agentsean/ee": "workspace:*",
     "drizzle-orm": "0.45.2",
     "fastify": "5.12.1"

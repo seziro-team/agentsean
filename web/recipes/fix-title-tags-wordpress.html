@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Fix title tags on WordPress — Agent Sean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Sean writes unique titles through the companion plugin, verifies live HTML, and stores a revert snapshot."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+</head>
+<body>
+  <header>
+    <a href="../index.html">Agent Sean</a>
+    <nav><a href="index.html">Recipes</a></nav>
+  </header>
+  <main>
+    <p class="kicker">wordpress</p>
+    <h1>Fix title tags on WordPress</h1>
+    <p class="lead">Sean writes unique titles through the companion plugin, verifies live HTML, and stores a revert snapshot.</p>
+    <ol>
+      <li>Install sean-bridge and create an Application Password.</li>
+      <li><code>sean connect wordpress --api-key USER:APP_PASSWORD https://example.com</code></li>
+      <li><code>sean apply</code> — T1 title-tag Actions apply automatically after the observe window.</li>
+      <li>Click Revert on any change. The shadow ledger restores the previous post meta.</li>
+    </ol>
+    <p><a href="index.html">All recipes</a></p>
+  </main>
+</body>
+</html>

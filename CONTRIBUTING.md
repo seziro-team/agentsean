@@ -23,6 +23,7 @@ cd sean
 pnpm install
 pnpm test
 pnpm build
+node packages/cli/dist/bin.js doctor --json --home /tmp/sean-dev
 node packages/cli/dist/bin.js start --foreground
 ```
 

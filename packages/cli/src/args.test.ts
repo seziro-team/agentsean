@@ -162,6 +162,38 @@ describe("parseArgs", () => {
     expect(d.target).toBe("https://blog.example");
   });
 
+  it("parses onboard, doctor, service, telemetry, recipes, update", () => {
+    const a = parseArgs([
+      "node",
+      "sean",
+      "onboard",
+      "https://example.com",
+      "--cms",
+      "wordpress",
+      "--telemetry",
+      "off",
+      "--no-start",
+      "--json",
+    ]);
+    expect(a.command).toBe("onboard");
+    expect(a.target).toBe("https://example.com");
+    expect(a.cms).toBe("wordpress");
+    expect(a.telemetry).toBe("off");
+    expect(a.noStart).toBe(true);
+    const b = parseArgs(["node", "sean", "service", "install", "--yes"]);
+    expect(b.command).toBe("service");
+    expect(b.target).toBe("install");
+    expect(b.yes).toBe(true);
+    const c = parseArgs(["node", "sean", "update", "--channel", "extended-stable"]);
+    expect(c.command).toBe("update");
+    expect(c.channel).toBe("extended-stable");
+    const d = parseArgs(["node", "sean", "recipes", "revert-a-change"]);
+    expect(d.command).toBe("recipes");
+    expect(d.target).toBe("revert-a-change");
+    const e = parseArgs(["node", "sean", "uninstall", "--purge"]);
+    expect(e.purge).toBe(true);
+  });
+
   it("flags unknown options", () => {
     const a = parseArgs(["node", "sean", "status", "--wat"]);
     expect(a.errors[0]).toMatch(/unknown flag/);

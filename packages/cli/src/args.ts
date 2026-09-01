@@ -16,7 +16,14 @@ export type CommandName =
   | "local"
   | "mentions"
   | "signup"
-  | "tenant";
+  | "tenant"
+  | "onboard"
+  | "doctor"
+  | "update"
+  | "uninstall"
+  | "service"
+  | "telemetry"
+  | "recipes";
 
 export type CliArgs = {
   command: CommandName | undefined;
@@ -38,6 +45,13 @@ export type CliArgs = {
   repo: string | undefined;
   dryRun: boolean;
   off: boolean;
+  yes: boolean;
+  cms: string | undefined;
+  channel: string | undefined;
+  purge: boolean;
+  noStart: boolean;
+  noService: boolean;
+  telemetry: string | undefined;
   errors: string[];
 };
 
@@ -60,6 +74,13 @@ const COMMANDS = new Set<string>([
   "mentions",
   "signup",
   "tenant",
+  "onboard",
+  "doctor",
+  "update",
+  "uninstall",
+  "service",
+  "telemetry",
+  "recipes",
 ]);
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -83,6 +104,13 @@ export function parseArgs(argv: string[]): CliArgs {
     repo: undefined,
     dryRun: false,
     off: false,
+    yes: false,
+    cms: undefined,
+    channel: undefined,
+    purge: false,
+    noStart: false,
+    noService: false,
+    telemetry: undefined,
     errors: [],
   };
 
@@ -166,6 +194,38 @@ export function parseArgs(argv: string[]): CliArgs {
       args.off = true;
       continue;
     }
+    if (a === "--yes" || a === "-y") {
+      args.yes = true;
+      continue;
+    }
+    if (a === "--cms") {
+      args.cms = rest[++i];
+      continue;
+    }
+    if (a === "--channel") {
+      args.channel = rest[++i];
+      continue;
+    }
+    if (a === "--purge") {
+      args.purge = true;
+      continue;
+    }
+    if (a === "--no-start") {
+      args.noStart = true;
+      continue;
+    }
+    if (a === "--no-service") {
+      args.noService = true;
+      continue;
+    }
+    if (a === "--telemetry") {
+      args.telemetry = rest[++i];
+      continue;
+    }
+    if (a === "--url") {
+      args.target = rest[++i];
+      continue;
+    }
     if (a.startsWith("-")) {
       args.errors.push(`unknown flag ${a}`);
       continue;
@@ -230,6 +290,19 @@ export function parseArgs(argv: string[]): CliArgs {
       args.target = a;
       continue;
     }
+    if (
+      (args.command === "onboard" ||
+        args.command === "service" ||
+        args.command === "telemetry" ||
+        args.command === "recipes" ||
+        args.command === "update" ||
+        args.command === "uninstall" ||
+        args.command === "doctor") &&
+      args.target === undefined
+    ) {
+      args.target = a;
+      continue;
+    }
     args.errors.push(`unexpected argument ${a}`);
   }
 
@@ -238,7 +311,17 @@ export function parseArgs(argv: string[]): CliArgs {
 
 export const HELP = `Agent Sean — the SEO engineer that never sleeps.
 
+Every SEO tool tells you what's wrong. Agent Sean fixes it.
+
 Usage:
+  sean                    # first run: onboard, then start
+  sean onboard [url] [--cms wordpress|shopify|git|cloudflare|other] [--telemetry on|off] [--no-start] [--json]
+  sean doctor [--json]
+  sean update [--channel stable|extended-stable|dev] [--json]
+  sean service [status|install|uninstall] [--json]
+  sean uninstall [--purge] [--json]
+  sean telemetry [status|log|on|off] [--json]
+  sean recipes [id] [--json]
   sean start [--foreground] [--host 127.0.0.1] [--port 7777] [--json]
   sean stop [--json]
   sean status [--json]
@@ -264,8 +347,10 @@ Usage:
   sean connect shopify --api-key shpat_… [shop]
   sean connect cloudflare [origin]
 
-Every command accepts --json. The daemon binds 127.0.0.1 only and refuses to
-start off-loopback without auth. Audit crawls a URL with zero credentials.
+Every command accepts --json. npx agentsean provisions on first run — there is
+no postinstall (npm 12+ disables those by default). The daemon binds 127.0.0.1
+only and refuses to start off-loopback without auth. Audit crawls a URL with
+zero credentials.
 Connect Google opens the local dashboard; the hosted broker never talks to
 this machine. --byo uses your own Cloud project (publish to Production).
 Apply plans title-tag fixes, validates them, and opens a Git PR. Revert

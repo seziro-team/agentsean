@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Security — Agent Sean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+  <header>
+    <a href="index.html">Agent Sean</a>
+    <nav>
+      <a href="install.html">Install</a>
+      <a href="recipes/index.html">Recipes</a>
+      <a href="security.html">Security</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Security</h1>
+    <p class="lead">The daemon holds Google and CMS credentials. An exposed dashboard is a defacement event.</p>
+    <ul>
+      <li>Bind <code>127.0.0.1:7777</code> only. Off-loopback without auth refuses to start.</li>
+      <li>Token ≥ 32 characters, ≥ 8 distinct. Short tokens are how OpenClaw instances were brute-forced in 2026.</li>
+      <li>Host allowlist, Origin check, <code>Sec-Fetch-Site</code>, CSRF header. No CORS anywhere.</li>
+      <li>Docker publishes loopback and exits if <code>SEAN_AUTH_TOKEN</code> is missing.</li>
+      <li><code>sean freeze</code> writes HALT and survives restart.</li>
+      <li>The LLM never holds credentials and never calls a write API.</li>
+      <li>Hosted never stores CMS write credentials — pair a customer-side connector.</li>
+    </ul>
+    <p>Report vulnerabilities via <a href="https://github.com/vp2722/sean/security">SECURITY.md</a>.</p>
+  </main>
+</body>
+</html>

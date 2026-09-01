@@ -4,6 +4,7 @@ import {
   Secret,
   type CredentialStore,
 } from "@agentsean/credentials";
+import { assertTokenStrength, envAuthToken } from "@agentsean/launch";
 import { TOKEN_ACCOUNT } from "./paths.js";
 
 export function generateToken(): Secret {
@@ -13,6 +14,13 @@ export function generateToken(): Secret {
 export async function loadOrCreateToken(
   store: CredentialStore,
 ): Promise<Secret> {
+  const env = envAuthToken();
+  if (env) {
+    assertTokenStrength(env);
+    const token = new Secret(env);
+    await store.set(TOKEN_ACCOUNT, token);
+    return token;
+  }
   const existing = await store.get(TOKEN_ACCOUNT);
   if (existing) return existing;
   const token = generateToken();

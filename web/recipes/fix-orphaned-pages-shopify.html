@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Fix orphaned pages on a Shopify store — Agent Sean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Internal-link Actions go to metafields. Theme writes are refused — Shopify write_themes stays denied."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+</head>
+<body>
+  <header>
+    <a href="../index.html">Agent Sean</a>
+    <nav><a href="index.html">Recipes</a></nav>
+  </header>
+  <main>
+    <p class="kicker">shopify</p>
+    <h1>Fix orphaned pages on a Shopify store</h1>
+    <p class="lead">Internal-link Actions go to metafields. Theme writes are refused — Shopify write_themes stays denied.</p>
+    <ol>
+      <li><code>sean connect shopify --api-key shpat_… mystore.myshopify.com</code></li>
+      <li>Sean lists pages with zero inbound links from the crawl graph.</li>
+      <li>An Action proposes a metafield + a merchant-pasted snippet. Sean never writes the theme.</li>
+      <li>Verify-by-refetch. Revert restores the previous metafield value.</li>
+    </ol>
+    <p><a href="index.html">All recipes</a></p>
+  </main>
+</body>
+</html>

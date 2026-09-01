@@ -1,105 +1,140 @@
-# Agent Sean
+<p align="center">
+  <strong>Agent Sean</strong><br/>
+  The SEO engineer that never sleeps.
+</p>
 
-The SEO engineer that never sleeps.
+<p align="center">
+  <em>Every SEO tool tells you what's wrong. Agent Sean fixes it.</em>
+</p>
+
+<p align="center">
+  <img src="docs/assets/demo.svg" alt="Sean applies a title-tag diff and offers Revert" width="720"/>
+</p>
+
+<p align="center">
+  <a href="LICENSE">AGPL-3.0</a> ·
+  <a href="docs/install.md">Docs</a> ·
+  <a href="web/recipes/index.html">Recipes</a> ·
+  <a href="TELEMETRY.md">Telemetry</a>
+</p>
+
+```bash
+npx agentsean
+```
 
 An open-source, self-hosted, always-on autonomous SEO engineer. Installs from a
 terminal, opens a local dashboard, connects to your data, and then actually does
-the work — 24/7, on your real website.
+the work — 24/7, on your real website, as a diff you can read and revert.
 
-> Every other SEO tool tells you what's wrong. Agent Sean fixes it — in
-> WordPress, in Shopify, in your Git repo, at the edge — as a diff you can read
-> and revert, on a schedule you set, forever.
+It binds **`127.0.0.1:7777` only**. `sean freeze` halts every write. Hosted never
+stores CMS write credentials.
 
-**Status:** Phase 10 (hosted tier). Point Sean at
-a URL for a scored audit with zero credentials, connect Google as an upgrade,
-then apply the same title-tag Action on WordPress, Shopify, a Next.js repo, or
-a Squarespace site behind the Cloudflare edge overlay — each verified by
-re-fetching live HTML, each revertible. Daily, Sean finds a decaying page from
-GSC clicks, rewrites it, runs PublishGate, and publishes — 2 refreshes/day, 2
-new pages/day, not overridable. Keyword opportunities come from GSC + Bing with
-zero paid keys. Every claim carries an evidence tier. Monthly, Sean reports AI
-citation share (~$1.11/run), manages a GBP profile within quota, and surfaces
-brand-mention opportunities. Schema, word count, and `llms.txt` are not sold as
-AEO levers. Training crawlers ≠ citation crawlers. Self-host is $0; Cloud
-Starter is $9/mo (BYOK); Agency is $249/mo for 25–50 sites. Hosted never
-stores CMS write credentials. Sean never scrapes Google. `sean freeze` halts
-writes. See [`PLAN.md`](PLAN.md).
+**Status:** Phase 11 (launch). A user runs one command, answers a handful of
+questions, and walks away. See [`PLAN.md`](PLAN.md).
 
 ## Install
 
-Requires **Node.js ≥ 22.19**.
+Requires **Node.js ≥ 22.19** if you already have Node. The curl installer
+provisions Node if you do not. There is **no postinstall script** — npm v12
+disables those by default, so Sean provisions on first *run*.
 
 ```bash
-npx agentsean start
+npx agentsean
+# or
+curl -fsSL https://raw.githubusercontent.com/vp2722/sean/main/install/install.sh | sh
+# Windows
+irm https://raw.githubusercontent.com/vp2722/sean/main/install/install.ps1 | iex
+# Docker (loopback publish; token required)
+SEAN_AUTH_TOKEN="$(openssl rand -base64 32)" docker compose up
 ```
 
-The daemon binds **`127.0.0.1:7777` only**. It will not bind `0.0.0.0` without
-auth. Remote access is via Tailscale Serve or a Cloudflare Tunnel — never by
-opening the port to the world.
-
 ```bash
-npx agentsean audit https://example.com --json
-npx agentsean connect google
-npx agentsean apply --repo ./my-next-app
-npx agentsean revert <changeId>
-npx agentsean content --repo ./my-next-app
-npx agentsean keywords
-npx agentsean mcp
-npx agentsean measure
-npx agentsean visibility
-npx agentsean local
-npx agentsean mentions
-npx agentsean signup agency
-npx agentsean tenant
-npx agentsean freeze
-npx agentsean status --json
-npx agentsean stop
+sean doctor
+sean service install    # opt-in; prints the files it will write
+sean freeze
 ```
 
 Every command accepts `--json`. Audit does not need the daemon or any
 credentials. Connect Google opens the local dashboard at
 `http://127.0.0.1:7777/connect` — a hosted page never talks to the daemon.
-Default metric is clicks (GSC impressions from 2025-05-13 to 2026-04-27 are
-contaminated). BYO Cloud project: `sean connect google --byo --credentials ./client_secret.json`.
-See [`docs/google.md`](docs/google.md). Action system:
-[`docs/actions.md`](docs/actions.md). Content engine:
-[`docs/content.md`](docs/content.md). Keywords and providers:
-[`docs/keywords.md`](docs/keywords.md). Evidence ladder:
-[`docs/measure.md`](docs/measure.md). Platform adapters:
-[`docs/adapters.md`](docs/adapters.md). AI visibility, local, mentions:
-[`docs/surfaces.md`](docs/surfaces.md). Hosted tier:
-[`docs/hosted.md`](docs/hosted.md). Site Score and priority formulas:
-[`docs/site-score.md`](docs/site-score.md), [`docs/priority.md`](docs/priority.md).
+
+## What it does after you walk away
+
+- crawls the site weekly and after every deploy
+- pulls Search Console and Analytics daily
+- finds issues against ~300 checks and prioritizes them by a [published formula](docs/priority.md)
+- **fixes** the safe ones in WordPress / Shopify / Git / the edge
+- queues the dangerous ones for one click
+- rewrites decaying content within 2 refreshes/day and 2 new pages/day (not overridable)
+- tracks ranks and AI citation share
+- reports weekly, in your brand, with an [evidence tier](docs/measure.md) on every claim
+- records every change with a before-snapshot and a revert button
+- stops instantly when told to
+
+## What it does not do
+
+Stakeholder negotiation, strategy arguments, and deciding whether a business
+should want the traffic. Tools that pretend otherwise are the ones people stop
+trusting.
+
+Sean never scrapes Google. Schema, word count, and `llms.txt` are not sold as
+AEO levers. Training crawlers ≠ citation crawlers. Shopify theme writes are
+refused. Unbounded city×service pages are refused.
+
+## Prior art
+
+[OpenSEO](https://github.com/every-app/open-seo) proved an open-source SEO
+platform could work. Agent Sean is the execution layer that writes reversible
+diffs to your actual site — **not a fork of OpenSEO**, and not a report that
+stops at the finding. Selected OpenSEO modules are ported under MIT with
+attribution; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+## Supported CMS
+
+| Surface | How Sean writes |
+| --- | --- |
+| [WordPress](web/recipes/fix-title-tags-wordpress.html) | Companion plugin + Application Passwords |
+| [Shopify](web/recipes/fix-orphaned-pages-shopify.html) | Metafields. Theme writes refused. |
+| [Next.js / Git](web/recipes/git-pr-title-tags-nextjs.html) | A PR you can read |
+| Squarespace / Framer / Duda | Cloudflare edge overlay — never branches on user-agent |
+
+## Docs
+
+Install · [`docs/install.md`](docs/install.md) ·
+Actions · [`docs/actions.md`](docs/actions.md) ·
+Content · [`docs/content.md`](docs/content.md) ·
+Keywords · [`docs/keywords.md`](docs/keywords.md) ·
+Evidence · [`docs/measure.md`](docs/measure.md) ·
+Adapters · [`docs/adapters.md`](docs/adapters.md) ·
+Surfaces · [`docs/surfaces.md`](docs/surfaces.md) ·
+Hosted · [`docs/hosted.md`](docs/hosted.md) ·
+Launch · [`docs/launch.md`](docs/launch.md) ·
+Site score · [`docs/site-score.md`](docs/site-score.md) ·
+Security · [`docs/security.md`](docs/security.md)
+
+Self-host is $0. Cloud Starter is $9/mo (BYOK). Agency is $249/mo for 25–50 sites.
+
+<details>
+<summary>Telemetry &amp; privacy</summary>
+
+Off until you say yes at onboard (or `sean telemetry on`). Honor
+`DO_NOT_TRACK=1`. Never domains, URLs, queries, keys, or IPs. Single call site:
+`recordEvent`. Full list: [`TELEMETRY.md`](TELEMETRY.md).
+</details>
 
 ## Repo
 
-This is the canonical source for Agent Sean. The planned long-term home is
-`github.com/seanhq/sean`; until that org exists, development happens at
+Canonical source for Agent Sean. Planned long-term home `github.com/seanhq/sean`;
+until that org exists, development is at
 [`github.com/vp2722/sean`](https://github.com/vp2722/sean).
 
 ```
 packages/
-  cli/           # npx agentsean (start | stop | status | audit | connect | apply | revert | content | keywords | mcp | measure | visibility | local | mentions | signup | tenant | freeze)
+  cli/           # npx agentsean
+  launch/        # onboard, doctor, telemetry, recipes, service units
   daemon/        # Fastify, loopback bind, security middleware, SSE, SPA
   dashboard/     # React + Vite SPA (same origin, no CORS)
-  scheduler/     # JobQueue (SQLite locally, pg-boss on Postgres), cadences
-  crawler/       # undici + cheerio + adaptive Playwright, resumable crawls
-  analyzers/     # 300+ check catalogue, site score, priority, schema.org
-  google/        # OAuth broker + BYO, GSC, GA4, PSI, CrUX, incidents, residual
-  actions/       # typed Action, 15-check validator, executor, shadow ledger
-  adapters/      # git, wordpress, shopify, cloudflare edge, saas, factory
-  plugins/wordpress/  # sean-bridge, GPL-2.0-or-later companion plugin
-  playbooks/     # versioned SEO methodology (adapted OpenSEO skills + content)
-  llm/           # BYOK via Vercel AI SDK 7, model routing, cost ledger
-  content/       # briefs, PublishGate, refresh-first generation
-  providers/     # serp / keywords / backlinks / volume; cost before the call
-  keywords/      # opportunities, clusters, per-site difficulty, weekly ranks
-  mcp/           # stdio MCP server + OpenSEO client
-  measure/       # evidence ladder, experiments, power, GA4↔GSC waterfall
-  surfaces/      # AI citation share, GBP quota, brand mentions, verticals
-  hosted/        # tenants, entitlements, envelope encryption, Stripe events
-  db/            # Drizzle schema (SQLite local + Postgres hosted)
-  credentials/   # OS keychain + encrypted-file fallback
+  …
   ee/            # commercial features (separate license)
 ```
 
@@ -110,22 +145,13 @@ packages/
 - WordPress companion plugin (`plugins/wordpress`): **GPL-2.0-or-later**
 - Connector SDK (later): **Apache-2.0**
 
-Contributions require a [CLA](CLA.md). See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Prior art
-
-Agent Sean is **not a fork** of [OpenSEO](https://github.com/every-app/open-seo).
-OpenSEO is a Cloudflare Workers app that analyzes and reports. Sean is a
-persistent local daemon that holds credentials and writes reversible diffs to
-the customer's source of truth. Selected OpenSEO modules will be ported under
-MIT with attribution; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+[`LICENSING.md`](LICENSING.md) · [`TRADEMARK.md`](TRADEMARK.md) ·
+contributions require a [CLA](CLA.md). See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 
 The daemon is fail-closed. Host-header allowlisting, Origin / `Sec-Fetch-Site`
-checks, a CSRF custom header on mutating requests, a random token, and
-`SameSite=Strict` cookies are enforced before any feature code. `sean freeze`
-halts every write. Details: [`docs/security.md`](docs/security.md),
-[`docs/daemon.md`](docs/daemon.md).
-
-If you find a vulnerability, see [`SECURITY.md`](SECURITY.md).
+checks, a CSRF custom header on mutating requests, a random token (≥ 32
+characters), and `SameSite=Strict` cookies are enforced before any feature code.
+Remote access is Tailscale Serve or a Cloudflare Tunnel — never by opening the
+port to the world. If you find a vulnerability, see [`SECURITY.md`](SECURITY.md).

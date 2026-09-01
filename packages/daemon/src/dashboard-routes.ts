@@ -21,6 +21,13 @@ import {
   type SqliteDatabase,
 } from "@agentsean/db";
 import { Secret, type CredentialStore } from "@agentsean/credentials";
+import {
+  consentTelemetry,
+  isTelemetryEnabled,
+  loadTelemetryConfig,
+  previewPayload,
+  TELEMETRY_EVENTS,
+} from "@agentsean/launch";
 import { DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING, listContent } from "@agentsean/content";
 import {
   analyzeExperiment,
@@ -1003,6 +1010,12 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
         contentRefreshPerDay: BLAST.contentRefreshPerDay,
         overridable: false,
       },
+      telemetry: {
+        enabled: isTelemetryEnabled(opts.seanHome),
+        consentedAt: loadTelemetryConfig(opts.seanHome).consentedAt,
+        events: TELEMETRY_EVENTS,
+        preview: previewPayload(),
+      },
     };
   });
 
@@ -1017,6 +1030,7 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       aiDisclosure?: string;
       newPagesPerDay?: number;
       contentRefreshPerDay?: number;
+      telemetryEnabled?: boolean;
     };
     if (body.newPagesPerDay !== undefined || body.contentRefreshPerDay !== undefined) {
       return reply.code(400).send({
@@ -1038,6 +1052,9 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     if (typeof body.notifications === "string") setSetting(opts.db, "notifications", body.notifications);
     if (typeof body.llmProvider === "string") setSetting(opts.db, "llmProvider", body.llmProvider);
     if (typeof body.aiDisclosure === "string") setSetting(opts.db, "aiDisclosure", body.aiDisclosure);
+    if (typeof body.telemetryEnabled === "boolean") {
+      consentTelemetry(opts.seanHome, body.telemetryEnabled, "dashboard");
+    }
     opts.bus.emit("settings");
     return { ok: true };
   });

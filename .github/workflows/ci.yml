@@ -47,3 +47,33 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  install-smoke:
+    name: Install smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Installer flags
+        run: |
+          bash install/install.sh --help
+          bash install/install.sh --dry-run --from-source "$PWD" --prefix /tmp/sean-smoke --no-onboard
+      - name: Install
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: From-source shim + doctor
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+        run: |
+          bash install/install.sh --from-source "$PWD" --prefix /tmp/sean-smoke --no-onboard
+          /tmp/sean-smoke/bin/sean doctor --json --home /tmp/sean-smoke-home
+          /tmp/sean-smoke/bin/sean --version

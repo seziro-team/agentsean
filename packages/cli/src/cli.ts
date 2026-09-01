@@ -17,8 +17,15 @@ import { localCommand } from "./commands/local.js";
 import { mentionsCommand } from "./commands/mentions.js";
 import { signupCommand } from "./commands/signup.js";
 import { tenantCommand } from "./commands/tenant.js";
-
-const VERSION = "0.0.0";
+import { onboardCommand } from "./commands/onboard.js";
+import { doctorCommand } from "./commands/doctor.js";
+import { updateCommand } from "./commands/update.js";
+import { uninstallCommand } from "./commands/uninstall.js";
+import { serviceCommand } from "./commands/service.js";
+import { telemetryCommand } from "./commands/telemetry.js";
+import { recipesCommand } from "./commands/recipes.js";
+import { defaultSeanHome } from "@agentsean/daemon";
+import { recordEvent, VERSION } from "@agentsean/launch";
 
 export async function run(argv: string[] = process.argv): Promise<number> {
   const args = parseArgs(argv);
@@ -39,16 +46,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     );
     return 2;
   }
-  if (!args.command) {
-    emitError(
-      args.json,
-      { error: "missing_command" },
-      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, `sean content`, `sean keywords`, `sean mcp`, `sean measure`, `sean visibility`, `sean local`, `sean mentions`, `sean signup`, `sean tenant`, or `sean freeze`.\n\n" + HELP,
-    );
-    return 2;
-  }
+  const command = args.command ?? "onboard";
+  recordEvent(args.home ?? defaultSeanHome(), { event: "command_used", command });
 
-  switch (args.command) {
+  switch (command) {
     case "start":
       return startCommand({
         json: args.json,
@@ -153,6 +154,40 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         home: args.home,
         target: args.target,
       });
+    case "onboard":
+      return onboardCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+        cms: args.cms,
+        telemetry: args.telemetry,
+        noStart: args.noStart,
+        host: args.host,
+        port: args.port,
+      });
+    case "doctor":
+      return doctorCommand({ json: args.json, home: args.home, port: args.port });
+    case "update":
+      return updateCommand({ json: args.json, channel: args.channel ?? args.target });
+    case "uninstall":
+      return uninstallCommand({
+        json: args.json,
+        home: args.home,
+        purge: args.purge,
+      });
+    case "service":
+      return serviceCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+        yes: args.yes,
+        host: args.host,
+        port: args.port,
+      });
+    case "telemetry":
+      return telemetryCommand({ json: args.json, home: args.home, target: args.target });
+    case "recipes":
+      return recipesCommand({ json: args.json, target: args.target });
     default:
       return 2;
   }

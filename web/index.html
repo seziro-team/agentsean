@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Agent Sean — the SEO engineer that never sleeps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Every SEO tool tells you what's wrong. Agent Sean fixes it — as a revertible diff on your actual site."/>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+  <header>
+    <a href="index.html">Agent Sean</a>
+    <nav>
+      <a href="install.html">Install</a>
+      <a href="recipes/index.html">Recipes</a>
+      <a href="security.html">Security</a>
+      <a href="telemetry.html">Telemetry</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Every SEO tool tells you what's wrong. Agent Sean fixes it.</h1>
+      <p class="lead">A self-hosted daemon that writes reversible diffs to WordPress, Shopify, Git, or the edge — on a schedule you set, forever.</p>
+      <pre class="install">npx agentsean</pre>
+    </section>
+    <img class="demo" src="assets/demo.svg" alt="Finding, title-tag diff, and a Revert button"/>
+    <h2>Supported surfaces</h2>
+    <table class="matrix">
+      <thead><tr><th>Where the site lives</th><th>How Sean writes</th></tr></thead>
+      <tbody>
+        <tr><td><a href="recipes/fix-title-tags-wordpress.html">WordPress</a></td><td>Companion plugin + Application Passwords</td></tr>
+        <tr><td><a href="recipes/fix-orphaned-pages-shopify.html">Shopify</a></td><td>Metafields. Theme writes refused.</td></tr>
+        <tr><td><a href="recipes/git-pr-title-tags-nextjs.html">Next.js / Git</a></td><td>A PR you can read</td></tr>
+        <tr><td><a href="recipes/index.html">Squarespace / Framer / Duda</a></td><td>Cloudflare edge overlay, no UA branch</td></tr>
+      </tbody>
+    </table>
+    <h2>Prior art</h2>
+    <p>OpenSEO proved an open-source SEO platform could work. Agent Sean is the execution layer that writes reversible diffs to your actual site — not a fork of OpenSEO, and not a report that stops at the finding.</p>
+    <h2>What Sean does not do</h2>
+    <p>Stakeholder negotiation, strategy arguments, and deciding whether a business should want the traffic. Tools that pretend otherwise are the ones people stop trusting.</p>
+  </main>
+  <footer>AGPL-3.0-only · <a href="https://github.com/vp2722/sean">github.com/vp2722/sean</a></footer>
+</body>
+</html>

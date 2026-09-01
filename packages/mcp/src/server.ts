@@ -23,7 +23,7 @@ export function handleMcpMessage(_ctx: ToolContext, msg: JsonRpc): JsonRpc | nul
       result: {
         protocolVersion: MCP_PROTOCOL,
         capabilities: { tools: {} },
-        serverInfo: { name: "agentsean", version: "0.0.0" },
+        serverInfo: { name: "agentsean", version: "2026.9.0" },
         instructions:
           "Agent Sean MCP. Demand-side intelligence from GSC + Bing by default. DataForSEO upgrades in place. Sean never scrapes Google. The LLM never holds write credentials.",
       },

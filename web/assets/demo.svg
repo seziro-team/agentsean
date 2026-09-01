@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-label="Sean applies a title-tag diff and offers Revert">
+  <style>
+    .bg { fill: #0f1115; }
+    .card { fill: #171a21; stroke: #2c313a; }
+    .muted { fill: #9aa; font: 12px ui-monospace, monospace; }
+    .fg { fill: #eef; font: 14px ui-sans-serif, system-ui, sans-serif; }
+    .title { fill: #eef; font: 700 16px ui-sans-serif, system-ui, sans-serif; }
+    .del { fill: #3a1515; }
+    .ins { fill: #14321a; }
+    .delT { fill: #f88; font: 13px ui-monospace, monospace; }
+    .insT { fill: #8d8; font: 13px ui-monospace, monospace; }
+    .btn { fill: #0b57d0; }
+    .btnT { fill: #fff; font: 700 13px ui-sans-serif, system-ui, sans-serif; }
+  </style>
+  <rect class="bg" width="720" height="280"/>
+  <rect class="card" x="16" y="16" width="220" height="248" rx="12"/>
+  <text class="title" x="32" y="44">Finding</text>
+  <text class="fg" x="32" y="76">Homepage title is 12</text>
+  <text class="fg" x="32" y="96">characters.</text>
+  <text class="muted" x="32" y="128">ONP.TITLE_TOO_SHORT</text>
+  <text class="muted" x="32" y="148">T1 · auto after observe</text>
+
+  <rect class="card" x="250" y="16" width="250" height="248" rx="12"/>
+  <text class="title" x="266" y="44">Diff</text>
+  <rect class="del" x="266" y="64" width="218" height="36" rx="6"/>
+  <text class="delT" x="276" y="86">- Home</text>
+  <rect class="ins" x="266" y="110" width="218" height="52" rx="6"/>
+  <text class="insT" x="276" y="132">+ Acme HVAC repairs</text>
+  <text class="insT" x="276" y="150">  in Austin, TX</text>
+  <text class="muted" x="266" y="186">WordPress post meta</text>
+  <text class="muted" x="266" y="206">verified by live HTML</text>
+
+  <rect class="card" x="514" y="16" width="190" height="248" rx="12"/>
+  <text class="title" x="530" y="44">Applied</text>
+  <text class="fg" x="530" y="76">Live title updated.</text>
+  <text class="muted" x="530" y="104">snapshot stored</text>
+  <rect class="btn" x="530" y="140" width="158" height="40" rx="8"/>
+  <text class="btnT" x="574" y="165">Revert</text>
+  <text class="muted" x="530" y="204">sean revert &lt;id&gt;</text>
+  <text class="muted" x="530" y="224">one click · forever</text>
+</svg>

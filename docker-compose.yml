@@ -1,0 +1,18 @@
+# Loopback publish only. The image refuses to start without SEAN_AUTH_TOKEN.
+#   SEAN_AUTH_TOKEN=$(openssl rand -base64 32) docker compose up
+services:
+  sean:
+    build: .
+    ports:
+      - "127.0.0.1:7777:7777"
+    environment:
+      SEAN_AUTH_TOKEN: ${SEAN_AUTH_TOKEN:?set SEAN_AUTH_TOKEN to >=32 characters}
+      SEAN_HOME: /data
+      SEAN_HOST: "0.0.0.0"
+      SEAN_PORT: "7777"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    volumes:
+      - sean-data:/data
+    restart: unless-stopped
+volumes:
+  sean-data: {}

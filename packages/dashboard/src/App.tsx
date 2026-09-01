@@ -1277,6 +1277,7 @@ function Settings() {
         aiDisclosure: string;
         providers: { dataforseo: boolean; bing: boolean; openpagerank: boolean };
         caps: { newPagesPerDay: number; contentRefreshPerDay: number; overridable: boolean };
+        telemetry?: { enabled: boolean; events: string[] };
       }>("/api/settings"),
   });
   const adapters = useQuery({
@@ -1352,6 +1353,24 @@ function Settings() {
           Content caps: {d?.caps.contentRefreshPerDay ?? 2} refreshes/day, {d?.caps.newPagesPerDay ?? 2} new
           pages/day. Not overridable.
         </p>
+      </div>
+      <div className="card">
+        <strong>Privacy</strong>
+        <p className="muted">
+          Anonymous usage events only (install method, OS, version, CMS type, command names). Never domains,
+          URLs, queries, keys, or IPs. Honor <code>DO_NOT_TRACK=1</code>.
+        </p>
+        <button
+          className="secondary"
+          onClick={() => {
+            void api("/api/settings", {
+              method: "POST",
+              body: { telemetryEnabled: !d?.telemetry?.enabled },
+            }).then(() => q.refetch());
+          }}
+        >
+          {d?.telemetry?.enabled ? "Turn telemetry off" : "Turn telemetry on"}
+        </button>
       </div>
     </>
   );

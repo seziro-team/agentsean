@@ -73,7 +73,8 @@ describe("cli", () => {
     }
   });
 
-  it("rejects a missing command with --json", async () => {
+  it("with no command onboards (does not start when --no-start)", async () => {
+    const home = tmpHome();
     const chunks: string[] = [];
     const orig = process.stdout.write.bind(process.stdout);
     process.stdout.write = ((s: string | Uint8Array) => {
@@ -81,9 +82,70 @@ describe("cli", () => {
       return true;
     }) as typeof process.stdout.write;
     try {
-      const code = await run(["node", "sean", "--json"]);
-      expect(code).toBe(2);
-      expect(JSON.parse(chunks.join("").trim()).error).toBe("missing_command");
+      const code = await run([
+        "node",
+        "sean",
+        "--json",
+        "--home",
+        home,
+        "--no-start",
+        "--telemetry",
+        "off",
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(chunks.join("").trim()) as {
+        command: string;
+        telemetry: boolean;
+        questions: string[];
+      };
+      expect(parsed.command).toBe("onboard");
+      expect(parsed.telemetry).toBe(false);
+      expect(parsed.questions).toContain("url");
+    } finally {
+      process.stdout.write = orig;
+    }
+  });
+
+  it("doctor --json reports checks", async () => {
+    const home = tmpHome();
+    const chunks: string[] = [];
+    const orig = process.stdout.write.bind(process.stdout);
+    const origErr = process.stderr.write.bind(process.stderr);
+    process.stdout.write = ((s: string | Uint8Array) => {
+      chunks.push(String(s));
+      return true;
+    }) as typeof process.stdout.write;
+    process.stderr.write = process.stdout.write;
+    try {
+      const code = await run(["node", "sean", "doctor", "--json", "--home", home]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(chunks.join("").trim()) as {
+        command: string;
+        checks: Array<{ id: string }>;
+      };
+      expect(parsed.command).toBe("doctor");
+      expect(parsed.checks.some((c) => c.id === "node")).toBe(true);
+    } finally {
+      process.stdout.write = orig;
+      process.stderr.write = origErr;
+    }
+  });
+
+  it("recipes --json lists first-party recipes", async () => {
+    const chunks: string[] = [];
+    const orig = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((s: string | Uint8Array) => {
+      chunks.push(String(s));
+      return true;
+    }) as typeof process.stdout.write;
+    try {
+      const code = await run(["node", "sean", "recipes", "--json"]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(chunks.join("").trim()) as {
+        recipes: Array<{ id: string }>;
+      };
+      expect(parsed.recipes.length).toBeGreaterThanOrEqual(12);
+      expect(parsed.recipes.some((r) => r.id === "revert-a-change")).toBe(true);
     } finally {
       process.stdout.write = orig;
     }

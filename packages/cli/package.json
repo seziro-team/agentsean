@@ -38,6 +38,7 @@
     "@agentsean/measure": "workspace:*",
     "@agentsean/surfaces": "workspace:*",
     "@agentsean/hosted": "workspace:*",
+    "@agentsean/launch": "workspace:*",
     "@agentsean/mcp": "workspace:*",
     "@agentsean/providers": "workspace:*",
     "@agentsean/scheduler": "workspace:*",

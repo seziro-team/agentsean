@@ -22,6 +22,24 @@ It does not run an agent. It exposes REST endpoints authenticated with Applicati
 2. Create an Application Password for a dedicated Editor user.
 3. In Sean: `sean connect wordpress --api-key USER:APP_PASSWORD` with the site origin.
 
+== Frequently Asked Questions ==
+
+= Does this plugin run an AI agent on my server? =
+
+No. The plugin is a REST bridge. Agent Sean the daemon runs on a machine you control (usually your laptop or a VPS you SSH to), binds 127.0.0.1, and talks to this plugin with Application Passwords.
+
+= Does it phone home? =
+
+No. There is no telemetry in this plugin. The daemon's telemetry is documented in TELEMETRY.md and is off until you opt in.
+
+= Does activating the plugin start a background service? =
+
+No. WordPress Guideline 9. Service install is `sean service install` on the machine running the daemon, never a side effect of this plugin.
+
+= Can it write my theme? =
+
+It writes post meta, redirects, robots, JSON-LD, alt text, and can restore revisions. It does not replace your theme.
+
 == Changelog ==
 
 = 0.1.0 =

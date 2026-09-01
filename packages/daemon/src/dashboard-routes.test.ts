@@ -119,6 +119,37 @@ describe("dashboard routes", () => {
     sqlite.close();
   });
 
+  it("exposes a telemetry preview and never includes URLs", async () => {
+    const { server, sqlite } = await app();
+    const res = await server.inject({
+      method: "GET",
+      url: "/api/settings",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as {
+      telemetry: { enabled: boolean; preview: { event: string }; events: string[] };
+    };
+    expect(body.telemetry.enabled).toBe(false);
+    expect(body.telemetry.events).toContain("first_run");
+    expect(JSON.stringify(body.telemetry.preview)).not.toMatch(/https?:\/\//);
+
+    const on = await server.inject({
+      method: "POST",
+      url: "/api/settings",
+      headers: {
+        host: "127.0.0.1:7777",
+        [TOKEN_HEADER]: TOKEN,
+        [CSRF_HEADER]: "1",
+        "content-type": "application/json",
+      },
+      payload: { telemetryEnabled: true },
+    });
+    expect(on.statusCode).toBe(200);
+    await server.close();
+    sqlite.close();
+  });
+
   it("requires a token on the SSE stream", async () => {
     const { server, sqlite } = await app();
     const res = await server.inject({
