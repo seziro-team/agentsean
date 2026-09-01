@@ -486,6 +486,61 @@ CREATE TABLE IF NOT EXISTS reports (
 );
 CREATE INDEX IF NOT EXISTS reports_site_id_idx ON reports(site_id);
 
+CREATE TABLE IF NOT EXISTS style_profiles (
+  id TEXT PRIMARY KEY,
+  site_id TEXT NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
+  voice_json TEXT NOT NULL,
+  disclosure TEXT NOT NULL DEFAULT 'html_comment',
+  updated_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS style_profiles_site_uidx ON style_profiles(site_id);
+
+CREATE TABLE IF NOT EXISTS content_briefs (
+  id TEXT PRIMARY KEY,
+  site_id TEXT NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
+  page_id TEXT REFERENCES pages(id) ON DELETE SET NULL,
+  playbook_id TEXT NOT NULL,
+  playbook_version TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  target_url TEXT NOT NULL,
+  brief_json TEXT NOT NULL,
+  score REAL NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS content_briefs_site_idx ON content_briefs(site_id);
+CREATE INDEX IF NOT EXISTS content_briefs_page_idx ON content_briefs(page_id);
+
+CREATE TABLE IF NOT EXISTS content_drafts (
+  id TEXT PRIMARY KEY,
+  brief_id TEXT NOT NULL REFERENCES content_briefs(id) ON DELETE CASCADE,
+  site_id TEXT NOT NULL REFERENCES sites(id) ON DELETE CASCADE,
+  page_id TEXT REFERENCES pages(id) ON DELETE SET NULL,
+  action_id TEXT,
+  title TEXT,
+  body TEXT,
+  model TEXT,
+  model_class TEXT,
+  state TEXT NOT NULL,
+  gate_json TEXT,
+  evidence_tier TEXT NOT NULL DEFAULT 'E',
+  created_at TEXT NOT NULL,
+  published_at TEXT
+);
+CREATE INDEX IF NOT EXISTS content_drafts_site_idx ON content_drafts(site_id);
+CREATE INDEX IF NOT EXISTS content_drafts_brief_idx ON content_drafts(brief_id);
+CREATE INDEX IF NOT EXISTS content_drafts_state_idx ON content_drafts(site_id, state);
+
+CREATE TABLE IF NOT EXISTS publish_gate_results (
+  id TEXT PRIMARY KEY,
+  draft_id TEXT NOT NULL REFERENCES content_drafts(id) ON DELETE CASCADE,
+  check_id INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  ok INTEGER NOT NULL,
+  detail TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS publish_gate_results_draft_idx ON publish_gate_results(draft_id);
+
 CREATE VIRTUAL TABLE IF NOT EXISTS findings_fts USING fts5(
   id UNINDEXED,
   title,

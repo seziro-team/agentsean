@@ -331,3 +331,10 @@ export {
   entitySightings,
   twoKeyApprovals,
 } from "./actions.js";
+
+export {
+  styleProfiles,
+  contentBriefs,
+  contentDrafts,
+  publishGateResults,
+} from "./content.js";

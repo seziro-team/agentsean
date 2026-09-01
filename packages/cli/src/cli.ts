@@ -8,6 +8,7 @@ import { connectCommand } from "./commands/connect.js";
 import { applyCommand } from "./commands/apply.js";
 import { revertCommand } from "./commands/revert.js";
 import { freezeCommand } from "./commands/freeze.js";
+import { contentCommand } from "./commands/content.js";
 
 const VERSION = "0.0.0";
 
@@ -34,7 +35,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     emitError(
       args.json,
       { error: "missing_command" },
-      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, or `sean freeze`.\n\n" + HELP,
+      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, `sean content`, or `sean freeze`.\n\n" + HELP,
     );
     return 2;
   }
@@ -89,6 +90,14 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       return freezeCommand({ json: args.json, home: args.home, off: args.off });
     case "unfreeze":
       return freezeCommand({ json: args.json, home: args.home, off: true });
+    case "content":
+      return contentCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+        repo: args.repo,
+        dryRun: args.dryRun,
+      });
     default:
       return 2;
   }

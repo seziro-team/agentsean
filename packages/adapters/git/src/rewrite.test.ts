@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rewriteTitle, titleInSource } from "./rewrite.js";
+import { rewriteBody, rewriteTitle, titleInSource } from "./rewrite.js";
 
 describe("rewriteTitle", () => {
   it("rewrites Next.js metadata title", () => {
@@ -9,6 +9,17 @@ describe("rewriteTitle", () => {
     if (out.ok) {
       expect(titleInSource(out.after)).toBe("About our running shoes today");
       expect(out.after).toContain("About our running shoes today");
+    }
+  });
+
+  it("replaces markdown after frontmatter", () => {
+    const src = `---\ntitle: Old\n---\n\nHello world.\n`;
+    const out = rewriteBody(src, "# New\n\nBody with 12% lift.\n");
+    expect(out.ok).toBe(true);
+    if (out.ok) {
+      expect(out.after.startsWith("---\ntitle: Old\n---")).toBe(true);
+      expect(out.after).toContain("# New");
+      expect(out.after).not.toContain("Hello world");
     }
   });
 

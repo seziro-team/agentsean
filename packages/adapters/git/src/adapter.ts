@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import type {
   Action,
@@ -11,7 +12,7 @@ import type {
   SiteAdapter,
 } from "@agentsean/actions";
 import { detectFramework, resolvePageFile } from "./resolve.js";
-import { rewriteTitle, titleInSource } from "./rewrite.js";
+import { rewriteBody, rewriteTitle, titleInSource } from "./rewrite.js";
 import {
   checkout,
   commitAll,
@@ -50,6 +51,46 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
     return file;
   }
 
+  function newPageFile(pagePath: string): string {
+    const rel = pagePath.replace(/^\//, "").replace(/\/$/, "") || "index";
+    return path.join(repo, "content", `${rel}.md`);
+  }
+
+  function plan(action: Action): { file: string; before: string; after: string; summary: string } {
+    if (action.kind === "create_page" && "path" in action.payload) {
+      const file = newPageFile(action.payload.path);
+      const before = fs.existsSync(file) ? readFile(file) : "";
+      const after = `# ${action.payload.title}\n\n${action.payload.body}\n`;
+      return { file, before, after, summary: `create ${path.relative(repo, file)}` };
+    }
+    const file = fileFor(action.target);
+    const before = readFile(file);
+    if (
+      "title" in action.payload &&
+      (action.kind === "rewrite_title" || action.kind === "fix_title_length")
+    ) {
+      const rewritten = rewriteTitle(before, action.payload.title);
+      if (!rewritten.ok) throw new Error(rewritten.error);
+      return {
+        file,
+        before,
+        after: rewritten.after,
+        summary: `rewrite title on ${path.relative(repo, file)}`,
+      };
+    }
+    if ("body" in action.payload && action.kind === "refresh_content") {
+      const rewritten = rewriteBody(before, action.payload.body);
+      if (!rewritten.ok) throw new Error(rewritten.error);
+      return {
+        file,
+        before,
+        after: rewritten.after,
+        summary: `refresh content on ${path.relative(repo, file)}`,
+      };
+    }
+    throw new Error(`git adapter does not apply ${action.kind}`);
+  }
+
   const adapter: SiteAdapter = {
     kind: "git",
     capabilities(): AdapterCapabilities {
@@ -64,40 +105,32 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
       };
     },
     async dryRun(action: Action): Promise<AdapterDryRun> {
-      const file = fileFor(action.target);
-      const before = readFile(file);
-      if (!("title" in action.payload)) {
-        throw new Error(`git adapter Phase 3 supports rewrite_title, got ${action.kind}`);
-      }
-      const rewritten = rewriteTitle(before, action.payload.title);
-      if (!rewritten.ok) throw new Error(rewritten.error);
+      const planned = plan(action);
       return {
-        targetRef: path.relative(repo, file),
-        before,
-        after: rewritten.after,
-        summary: `rewrite title on ${path.relative(repo, file)}`,
+        targetRef: path.relative(repo, planned.file).replaceAll("\\", "/"),
+        before: planned.before,
+        after: planned.after,
+        summary: planned.summary,
       };
     },
     async apply(action: Action): Promise<AdapterApplyResult> {
-      if (action.kind !== "rewrite_title" && action.kind !== "fix_title_length") {
-        throw new Error(`git adapter Phase 3 supports title rewrites, got ${action.kind}`);
-      }
-      if (!("title" in action.payload)) throw new Error("missing title payload");
-      const file = fileFor(action.target);
-      const before = readFile(file);
-      const rewritten = rewriteTitle(before, action.payload.title);
-      if (!rewritten.ok) throw new Error(rewritten.error);
+      const planned = plan(action);
+      const file = planned.file;
       const rel = path.relative(repo, file).replaceAll("\\", "/");
       const base = opts.defaultBranch ?? gitBranch(run, repo);
-      const branch = `sean/title-${action.id.slice(0, 8)}`;
+      const branch =
+        action.kind === "rewrite_title" || action.kind === "fix_title_length"
+          ? `sean/title-${action.id.slice(0, 8)}`
+          : `sean/${action.kind}-${action.id.slice(0, 8)}`;
       try {
         createBranch(run, repo, branch);
       } catch {
         checkout(run, repo, branch);
       }
-      writeFile(file, rewritten.after);
-      const sha = commitAll(run, repo, `seo: rewrite title on ${rel}\n\nAction ${action.id}`);
-      const diff = unifiedDiff(before, rewritten.after, rel);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      writeFile(file, planned.after);
+      const sha = commitAll(run, repo, `seo: ${planned.summary}\n\nAction ${action.id}`);
+      const diff = unifiedDiff(planned.before, planned.after, rel);
       let prUrl: string | undefined;
       const remote = currentRemote(run, repo);
       const parsed = remote ? parseGithubRemote(remote) : null;
@@ -113,7 +146,7 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
           prUrl = await openGithubPr({
             owner: parsed.owner,
             repo: parsed.repo,
-            title: `seo: rewrite title on ${rel}`,
+            title: `seo: ${planned.summary}`,
             body: action.rationale.join("\n"),
             head: branch,
             base,
@@ -127,8 +160,8 @@ export function createGitAdapter(opts: GitAdapterOptions): SiteAdapter {
       }
       const result: AdapterApplyResult = {
         targetRef: rel,
-        before,
-        after: rewritten.after,
+        before: planned.before,
+        after: planned.after,
         summary: prUrl
           ? `Opened PR ${prUrl} (branch ${branch}, ${sha.slice(0, 7)})`
           : `Committed ${sha.slice(0, 7)} on ${branch}`,

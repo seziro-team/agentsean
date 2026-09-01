@@ -100,6 +100,7 @@ export async function createServer(
       token: options.token,
       bus: options.bus ?? createEventBus(),
       queue: options.queue,
+      store: options.store,
     });
   }
 

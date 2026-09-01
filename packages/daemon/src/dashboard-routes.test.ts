@@ -130,4 +130,23 @@ describe("dashboard routes", () => {
     await server.close();
     sqlite.close();
   });
+
+  it("refuses to override the content rate caps", async () => {
+    const { server, sqlite } = await app();
+    const res = await server.inject({
+      method: "POST",
+      url: "/api/settings",
+      headers: {
+        host: "127.0.0.1:7777",
+        [TOKEN_HEADER]: TOKEN,
+        [CSRF_HEADER]: "1",
+        "content-type": "application/json",
+      },
+      payload: { newPagesPerDay: 50 },
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error).toBe("rate_limit_locked");
+    await server.close();
+    sqlite.close();
+  });
 });

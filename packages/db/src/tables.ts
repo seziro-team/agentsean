@@ -45,15 +45,25 @@ export const ACTION_TABLES = [
 /** Phase 4 dashboard snapshots. FTS5 is SQLite-only and lives outside drizzle. */
 export const DASHBOARD_TABLES = ["reports"] as const;
 
+/** Phase 5 content engine. */
+export const CONTENT_TABLES = [
+  "style_profiles",
+  "content_briefs",
+  "content_drafts",
+  "publish_gate_results",
+] as const;
+
 export const ALL_TABLES = [
   ...CORE_TABLES,
   ...GOOGLE_TABLES,
   ...ACTION_TABLES,
   ...DASHBOARD_TABLES,
+  ...CONTENT_TABLES,
 ] as const;
 
 export type CoreTable = (typeof CORE_TABLES)[number];
 export type GoogleTable = (typeof GOOGLE_TABLES)[number];
 export type ActionTable = (typeof ACTION_TABLES)[number];
 export type DashboardTable = (typeof DASHBOARD_TABLES)[number];
+export type ContentTable = (typeof CONTENT_TABLES)[number];
 export type AppTable = (typeof ALL_TABLES)[number];

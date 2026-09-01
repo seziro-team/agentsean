@@ -17,7 +17,16 @@ import {
   sites,
   type SqliteDatabase,
 } from "@agentsean/db";
-import { ACTION_KINDS, KIND_TIER, signApproval, addTwoKey, actionFromRow } from "@agentsean/actions";
+import { Secret, type CredentialStore } from "@agentsean/credentials";
+import { DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING, listContent } from "@agentsean/content";
+import {
+  ACTION_KINDS,
+  BLAST,
+  KIND_TIER,
+  addTwoKey,
+  actionFromRow,
+  signApproval,
+} from "@agentsean/actions";
 import { crawlSite, persistCrawl, persistFindings } from "@agentsean/crawler";
 import { buildReport, flattenForDb, SITE_SCORE_FORMULA, SITE_SCORE_VERSION } from "@agentsean/analyzers";
 import {
@@ -39,6 +48,7 @@ export type DashboardRouteOptions = {
   token: string;
   bus: EventBus;
   queue?: JobQueue | undefined;
+  store?: CredentialStore | undefined;
 };
 
 function approvalKey(token: string): Buffer {
@@ -384,6 +394,7 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
 
   app.get("/api/content", (req) => {
     const q = req.query as { siteId?: string };
+    const listed = listContent(opts.db, q.siteId);
     const rows = opts.db
       .select()
       .from(actions)
@@ -393,7 +404,27 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
         return a.actionType === "create_page" || a.actionType === "refresh_content";
       });
     return {
-      cap: { newPagesPerDay: 2 },
+      cap: {
+        newPagesPerDay: BLAST.newPagesPerDay,
+        contentRefreshPerDay: BLAST.contentRefreshPerDay,
+        overridable: false,
+      },
+      evidence: { default: DEFAULT_EVIDENCE_TIER, meaning: EVIDENCE_MEANING[DEFAULT_EVIDENCE_TIER] },
+      briefs: listed.briefs.map((b) => ({
+        id: b.id,
+        kind: b.kind,
+        targetUrl: b.targetUrl,
+        score: b.score,
+        createdAt: b.createdAt,
+      })),
+      drafts: listed.drafts.map((d) => ({
+        id: d.id,
+        state: d.state,
+        title: d.title,
+        evidenceTier: d.evidenceTier,
+        createdAt: d.createdAt,
+        publishedAt: d.publishedAt,
+      })),
       items: rows.map((r) => ({
         id: r.id,
         kind: r.actionType,
@@ -506,23 +537,49 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     return reply.send(pdf);
   });
 
-  app.get("/api/settings", () => ({
-    halted: isHalted(opts.seanHome),
-    budgetUsdDaily: getSettingNumber(opts.db, "budgetUsdDaily", 8),
-    observeDays: getSettingNumber(opts.db, "observeDays", 7),
-    whiteLabel: getSetting(opts.db, "whiteLabel") === "1",
-    rankCadence: getSetting(opts.db, "rankCadence") ?? "weekly",
-    notifications: getSetting(opts.db, "notifications") ?? "off",
-  }));
+  app.get("/api/settings", async () => {
+    const llmProvider = getSetting(opts.db, "llmProvider") ?? "anthropic";
+    let llmConfigured = false;
+    if (opts.store) {
+      const secret = await opts.store.get(`llm:${llmProvider}`);
+      llmConfigured = Boolean(secret) || Boolean(process.env["OLLAMA_HOST"]);
+    }
+    return {
+      halted: isHalted(opts.seanHome),
+      budgetUsdDaily: getSettingNumber(opts.db, "budgetUsdDaily", 8),
+      observeDays: getSettingNumber(opts.db, "observeDays", 7),
+      whiteLabel: getSetting(opts.db, "whiteLabel") === "1",
+      rankCadence: getSetting(opts.db, "rankCadence") ?? "weekly",
+      notifications: getSetting(opts.db, "notifications") ?? "off",
+      llmProvider,
+      llmConfigured,
+      aiDisclosure: getSetting(opts.db, "aiDisclosure") ?? "html_comment",
+      caps: {
+        newPagesPerDay: BLAST.newPagesPerDay,
+        contentRefreshPerDay: BLAST.contentRefreshPerDay,
+        overridable: false,
+      },
+    };
+  });
 
-  app.post("/api/settings", (req) => {
+  app.post("/api/settings", (req, reply) => {
     const body = (req.body ?? {}) as {
       budgetUsdDaily?: number;
       observeDays?: number;
       whiteLabel?: boolean;
       rankCadence?: string;
       notifications?: string;
+      llmProvider?: string;
+      aiDisclosure?: string;
+      newPagesPerDay?: number;
+      contentRefreshPerDay?: number;
     };
+    if (body.newPagesPerDay !== undefined || body.contentRefreshPerDay !== undefined) {
+      return reply.code(400).send({
+        error: "rate_limit_locked",
+        detail: "new-page and content-refresh caps are not overridable",
+      });
+    }
     if (typeof body.budgetUsdDaily === "number") {
       setSetting(opts.db, "budgetUsdDaily", String(body.budgetUsdDaily));
     }
@@ -535,8 +592,23 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     }
     if (typeof body.rankCadence === "string") setSetting(opts.db, "rankCadence", body.rankCadence);
     if (typeof body.notifications === "string") setSetting(opts.db, "notifications", body.notifications);
+    if (typeof body.llmProvider === "string") setSetting(opts.db, "llmProvider", body.llmProvider);
+    if (typeof body.aiDisclosure === "string") setSetting(opts.db, "aiDisclosure", body.aiDisclosure);
     opts.bus.emit("settings");
     return { ok: true };
+  });
+
+  app.post("/api/settings/llm", async (req, reply) => {
+    if (!opts.store) return reply.code(400).send({ error: "no_store" });
+    const body = (req.body ?? {}) as { provider?: string; apiKey?: string };
+    const provider = body.provider ?? getSetting(opts.db, "llmProvider") ?? "anthropic";
+    if (!body.apiKey || body.apiKey.length < 8) {
+      return reply.code(400).send({ error: "missing_key" });
+    }
+    await opts.store.set(`llm:${provider}`, new Secret(body.apiKey));
+    setSetting(opts.db, "llmProvider", provider);
+    opts.bus.emit("settings");
+    return { ok: true, provider, configured: true };
   });
 
   app.post("/api/freeze", (req) => {

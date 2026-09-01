@@ -78,6 +78,7 @@ export function buildValidationContext(
     appliedThisHour: counts.appliedThisHour,
     appliedThisDay: counts.appliedThisDay,
     newPagesToday: counts.newPagesToday,
+    contentRefreshToday: counts.contentRefreshToday,
     spentUsdToday: counts.spentUsdToday,
     budgetUsdDaily: opts.budgetUsdDaily ?? 8,
     estimatedCostUsd: opts.estimatedCostUsd ?? 0,

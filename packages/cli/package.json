@@ -26,8 +26,10 @@
     "@agentsean/actions": "workspace:*",
     "@agentsean/adapter-git": "workspace:*",
     "@agentsean/analyzers": "workspace:*",
+    "@agentsean/content": "workspace:*",
     "@agentsean/crawler": "workspace:*",
     "@agentsean/daemon": "workspace:*",
+    "@agentsean/llm": "workspace:*",
     "@agentsean/db": "workspace:*",
     "@agentsean/google": "workspace:*",
     "drizzle-orm": "0.45.2"

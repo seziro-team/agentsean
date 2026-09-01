@@ -540,16 +540,49 @@ function Content(props: { siteId: string | undefined }) {
     queryFn: () =>
       api<{
         items: Array<{ id: string; kind: string; state: string; createdAt: string; targetRef: string }>;
-        cap: { newPagesPerDay: number };
+        drafts: Array<{
+          id: string;
+          state: string;
+          title: string | null;
+          evidenceTier: string;
+          createdAt: string;
+          publishedAt: string | null;
+        }>;
+        briefs: Array<{ id: string; kind: string; targetUrl: string; score: number; createdAt: string }>;
+        cap: { newPagesPerDay: number; contentRefreshPerDay: number; overridable: boolean };
+        evidence: { default: string; meaning: string };
       }>(`/api/content${props.siteId ? `?siteId=${props.siteId}` : ""}`),
   });
   return (
     <>
       <h2>Content</h2>
       <p className="lead">
-        Calendar of drafts and published work. Quality gates land with the content engine (Phase 5). Cap:{" "}
-        {q.data?.cap.newPagesPerDay ?? 2} new pages/day/site.
+        Default is rewrite-in-place. Cap: {q.data?.cap.contentRefreshPerDay ?? 2} refreshes/day and{" "}
+        {q.data?.cap.newPagesPerDay ?? 2} new pages/day, not overridable. Evidence: {q.data?.evidence.default} —{" "}
+        {q.data?.evidence.meaning}
       </p>
+      <h3>Drafts</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Title</th>
+            <th>State</th>
+            <th>Evidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(q.data?.drafts ?? []).map((d) => (
+            <tr key={d.id}>
+              <td>{(d.publishedAt ?? d.createdAt).slice(0, 10)}</td>
+              <td>{d.title ?? "—"}</td>
+              <td>{d.state}</td>
+              <td>{d.evidenceTier}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h3>Actions</h3>
       <table>
         <thead>
           <tr>
@@ -679,6 +712,10 @@ function Settings() {
         whiteLabel: boolean;
         rankCadence: string;
         notifications: string;
+        llmProvider: string;
+        llmConfigured: boolean;
+        aiDisclosure: string;
+        caps: { newPagesPerDay: number; contentRefreshPerDay: number; overridable: boolean };
       }>("/api/settings"),
   });
   const [budget, setBudget] = useState("");
@@ -716,6 +753,17 @@ function Settings() {
           Save
         </button>
         <p className="muted">Observe period: {d?.observeDays ?? 7} days (shortenable to 24h, not zero). Rank cadence: {d?.rankCadence ?? "weekly"}.</p>
+      </div>
+      <div className="card">
+        <strong>LLM (BYOK)</strong>
+        <p className="muted">
+          Provider {d?.llmProvider ?? "anthropic"} · {d?.llmConfigured ? "key configured" : "no key"} · disclosure{" "}
+          {d?.aiDisclosure ?? "html_comment"}. The model never holds CMS credentials and never calls a write API.
+        </p>
+        <p className="muted">
+          Content caps: {d?.caps.contentRefreshPerDay ?? 2} refreshes/day, {d?.caps.newPagesPerDay ?? 2} new
+          pages/day. Not overridable.
+        </p>
       </div>
     </>
   );

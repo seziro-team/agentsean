@@ -32,6 +32,38 @@ export function rewriteTitle(source: string, next: string): { ok: true; after: s
   return { ok: false, error: "no title field found in file" };
 }
 
+export function rewriteBody(source: string, next: string): { ok: true; after: string } | { ok: false; error: string } {
+  const fm = source.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
+  if (fm) {
+    return { ok: true, after: fm[0] + next.replace(/^\n/, "") };
+  }
+  const main = /(<main[^>]*>)([\s\S]*?)(<\/main>)/i.exec(source);
+  if (main && main.index !== undefined) {
+    const inner = markdownToHtml(next);
+    const after = source.slice(0, main.index) + `${main[1]}${inner}${main[3]}` + source.slice(main.index + main[0].length);
+    return { ok: true, after };
+  }
+  const article = /(<article[^>]*>)([\s\S]*?)(<\/article>)/i.exec(source);
+  if (article && article.index !== undefined) {
+    const inner = markdownToHtml(next);
+    const after =
+      source.slice(0, article.index) + `${article[1]}${inner}${article[3]}` + source.slice(article.index + article[0].length);
+    return { ok: true, after };
+  }
+  if (/^#\s+/m.test(source) || source.trim().length < 40) {
+    return { ok: true, after: next };
+  }
+  return { ok: true, after: next };
+}
+
+function markdownToHtml(md: string): string {
+  const escaped = md
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return `\n${escaped}\n`;
+}
+
 export function titleInSource(source: string): string | null {
   const html = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(source);
   if (html?.[1]) return html[1].trim();

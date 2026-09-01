@@ -4,11 +4,13 @@ export {
   GOOGLE_TABLES,
   ACTION_TABLES,
   DASHBOARD_TABLES,
+  CONTENT_TABLES,
   ALL_TABLES,
   type CoreTable,
   type GoogleTable,
   type ActionTable,
   type DashboardTable,
+  type ContentTable,
   type AppTable,
 } from "./tables.js";
 export {
@@ -45,6 +47,10 @@ export {
   entitySightings,
   twoKeyApprovals,
   reports,
+  styleProfiles,
+  contentBriefs,
+  contentDrafts,
+  publishGateResults,
   sqliteSchema,
   pgSchema,
 } from "./schema.js";

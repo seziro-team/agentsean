@@ -7,7 +7,8 @@ export type CommandName =
   | "apply"
   | "revert"
   | "freeze"
-  | "unfreeze";
+  | "unfreeze"
+  | "content";
 
 export type CliArgs = {
   command: CommandName | undefined;
@@ -42,6 +43,7 @@ const COMMANDS = new Set<string>([
   "revert",
   "freeze",
   "unfreeze",
+  "content",
 ]);
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -176,6 +178,10 @@ export function parseArgs(argv: string[]): CliArgs {
       args.target = a;
       continue;
     }
+    if (args.command === "content" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
     args.errors.push(`unexpected argument ${a}`);
   }
 
@@ -194,6 +200,7 @@ Usage:
   sean revert <changeId> [--json]
   sean freeze [--off] [--json]
   sean unfreeze [--json]
+  sean content [origin] [--repo /path/to/site] [--dry-run] [--json]
 
 Every command accepts --json. The daemon binds 127.0.0.1 only and refuses to
 start off-loopback without auth. Audit crawls a URL with zero credentials.
@@ -201,5 +208,7 @@ Connect Google opens the local dashboard; the hosted broker never talks to
 this machine. --byo uses your own Cloud project (publish to Production).
 Apply plans title-tag fixes, validates them, and opens a Git PR. Revert
 restores the shadow-ledger snapshot. Freeze writes HALT and stops every write
-across every site; it survives restart.
+across every site; it survives restart. Content identifies a decaying page from
+GSC clicks, rewrites it, runs PublishGate, and publishes via the Git adapter.
+New pages are capped at 2/day/site and the cap is not overridable.
 `;

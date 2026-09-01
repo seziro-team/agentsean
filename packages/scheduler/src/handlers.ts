@@ -13,6 +13,8 @@ import { buildReport, flattenForDb } from "@agentsean/analyzers";
 import { crawlSite, persistCrawl, persistFindings, type CrawlCheckpoint } from "@agentsean/crawler";
 import { loadAuditExtras, syncGoogle } from "@agentsean/google";
 import type { CredentialStore } from "@agentsean/credentials";
+import { loadLlmConfig } from "@agentsean/llm";
+import { runContentJob } from "@agentsean/content";
 import type { HandlerContext, Job, JobHandler, JobKind } from "./types.js";
 
 export type HandlerDeps = {
@@ -220,13 +222,22 @@ export function createHandlers(deps: HandlerDeps): Record<JobKind, JobHandler> {
     },
     async content(job, ctx) {
       ctx.heartbeat();
-      // Content generation is Phase 5. Respect the 2 new pages/day cap by refusing to invent pages.
-      return {
-        skipped: true,
-        reason: "content_engine_phase_5",
-        cap: { newPagesPerDay: 2 },
+      if (!job.siteId) return { skipped: true, reason: "no_site" };
+      const origin = originOf(job, deps.db);
+      if (!origin) return { skipped: true, reason: "no_origin" };
+      const llm = await loadLlmConfig({
+        ...(deps.store ? { store: deps.store } : {}),
+        ...(deps.fetch ? { fetch: deps.fetch } : {}),
+      });
+      return runContentJob(deps.db, {
         siteId: job.siteId,
-      };
+        origin,
+        now: ctx.now,
+        halted: ctx.halted,
+        llm,
+        adapter: defaultAdapterFor(deps)(job.siteId),
+        approvalKey: deps.approvalKey,
+      });
     },
     async plan_and_apply(job, ctx) {
       ctx.heartbeat();

@@ -10,11 +10,12 @@ the work — 24/7, on your real website.
 > WordPress, in Shopify, in your Git repo, at the edge — as a diff you can read
 > and revert, on a schedule you set, forever.
 
-**Status:** Phase 4 (daemon, dashboard, hardening). Point Sean at a URL for a
-scored audit with zero credentials, connect Google as an upgrade, then `sean
-apply --repo` to fix a title tag by opening a Git PR you can revert. The
-daemon runs unattended: weekly crawl, daily GSC, T1/T2 auto, T3 queued,
-`sean freeze` to halt writes. See [`PLAN.md`](PLAN.md).
+**Status:** Phase 5 (content engine). Point Sean at a URL for a scored audit
+with zero credentials, connect Google as an upgrade, then `sean apply --repo`
+to fix a title tag by opening a Git PR you can revert. Daily, Sean finds a
+decaying page from GSC clicks, rewrites it, runs PublishGate, and publishes
+via the Git adapter — 2 refreshes/day, 2 new pages/day, not overridable.
+`sean freeze` halts writes. See [`PLAN.md`](PLAN.md).
 
 ## Install
 
@@ -33,6 +34,7 @@ npx agentsean audit https://example.com --json
 npx agentsean connect google
 npx agentsean apply --repo ./my-next-app
 npx agentsean revert <changeId>
+npx agentsean content --repo ./my-next-app
 npx agentsean freeze
 npx agentsean status --json
 npx agentsean stop
@@ -44,7 +46,8 @@ credentials. Connect Google opens the local dashboard at
 Default metric is clicks (GSC impressions from 2025-05-13 to 2026-04-27 are
 contaminated). BYO Cloud project: `sean connect google --byo --credentials ./client_secret.json`.
 See [`docs/google.md`](docs/google.md). Action system:
-[`docs/actions.md`](docs/actions.md). Site Score and priority formulas:
+[`docs/actions.md`](docs/actions.md). Content engine:
+[`docs/content.md`](docs/content.md). Site Score and priority formulas:
 [`docs/site-score.md`](docs/site-score.md), [`docs/priority.md`](docs/priority.md).
 
 ## Repo
@@ -55,7 +58,7 @@ This is the canonical source for Agent Sean. The planned long-term home is
 
 ```
 packages/
-  cli/           # npx agentsean (start | stop | status | audit | connect | apply | revert | freeze)
+  cli/           # npx agentsean (start | stop | status | audit | connect | apply | revert | content | freeze)
   daemon/        # Fastify, loopback bind, security middleware, SSE, SPA
   dashboard/     # React + Vite SPA (same origin, no CORS)
   scheduler/     # JobQueue (SQLite locally, pg-boss on Postgres), cadences
@@ -64,6 +67,9 @@ packages/
   google/        # OAuth broker + BYO, GSC, GA4, PSI, CrUX, incidents, residual
   actions/       # typed Action, 15-check validator, executor, shadow ledger
   adapters/git/  # branch, commit, open PR, verify, revert
+  playbooks/     # versioned SEO methodology (adapted OpenSEO skills + content)
+  llm/           # BYOK via Vercel AI SDK 7, model routing, cost ledger
+  content/       # briefs, PublishGate, refresh-first generation
   db/            # Drizzle schema (SQLite local + Postgres hosted)
   credentials/   # OS keychain + encrypted-file fallback
   ee/            # commercial features (separate license)

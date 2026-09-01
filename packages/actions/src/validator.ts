@@ -1,5 +1,6 @@
 import {
   CONTENT_GEN_KINDS,
+  CONTENT_REFRESH_KINDS,
   KIND_TIER,
   NEW_PAGE_KINDS,
   TWO_KEY_KINDS,
@@ -218,13 +219,14 @@ function checkDiffCaps(action: Action, ctx: ValidationContext): Veto[] {
   if (changed > cap.maxBytes) {
     return [veto(5, "DIFF_CAPS", `changed ${changed} bytes, cap ${cap.maxBytes}`)];
   }
-  if (!field && before > 0) {
+  const contentKind = CONTENT_GEN_KINDS.has(action.kind);
+  if (!field && !contentKind && before > 0) {
     const pct = (changed / before) * 100;
     if (pct > cap.maxPct && changed > 40) {
       return [veto(5, "DIFF_CAPS", `changed ${pct.toFixed(1)}% of page, cap ${cap.maxPct}%`)];
     }
   }
-  if (!field && after > before * 1.5 + 200 && before > 0) {
+  if (!field && !contentKind && after > before * 1.5 + 200 && before > 0) {
     return [veto(5, "DIFF_CAPS", "after is more than 1.5× before + 200 bytes")];
   }
   if ("title" in action.payload && action.payload.title.length > TITLE_MAX) {
@@ -378,6 +380,11 @@ function checkRate(action: Action, ctx: ValidationContext): Veto[] {
   if (NEW_PAGE_KINDS.has(action.kind) && ctx.newPagesToday >= BLAST.newPagesPerDay) {
     return [
       veto(15, "RATE_LIMIT", `new-page cap is ${BLAST.newPagesPerDay}/day/site`),
+    ];
+  }
+  if (CONTENT_REFRESH_KINDS.has(action.kind) && ctx.contentRefreshToday >= BLAST.contentRefreshPerDay) {
+    return [
+      veto(15, "RATE_LIMIT", `content-refresh cap is ${BLAST.contentRefreshPerDay}/day/site`),
     ];
   }
   return [];

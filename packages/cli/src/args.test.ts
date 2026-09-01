@@ -100,6 +100,23 @@ describe("parseArgs", () => {
     expect(c.command).toBe("unfreeze");
   });
 
+  it("parses content --dry-run", () => {
+    const a = parseArgs([
+      "node",
+      "sean",
+      "content",
+      "https://example.com",
+      "--repo",
+      "./site",
+      "--dry-run",
+      "--json",
+    ]);
+    expect(a.command).toBe("content");
+    expect(a.target).toBe("https://example.com");
+    expect(a.repo).toBe("./site");
+    expect(a.dryRun).toBe(true);
+  });
+
   it("flags unknown options", () => {
     const a = parseArgs(["node", "sean", "status", "--wat"]);
     expect(a.errors[0]).toMatch(/unknown flag/);

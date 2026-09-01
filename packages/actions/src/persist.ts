@@ -385,6 +385,7 @@ export function countsForLedger(
   appliedThisHour: number;
   appliedThisDay: number;
   newPagesToday: number;
+  contentRefreshToday: number;
   spentUsdToday: number;
 } {
   const hour = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
@@ -399,13 +400,16 @@ export function countsForLedger(
   const newPagesToday = applied.filter(
     (a) => a.actionType === "create_page" && (a.appliedAt ?? "") >= day,
   ).length;
+  const contentRefreshToday = applied.filter(
+    (a) => a.actionType === "refresh_content" && (a.appliedAt ?? "") >= day,
+  ).length;
   const costs = db
     .select()
     .from(costLedger)
     .where(and(eq(costLedger.siteId, siteId), gte(costLedger.ts, day)))
     .all();
   const spentUsdToday = costs.reduce((s, r) => s + (r.costUsd ?? 0), 0);
-  return { appliedThisHour, appliedThisDay, newPagesToday, spentUsdToday };
+  return { appliedThisHour, appliedThisDay, newPagesToday, contentRefreshToday, spentUsdToday };
 }
 
 export { BLAST };

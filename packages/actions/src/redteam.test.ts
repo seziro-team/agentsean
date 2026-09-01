@@ -51,6 +51,7 @@ function ctx(over: Partial<ValidationContext> = {}): ValidationContext {
     appliedThisHour: 0,
     appliedThisDay: 0,
     newPagesToday: 2,
+    contentRefreshToday: 0,
     spentUsdToday: 0,
     budgetUsdDaily: 8,
     estimatedCostUsd: 0,

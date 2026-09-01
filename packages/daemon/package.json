@@ -29,6 +29,7 @@
     "@agentsean/actions": "workspace:*",
     "@agentsean/adapter-git": "workspace:*",
     "@agentsean/analyzers": "workspace:*",
+    "@agentsean/content": "workspace:*",
     "@agentsean/credentials": "workspace:*",
     "@agentsean/crawler": "workspace:*",
     "@agentsean/dashboard": "workspace:*",

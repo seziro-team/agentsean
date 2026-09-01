@@ -132,6 +132,7 @@ export type ValidationContext = {
   appliedThisHour: number;
   appliedThisDay: number;
   newPagesToday: number;
+  contentRefreshToday: number;
   spentUsdToday: number;
   budgetUsdDaily: number;
   estimatedCostUsd: number;
@@ -215,7 +216,7 @@ export const DIFF_CAPS: Record<string, { maxBytes: number; maxPct: number }> = {
   insert_internal_link: { maxBytes: 400, maxPct: 5 },
   add_jsonld: { maxBytes: 4000, maxPct: 20 },
   update_jsonld: { maxBytes: 4000, maxPct: 20 },
-  refresh_content: { maxBytes: 40_000, maxPct: 40 },
+  refresh_content: { maxBytes: 40_000, maxPct: 400 },
   create_page: { maxBytes: 40_000, maxPct: 100 },
   default: { maxBytes: 2000, maxPct: 15 },
 };
@@ -225,6 +226,7 @@ export const BLAST = {
   maxPerHour: 40,
   maxPerDay: 80,
   newPagesPerDay: 2,
+  contentRefreshPerDay: 2,
 } as const;
 
 export const TITLE_MAX = 70;

@@ -1,4 +1,13 @@
-export { ACTION_KINDS, KIND_TIER, TWO_KEY_KINDS, isActionKind, type ActionKind } from "./kinds.js";
+export {
+  ACTION_KINDS,
+  KIND_TIER,
+  TWO_KEY_KINDS,
+  NEW_PAGE_KINDS,
+  CONTENT_GEN_KINDS,
+  CONTENT_REFRESH_KINDS,
+  isActionKind,
+  type ActionKind,
+} from "./kinds.js";
 export { parseAction } from "./payloads.js";
 export { validateAction, validateParsed } from "./validator.js";
 export { executeAction, revertChange, buildValidationContext } from "./executor.js";

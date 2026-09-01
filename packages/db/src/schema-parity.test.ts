@@ -7,6 +7,7 @@ import * as pgSchema from "./pg/schema.js";
 import {
   ACTION_TABLES,
   ALL_TABLES,
+  CONTENT_TABLES,
   CORE_TABLES,
   DASHBOARD_TABLES,
   GOOGLE_TABLES,
@@ -126,6 +127,12 @@ describe("schema parity", () => {
 
   it("defines every Phase 4 dashboard table on SQLite", () => {
     for (const name of DASHBOARD_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 5 content table on SQLite", () => {
+    for (const name of CONTENT_TABLES) {
       expect(sqliteTables.has(name), name).toBe(true);
     }
   });

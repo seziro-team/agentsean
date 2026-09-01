@@ -44,6 +44,10 @@ export const {
   entitySightings,
   twoKeyApprovals,
   reports,
+  styleProfiles,
+  contentBriefs,
+  contentDrafts,
+  publishGateResults,
 } = schema;
 
 export { sqliteSchema, pgSchema };

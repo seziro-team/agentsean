@@ -29,7 +29,7 @@ Cadences per site (idempotent per period bucket):
 | gsc_sync | daily |
 | cwv (CrUX / PSI) | weekly |
 | rank_check | **weekly** (daily 200-keyword tracking is ~$3.60/mo, 45% of $8) |
-| content | daily, cap 2 new pages/site — generation is Phase 5 |
+| content | daily: decay → brief → PublishGate → refresh_content. Cap 2 refreshes and 2 new pages/site, not overridable |
 | plan_and_apply | daily T1/T2 auto, T3 queued |
 
 Crash recovery: a `running` row whose heartbeat is older than 5 minutes is

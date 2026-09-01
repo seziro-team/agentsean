@@ -49,6 +49,7 @@ function ctx(over: Partial<ValidationContext> = {}): ValidationContext {
     appliedThisHour: 0,
     appliedThisDay: 0,
     newPagesToday: 0,
+    contentRefreshToday: 0,
     spentUsdToday: 0,
     budgetUsdDaily: 8,
     estimatedCostUsd: 0,
@@ -76,6 +77,25 @@ function titleAction(over: Partial<Action> = {}): Action {
     ...over,
   };
 }
+
+describe("content rate limits", () => {
+  it("vetoes the third refresh of the day", () => {
+    const action: Action = {
+      id: randomUUID(),
+      siteId,
+      kind: "refresh_content",
+      tier: KIND_TIER.refresh_content,
+      target: { pageId, url: "https://example.com/" },
+      payload: { body: "# Hello\n\nA longer body that stays on this URL.\n" },
+      rationale: ["Refresh the decaying page."],
+      findingIds: [findingId],
+      estimatedImpact: { metric: "clicks", estimate: 0, confidence: 0.2 },
+    };
+    const blocked = validateAction(action, ctx({ contentRefreshToday: 2 }));
+    expect(blocked.ok).toBe(false);
+    if (!blocked.ok) expect(blocked.vetoes.some((v) => v.code === "RATE_LIMIT")).toBe(true);
+  });
+});
 
 describe("closed schema", () => {
   it("rejects unknown kinds and extra keys", () => {
