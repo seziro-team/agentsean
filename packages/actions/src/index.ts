@@ -1,3 +1,4 @@
+export * from "./tagscan.js";
 export {
   ACTION_KINDS,
   KIND_TIER,

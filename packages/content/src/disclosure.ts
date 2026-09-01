@@ -1,9 +1,9 @@
 // Anchored on `<head` with a word boundary so the engine does not retry the
 // attribute run from every position in a document full of `<head`-alikes
 // (js/polynomial-redos).
-const HEAD_OPEN = /<head\b([^>]*)>/i;
 
 import type { StyleProfile } from "./types.js";
+import { findOpenTag } from "@agentsean/actions";
 
 export const HTML_COMMENT =
   "<!-- ai-generated: Agent Sean. EU AI Act Art. 50 machine-readable mark. -->";
@@ -26,7 +26,9 @@ export function applyDisclosure(body: string, profile: StyleProfile): string {
   if (body.includes(mark) || body.includes("ai-generated")) return body;
   if (profile.disclosure === "meta") {
     if (/<head[\s>]/i.test(body)) {
-      return body.replace(HEAD_OPEN, (_m, attrs: string) => `<head${attrs}>\n${mark}`);
+      const head = findOpenTag(body, "head");
+      if (head) return body.slice(0, head.end) + `\n${mark}` + body.slice(head.end);
+      return body;
     }
     return `${mark}\n${body}`;
   }

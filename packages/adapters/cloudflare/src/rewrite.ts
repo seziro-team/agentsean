@@ -1,4 +1,4 @@
-import { patchHtmlTitle } from "@agentsean/actions";
+import { findMetaByName, findOpenTag, patchHtmlTitle } from "@agentsean/actions";
 
 export type Overlay = {
   title?: string | undefined;
@@ -12,14 +12,6 @@ export type OverlayMap = Record<string, Overlay>;
  * bot signals, or crawler class. That is cloaking under Google's spam policies
  * (page last updated 2026-08-28).
  */
-/**
- * Anchored on `<meta`/`<head` with a word boundary, and the attribute run is a
- * single negated class. Without the boundary the engine retries the run from
- * every `<meta`-alike position in a large document (CodeQL js/polynomial-redos).
- */
-const META_DESCRIPTION = /<meta\b[^>]*\bname=["']description["'][^>]*>/i;
-const HEAD_OPEN = /<head\b[^>]*>/i;
-
 /**
  * Escape a value being written into a double-quoted HTML attribute.
  *
@@ -45,10 +37,14 @@ export function rewriteHtml(html: string, overlay: Overlay | undefined): string 
   if (overlay.title) out = patchHtmlTitle(out, overlay.title);
   if (overlay.metaDescription) {
     const tag = `<meta name="description" content="${escapeAttribute(overlay.metaDescription)}">`;
-    if (META_DESCRIPTION.test(out)) {
-      out = out.replace(META_DESCRIPTION, tag);
-    } else if (HEAD_OPEN.test(out)) {
-      out = out.replace(HEAD_OPEN, (h) => `${h}${tag}`);
+    // Forward scans rather than regexes — the regex forms were O(n^2) on
+    // hostile input (18.5s and 9.9s measured). See @agentsean/actions/tagscan.
+    const existing = findMetaByName(out, "description");
+    if (existing) {
+      out = out.slice(0, existing.start) + tag + out.slice(existing.end);
+    } else {
+      const head = findOpenTag(out, "head");
+      if (head) out = out.slice(0, head.end) + tag + out.slice(head.end);
     }
   }
   return out;

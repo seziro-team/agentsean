@@ -21,8 +21,9 @@
  * This runs on HTML fetched back from the customer's live site to confirm a
  * write landed, so the input is not ours and may carry user-generated content.
  */
+import { findOpenTag } from "./tagscan.js";
+
 const TITLE_EL = /<title\b[^>]*>((?:[^<]|<(?!\/title[\s>]))*)(?:<\/title[^>]*>|$)/i;
-const HEAD_OPEN = /<head\b[^>]*>/i;
 
 export function htmlTitle(html: string): string | null {
   const inner = TITLE_EL.exec(html)?.[1]?.trim();
@@ -33,8 +34,15 @@ export function patchHtmlTitle(html: string, title: string): string {
   if (TITLE_EL.test(html)) {
     return html.replace(TITLE_EL, `<title>${escapeHtml(title)}</title>`);
   }
-  if (HEAD_OPEN.test(html)) {
-    return html.replace(HEAD_OPEN, (h) => `${h}<title>${escapeHtml(title)}</title>`);
+  // Forward scan, not a regex: `/<head\b[^>]*>/` is O(n^2) on input with many
+  // `<head` and no `>` (measured 18.5s at 60k). See tagscan.ts.
+  const head = findOpenTag(html, "head");
+  if (head) {
+    return (
+      html.slice(0, head.end) +
+      `<title>${escapeHtml(title)}</title>` +
+      html.slice(head.end)
+    );
   }
   return `<!doctype html><html><head><title>${escapeHtml(title)}</title></head><body></body></html>`;
 }

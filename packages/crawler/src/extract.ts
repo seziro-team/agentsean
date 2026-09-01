@@ -231,9 +231,44 @@ export function extractPage(
   };
 }
 
+/**
+ * Index just past the first `<head …>` open tag, or -1.
+ *
+ * Deliberately not a regex. `/<head\b[^>]*>/` is O(n^2) on input carrying many
+ * `<head` and no `>`: the engine runs the negated class to end-of-input, fails,
+ * backtracks, then restarts at the next `<head` and rescans everything again —
+ * 18.5 seconds measured at 60,000 repetitions. Adding `\b` fixes the
+ * `<header>` overmatch but does nothing for the restart, which is the part that
+ * costs. This runs on every crawled page, so the input is attacker-authored by
+ * definition.
+ *
+ * Kept local rather than shared with `@agentsean/actions/tagscan`, which does
+ * the same job: `actions` sits above `crawler` in the dependency graph, and
+ * inverting that to save a dozen lines would be the wrong trade.
+ */
+function headOpenEnd(html: string): number {
+  const lower = html.toLowerCase();
+  let from = 0;
+  for (;;) {
+    const start = lower.indexOf("<head", from);
+    if (start === -1) return -1;
+    const after = start + 5;
+    const next = lower.charCodeAt(after);
+    // Word boundary, so `<header>` is not a `<head>`.
+    if ((next >= 97 && next <= 122) || (next >= 48 && next <= 57) || next === 95) {
+      from = after;
+      continue;
+    }
+    const close = html.indexOf(">", after);
+    return close === -1 ? -1 : close + 1;
+  }
+}
+
 function detectHeadBroken(html: string): boolean {
-  const m = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i);
-  const head = m?.[1];
+  const openEnd = headOpenEnd(html);
+  if (openEnd === -1) return false;
+  const closeIdx = html.toLowerCase().indexOf("</head", openEnd);
+  const head = closeIdx === -1 ? html.slice(openEnd) : html.slice(openEnd, closeIdx);
   if (!head) return false;
   const canon = head.search(/<link\b[^>]*rel\s*=\s*["']?canonical/i);
   const slice = canon >= 0 ? head.slice(0, canon) : head;

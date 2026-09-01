@@ -1,3 +1,4 @@
+import { attrValue, findMetaByName } from "@agentsean/actions";
 /** Highest-ROI migration feature: catch preview hosts that index. */
 
 export const VERCEL_BYPASS_HEADER = "x-vercel-protection-bypass";
@@ -45,11 +46,10 @@ export function assertPreviewNotIndexed(
     };
   }
   const xrobots = header(input.headers, "x-robots-tag") ?? "";
-  const meta = input.html
-    ? (/<meta\b[^>]*\bname=["']robots["'][^>]*?\bcontent=["']([^"']*)/i.exec(
-        input.html,
-      )?.[1] ?? "")
-    : "";
+  // Forward scan, not a regex. The regex form carried TWO unbounded runs in
+  // one pattern (`[^>]*` then `[^>]*?`), a slow product on top of the restart
+  // problem — 9.9s measured on hostile input. See @agentsean/actions/tagscan.
+  const meta = input.html ? metaRobotsContent(input.html) : "";
   const noindex = /noindex/i.test(xrobots) || /noindex/i.test(meta);
   if (!noindex) {
     leaks.push(
@@ -68,3 +68,8 @@ export const CRAWLER_BYPASS = {
   cloudflareAccessId: CF_ACCESS_CLIENT_ID,
   cloudflareAccessSecret: CF_ACCESS_CLIENT_SECRET,
 } as const;
+
+function metaRobotsContent(html: string): string {
+  const tag = findMetaByName(html, "robots");
+  return tag ? (attrValue(tag.attrs, "content") ?? "") : "";
+}
