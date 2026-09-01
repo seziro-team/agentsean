@@ -618,6 +618,12 @@ table code {
   line-height: 1;
   font-family: var(--mono);
 }
+.plan .amt.text {
+  font-size: 1.55rem;
+  font-family: var(--sans);
+  letter-spacing: -0.02em;
+  line-height: 1.55;
+}
 .plan .per {
   color: var(--fg-3);
   font-size: 0.85rem;
@@ -786,7 +792,10 @@ main.doc .matrix {
   .cmd {
     font-size: 0.82rem;
     width: 100%;
-    justify-content: space-between;
+    gap: 10px;
+  }
+  .cmd button {
+    margin-left: auto;
   }
   .cta-row .btn {
     width: 100%;
