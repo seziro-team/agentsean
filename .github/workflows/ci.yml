@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+# Least privilege. Without an explicit block a workflow inherits the repository
+# default, which on many repos is read/write on every scope — a compromised
+# action in the tree would then be able to push. CI only ever needs to read.
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
