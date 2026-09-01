@@ -50,7 +50,17 @@ export async function startConnect(opts: {
   } else if (opts.input.clientId && opts.input.clientSecret) {
     byo = { clientId: opts.input.clientId, clientSecret: opts.input.clientSecret };
   }
-  const mode = opts.input.mode ?? (byo ? "byo" : "broker");
+  // `mode` arrives from the HTTP request body (google-routes → startConnect),
+  // so it is user-controlled and steers which OAuth path we take. Neither path
+  // reaches a credentialed action without real client material — but we still
+  // reject any value outside the two known literals locally, so the branch
+  // selection below is provably closed rather than defaulting an unexpected
+  // string into the broker path (js/user-controlled-bypass, defence in depth).
+  const requested = opts.input.mode;
+  if (requested !== undefined && requested !== "byo" && requested !== "broker") {
+    throw new GscTokenError(`Unknown connect mode: ${String(requested)}`);
+  }
+  const mode = requested ?? (byo ? "byo" : "broker");
   if (mode === "byo") {
     if (!byo) {
       throw new GscTokenError(

@@ -47,6 +47,24 @@ export function googleSupportedTypes(): Supported {
   return supportedCache;
 }
 
+// A JSON-LD `@context` is valid only if its host is schema.org. A substring
+// test (`ctx.includes("schema.org")`) also accepts `https://schema.org.evil.com`
+// and `https://evil.com/?x=schema.org` (js/incomplete-url-substring-
+// sanitization), which would let a hostile page's crafted @context pass the
+// vocabulary gate. Parse the URL and compare the hostname exactly. schema.org
+// contexts are commonly protocol-relative (`//schema.org`); prefix `https:` so
+// those still parse.
+function isSchemaOrgContext(ctx: string): boolean {
+  const trimmed = ctx.trim();
+  try {
+    const u = new URL(trimmed.startsWith("//") ? `https:${trimmed}` : trimmed);
+    const host = u.hostname.toLowerCase();
+    return host === "schema.org" || host === "www.schema.org";
+  } catch {
+    return false;
+  }
+}
+
 export type JsonLdIssue = {
   code:
     | "PARSE_ERROR"
@@ -101,7 +119,7 @@ function validateNode(node: unknown, acc: JsonLdIssue[] = []): JsonLdIssue[] {
       type: null,
       property: "@context",
     });
-  } else if (typeof ctx === "string" && !ctx.includes("schema.org")) {
+  } else if (typeof ctx === "string" && !isSchemaOrgContext(ctx)) {
     acc.push({
       code: "MISSING_CONTEXT",
       message: `@context is not schema.org: ${ctx}`,
