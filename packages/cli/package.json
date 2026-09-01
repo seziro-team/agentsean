@@ -1,0 +1,32 @@
+{
+  "name": "agentsean",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "description": "Agent Sean — the self-hosted autonomous SEO engineer",
+  "type": "module",
+  "bin": {
+    "agentsean": "./dist/bin.js",
+    "sean": "./dist/bin.js"
+  },
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vp2722/sean.git"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "@agentsean/daemon": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

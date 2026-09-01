@@ -1,0 +1,32 @@
+import fs from 'fs';
+import * as cheerio from 'cheerio';
+import { JSDOM } from 'jsdom';
+import { Readability } from '@mozilla/readability';
+import TurndownService from 'turndown';
+import { convert } from 'html-to-text';
+const html = fs.readFileSync('./fixture3.html','utf8');
+const uniq=[...new Set([...html.matchAll(/ZZ([A-Z]+?)ZZ/g)].map(m=>m[1]))];
+const R={};
+R['cheerio.text()']=cheerio.load(html)('body').text();
+const $2=cheerio.load(html); $2('script,style,noscript').remove(); R['cheerio-strip']=$2('body').text();
+R['jsdom.textContent']=new JSDOM(html).window.document.body.textContent;
+const d2=new JSDOM(html,{url:'https://ex.com/a'});
+const art=new Readability(d2.window.document.cloneNode(true)).parse();
+R['readability.text']=art?art.textContent:'';
+R['readability.html']=art?art.content:'';
+const td=new TurndownService();
+R['turndown(body)']=td.turndown(cheerio.load(html)('body').html()||'');
+R['turndown(full)']=td.turndown(html);
+R['html-to-text']=convert(html,{wordwrap:false});
+const names=Object.keys(R);
+let out='| marker | '+names.join(' | ')+' |\n|'+'---|'.repeat(names.length+1)+'\n';
+for(const m of uniq){ out+='| '+m+' | '+names.map(n=>R[n].includes(m)?'YES':'no').join(' | ')+' |\n'; }
+console.log(out);
+// unicode checks
+const tag=R['cheerio.text()'].match(/[\u{E0000}-\u{E007F}]/u);
+console.log('tagblock chars survive cheerio.text():', !!tag);
+console.log('bidi RLO survives:', R['cheerio.text()'].includes('‮'));
+console.log('ZWSP survives:', R['cheerio.text()'].includes('​'));
+console.log('NFKC removes tagblock?', [...'\u{E0049}'.normalize('NFKC')].map(c=>c.codePointAt(0).toString(16)));
+console.log('readability title:', art&&art.title);
+console.log('readability excerpt:', art&&art.excerpt);

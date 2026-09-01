@@ -1,0 +1,16 @@
+Agent Sean Commercial License
+Copyright (c) 2026 Agent Sean contributors
+
+This software in the `packages/ee` directory is licensed, not sold.
+
+Permission is hereby granted to view this directory in the public repository
+for evaluation. Use, copy, modification, distribution, or operation of this
+software in production is not permitted except under a separate commercial
+agreement with the copyright holder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+All other directories in this repository are licensed under AGPL-3.0-only.
+See the LICENSE file at the repository root.
