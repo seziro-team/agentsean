@@ -75,6 +75,30 @@ async function getOrCreatePrimaryTenant(
     .maybeSingle();
   if (existing) return existing as Tenant;
 
+  // Not an owner — but they may have been invited into someone else's tenant.
+  // Without this branch an invited member falls through to the create path
+  // below and silently gets a brand-new empty workspace, so they can never see
+  // the sites, activity, or terminal sessions they were invited to. RLS would
+  // have permitted it (is_tenant_member covers membership); the app just never
+  // looked.
+  const { data: membership } = await supabase
+    .from("tenant_members")
+    .select("tenant_id, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (membership) {
+    const { data: joined } = await supabase
+      .from("tenants")
+      .select("*")
+      .eq("id", membership.tenant_id)
+      .maybeSingle();
+    // Read back through the user client so RLS re-confirms the membership
+    // rather than trusting the row we just read.
+    if (joined) return joined as Tenant;
+  }
+
   // First login: create a self-serve tenant on the free self_host plan. The
   // customer upgrades from /dashboard/billing. Use the admin client so the
   // insert is not blocked by a strict RLS insert policy; fall back to the user
