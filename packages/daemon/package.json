@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/daemon",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
@@ -31,7 +31,7 @@
     "@agentsean/actions": "workspace:*",
     "@agentsean/adapter-git": "workspace:*",
     "@agentsean/adapter-factory": "workspace:*",
-    "@agentsean/adapter-wp": "workspace:*",
+    "@agentsean/adapter-wordpress": "workspace:*",
     "@agentsean/adapter-shopify": "workspace:*",
     "@agentsean/adapter-cloudflare": "workspace:*",
     "@agentsean/adapter-saas": "workspace:*",
@@ -50,13 +50,13 @@
     "@agentsean/surfaces": "workspace:*",
     "@agentsean/hosted": "workspace:*",
     "@agentsean/launch": "workspace:*",
-    "@agentsean/ee": "workspace:*",
     "drizzle-orm": "0.45.2",
     "fastify": "5.12.1"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@agentsean/ee": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -28,7 +28,7 @@
     var cached = null;
     try {
       cached = JSON.parse(localStorage.getItem(KEY) || "null");
-    } catch (e) {
+    } catch {
       /* private mode or corrupt value */
     }
     if (cached && typeof cached.v === "number") {
@@ -48,7 +48,7 @@
         paint(d.stargazers_count);
         try {
           localStorage.setItem(KEY, JSON.stringify({ v: d.stargazers_count, t: Date.now() }));
-        } catch (e) {
+        } catch {
           /* quota */
         }
       })
@@ -90,7 +90,7 @@
         try {
           document.execCommand("copy");
           done();
-        } catch (e) {
+        } catch {
           /* nothing sensible to do */
         }
         document.body.removeChild(ta);

@@ -1,4 +1,4 @@
-import { isEeBuild, traceLlm as eeTraceLlm } from "@agentsean/ee";
+import { loadEe } from "./ee.js";
 import { isHostedMode } from "./plans.js";
 
 export type LlmTrace = {
@@ -15,6 +15,8 @@ export async function traceLlm(
   event: LlmTrace,
   env: NodeJS.ProcessEnv = process.env,
 ): Promise<void> {
-  if (!isHostedMode(env) || !isEeBuild(env)) return;
-  await eeTraceLlm(event);
+  if (!isHostedMode(env)) return;
+  const ee = await loadEe();
+  if (!ee || !ee.isEeBuild(env)) return;
+  await ee.traceLlm(event);
 }

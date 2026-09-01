@@ -5,7 +5,7 @@ import {
 } from "@agentsean/actions";
 import type { SqliteDatabase } from "@agentsean/db";
 import { createGitAdapter } from "@agentsean/adapter-git";
-import { createWordpressAdapter } from "@agentsean/adapter-wp";
+import { createWordpressAdapter } from "@agentsean/adapter-wordpress";
 import { createShopifyAdapter } from "@agentsean/adapter-shopify";
 import { createCloudflareAdapter } from "@agentsean/adapter-cloudflare";
 import {
