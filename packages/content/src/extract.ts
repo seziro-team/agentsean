@@ -6,15 +6,17 @@ const STOP = new Set(
   ),
 );
 
-// Strip a raw element and its content. The end-tag pattern allows whitespace
-// before ">" (e.g. `</script >`) — HTML parsers accept it, so a filter that
-// requires a bare ">" lets attacker script/style content survive into the
-// extracted text (CodeQL js/bad-tag-filter). If the element is never closed we
-// fall through to end-of-input so nothing after an unterminated `<script>`
-// leaks. Character classes are disjoint (`[^<]` vs. the anchored close) so the
-// match is linear and cannot backtrack quadratically (js/polynomial-redos).
-const SCRIPT_EL = /<script\b[^>]*>(?:[^<]|<(?!\/script[\s>]))*(?:<\/script\s*>|$)/gi;
-const STYLE_EL = /<style\b[^>]*>(?:[^<]|<(?!\/style[\s>]))*(?:<\/style\s*>|$)/gi;
+// Strip a raw element and its content. The end tag is `<\/script[^>]*>`, which
+// tolerates ANY junk before ">" — whitespace, newlines, or attributes
+// (`</script >`, `</script\t\nbar>`, `</script foo=bar>`). HTML parsers close
+// on all of these, so a stricter close (`</script\s*>`) lets attacker script or
+// style content survive into the extracted text that later reaches an LLM
+// (CodeQL js/bad-tag-filter). If the element is never closed we fall through to
+// end-of-input so nothing after an unterminated `<script>` leaks. The inner
+// branches are disjoint (`[^<]` vs. a `<` not starting the close) so the match
+// is linear and cannot backtrack quadratically (js/polynomial-redos).
+const SCRIPT_EL = /<script\b[^>]*>(?:[^<]|<(?!\/script[\s>]))*(?:<\/script[^>]*>|$)/gi;
+const STYLE_EL = /<style\b[^>]*>(?:[^<]|<(?!\/style[\s>]))*(?:<\/style[^>]*>|$)/gi;
 
 // Single-pass entity decode. A sequential chain that expands `&amp;` before
 // `&lt;`/`&gt;` double-unescapes: `&amp;lt;` would become `&lt;` and then `<`
@@ -48,9 +50,13 @@ export function wordCount(text: string): number {
 
 // Heading inner is a negated-close class ((?:[^<]|<(?!\/h\1))*) rather than a
 // lazy `[\s\S]*?`: the two branches are disjoint at each position, so there is
-// no backtracking on crafted input with many `<` (js/polynomial-redos). The
-// close tag tolerates attributes/whitespace before ">".
-const HTML_HEADING = /<h([1-6])[^>]*>((?:[^<]|<(?!\/h\1[\s>]))*)<\/h\1\s*>/gi;
+// no backtracking on the inner (js/polynomial-redos). The `|$` close fallback
+// is what actually makes the whole match linear: without it, an unterminated
+// `<h1` forces matchAll to rescan to end-of-input from every `<h1` start and
+// fail, which is O(n^2) — a 60k-repetition input took 13s before this fallback,
+// 7ms after. The close `<\/h\1[^>]*>` also tolerates attributes/whitespace
+// before ">" (js/bad-tag-filter), matching how parsers close a heading.
+const HTML_HEADING = /<h([1-6])[^>]*>((?:[^<]|<(?!\/h\1[\s>]))*)(?:<\/h\1[^>]*>|$)/gi;
 
 export function extractHeadings(text: string): string[] {
   const out: string[] = [];

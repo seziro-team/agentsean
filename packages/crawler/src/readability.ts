@@ -48,15 +48,19 @@ export function extractMainContent(
     text = (main?.textContent ?? "").replace(/\s+/g, " ").trim();
   } catch {
     // Fallback when the DOM parser throws. This text feeds the analysis plane
-    // and ultimately an LLM, so script/style content MUST NOT survive. The
-    // end-tag pattern allows whitespace before ">" (`</script >`), which a
-    // bare-">" filter misses and lets script bodies leak (js/bad-tag-filter),
-    // and it falls through to end-of-input for an unclosed element. The inner
-    // is a negated-close class, not a lazy `[\s\S]*?`, so crafted input with
-    // many "<" cannot backtrack quadratically (js/polynomial-redos).
+    // and ultimately an LLM, so script/style content MUST NOT survive. The end
+    // tag is `<\/script[^>]*>`, tolerating any junk before ">" — whitespace,
+    // newlines, or attributes (`</script >`, `</script\t\nbar>`). A stricter
+    // close lets script bodies leak past the filter (js/bad-tag-filter). It
+    // falls through to end-of-input for an unclosed element. The inner is a
+    // negated-close class, not a lazy `[\s\S]*?`, so crafted input with many
+    // "<" cannot backtrack quadratically (js/polynomial-redos).
     text = html
-      .replace(/<script\b[^>]*>(?:[^<]|<(?!\/script[\s>]))*(?:<\/script\s*>|$)/gi, " ")
-      .replace(/<style\b[^>]*>(?:[^<]|<(?!\/style[\s>]))*(?:<\/style\s*>|$)/gi, " ")
+      .replace(
+        /<script\b[^>]*>(?:[^<]|<(?!\/script[\s>]))*(?:<\/script[^>]*>|$)/gi,
+        " ",
+      )
+      .replace(/<style\b[^>]*>(?:[^<]|<(?!\/style[\s>]))*(?:<\/style[^>]*>|$)/gi, " ")
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim();

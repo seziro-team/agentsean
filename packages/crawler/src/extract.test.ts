@@ -86,10 +86,18 @@ describe("extract ReDoS hardening", () => {
     expect(main.text).not.toContain("leak");
   });
 
-  it("extractMainContent fallback treats '</script >' as the end tag", () => {
+  it("extractMainContent fallback treats '</script >' and junk closes as end tags", () => {
     // Whitespace before '>' must still close the element (js/bad-tag-filter).
-    const broken = `<p>keep</p><script>evil()</script >`;
-    const main = extractMainContent(broken, "t");
-    expect(main.text).not.toContain("evil");
+    expect(
+      extractMainContent(`<p>keep</p><script>evil()</script >`, "t").text,
+    ).not.toContain("evil");
+    // Attributes/newlines on the end tag also close it (alert 104). A close of
+    // `</script\s*>` missed these and leaked the body.
+    expect(
+      extractMainContent(`<p>keep</p><script>evil()</script foo=bar>`, "t").text,
+    ).not.toContain("evil");
+    expect(
+      extractMainContent(`<p>keep</p><script>evil()</script\t\nx>`, "t").text,
+    ).not.toContain("evil");
   });
 });

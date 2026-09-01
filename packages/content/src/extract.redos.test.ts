@@ -39,6 +39,19 @@ describe("extract ReDoS hardening", () => {
     expect(out).toBe("keep tail");
   });
 
+  it("stripHtml strips a script whose close tag carries junk/attributes", () => {
+    // Parsers ignore attributes on an end tag, so `</script foo=bar>` and
+    // `</script\t\nx>` both close the element. A close pattern of `</script\s*>`
+    // missed these and let the body leak (js/bad-tag-filter, alert 103).
+    expect(stripHtml("keep<script>evil()</script foo=bar>tail")).toBe("keep tail");
+    expect(stripHtml("keep<script>evil()</script\t\nx>tail")).toBe("keep tail");
+    // The same for <style>.
+    expect(stripHtml("keep<style>.a{}</style bar>tail")).toBe("keep tail");
+    // A word-boundary look-alike is NOT a script and must be left to the generic
+    // tag stripper (its text content survives).
+    expect(stripHtml("a<scriptish>keep</scriptish>b")).toBe("a keep b");
+  });
+
   it("stripHtml is linear on a long comment-free tag soup", () => {
     const html = "<div " + " ".repeat(200_000) + ">text</div>";
     underBudget("stripHtml tag soup", () => stripHtml(html));
@@ -49,11 +62,30 @@ describe("extract ReDoS hardening", () => {
     expect(stripHtml("a &amp;lt; b")).toBe("a &lt; b");
   });
 
-  it("extractHeadings is linear on an unterminated <h1> and a space-only line", () => {
-    const htmlHeading = "<h1 " + "x".repeat(200_000);
+  it("extractHeadings is linear on many repeated unterminated <h1> tokens", () => {
+    // The real quadratic shape (alert 101): matchAll restarts at every `<h1`,
+    // and without the `|$` close fallback each restart rescans to end-of-input
+    // looking for a close that never comes — O(n^2). 60k repetitions took ~13s
+    // before the fallback. A single long-attribute `<h1` (one start position) is
+    // linear even under the old pattern, so it did NOT exercise the bug; the
+    // repeated token below does.
+    const manyH1 = "<h1>".repeat(60_000);
+    underBudget("extractHeadings many <h1>", () => extractHeadings(manyH1));
+
+    const singleLong = "<h1 " + "x".repeat(200_000);
     const mdHeading = "#" + " ".repeat(200_000);
-    underBudget("extractHeadings html", () => extractHeadings(htmlHeading));
+    underBudget("extractHeadings single long <h1", () => extractHeadings(singleLong));
     underBudget("extractHeadings md", () => extractHeadings(mdHeading));
+  });
+
+  it("extractHeadings reads a heading whose close tag carries attributes", () => {
+    // `</h1 foo>` closes an <h1> for a real parser; the close must tolerate junk
+    // before ">" (js/bad-tag-filter). Well-formed headings are unchanged.
+    expect(extractHeadings("<h1>Hello</h1>")).toContain("Hello");
+    expect(extractHeadings("<h1>Attr close</h1 data-x>")).toContain("Attr close");
+    expect(extractHeadings("<h2 class=x>Nested <span>bit</span></h2>")).toContain(
+      "Nested bit",
+    );
   });
 
   it("numericClaims is linear on an unterminated HTML comment", () => {
