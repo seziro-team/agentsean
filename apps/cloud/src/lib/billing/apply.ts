@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isPlanId, planOf } from "../plans";
+import { safeLog } from "../log";
 import type { Database, SubscriptionStatus } from "../db/types";
 import type { NormalizedEvent } from "./provider";
 
@@ -172,7 +173,7 @@ async function markInvitePaidForEvent(
       row = candidates[0] ?? null;
     } else if (candidates && candidates.length > 1) {
       console.warn(
-        `[billing] ${candidates.length} pending invites match ${event.amountCents} for ${event.customerEmail}; refusing to guess`,
+        `[billing] ${candidates.length} pending invites match ${event.amountCents} for ${safeLog(event.customerEmail)}; refusing to guess`,
       );
     }
   }
@@ -209,7 +210,7 @@ async function markInvitePaidForEvent(
           .eq("id", tenant.id);
       } else if (tenant) {
         console.warn(
-          `[billing] invite ${data.id} has unknown grant_plan ${String(data.grant_plan)}; not granting`,
+          `[billing] invite ${data.id} has unknown grant_plan ${safeLog(data.grant_plan)}; not granting`,
         );
       }
     }

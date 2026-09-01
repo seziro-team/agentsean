@@ -1,5 +1,6 @@
 import "server-only";
 import { emailEnv } from "./env";
+import { safeLog } from "./log";
 
 /**
  * Pluggable transactional email.
@@ -57,7 +58,7 @@ async function deliver(
     });
     if (!res.ok) {
       const body = await res.text();
-      console.error(`[email] provider rejected (${res.status}): ${body}`);
+      console.error(`[email] provider rejected (${res.status}): ${safeLog(body, 300)}`);
       return { sent: false, reason: `provider_${res.status}` };
     }
     const json = (await res.json()) as { id?: string };
