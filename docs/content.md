@@ -62,6 +62,7 @@ dashboard says so.
 
 ## Evidence
 
-Phase 7 ships the full A–E ladder and power calculations. Until then every
-content change reports **E — Applied; not measurable at this site's traffic
-volume**. Sean will not claim a click recovery from a rewrite.
+Content publishes are Track B unless they sit inside a pre-registered
+experiment. Unmeasured rewrites report **E — Applied; not measurable at this
+site's traffic volume**. Sean will not claim a click recovery from a rewrite.
+See [`measure.md`](measure.md).

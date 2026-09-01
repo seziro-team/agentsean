@@ -8,6 +8,7 @@ import {
   upsertGitConnection,
 } from "@agentsean/actions";
 import { createGitAdapter } from "@agentsean/adapter-git";
+import { adapterForSite } from "@agentsean/adapter-factory";
 import {
   defaultSeanHome,
   dbPath,
@@ -48,19 +49,24 @@ export async function applyCommand(opts: {
     }
     const cfg = loadGitConnection(db, site.id);
     const repoPath = opts.repo ?? (typeof cfg?.["repoPath"] === "string" ? cfg["repoPath"] : null);
-    if (!repoPath) {
-      emitError(
-        opts.json,
-        { command: "apply", error: "missing_repo" },
-        "Pass --repo /path/to/nextjs so Sean can open a PR.",
-      );
-      return 2;
+    let adapter;
+    try {
+      adapter = adapterForSite(db, site.id);
+    } catch {
+      if (!repoPath) {
+        emitError(
+          opts.json,
+          { command: "apply", error: "missing_adapter" },
+          "Connect wordpress, shopify, cloudflare, or pass --repo /path/to/nextjs.",
+        );
+        return 2;
+      }
+      const token = typeof cfg?.["token"] === "string" ? cfg["token"] : process.env["GITHUB_TOKEN"];
+      adapter = createGitAdapter({
+        repoPath,
+        ...(token ? { token } : {}),
+      });
     }
-    const token = typeof cfg?.["token"] === "string" ? cfg["token"] : process.env["GITHUB_TOKEN"];
-    const adapter = createGitAdapter({
-      repoPath,
-      ...(token ? { token } : {}),
-    });
     const pageRows = db.select().from(pages).where(eq(pages.siteId, site.id)).all();
     const findingRows = db.select().from(findings).where(eq(findings.siteId, site.id)).all();
     const planned = planTitleActions({

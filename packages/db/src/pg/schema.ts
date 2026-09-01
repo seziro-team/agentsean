@@ -338,3 +338,47 @@ export {
   contentDrafts,
   publishGateResults,
 } from "./content.js";
+
+export {
+  keywords,
+  keywordClusters,
+  rankSnapshots,
+  serpCache,
+  providerQuotes,
+  embeddingCache,
+} from "./keywords.js";
+
+export {
+  experiments,
+  cohorts,
+  cohortMembers,
+  experimentResults,
+  dataAnomalies,
+  claims,
+  reconciliationWaterfall,
+} from "./measure.js";
+
+export {
+  aiRuns,
+  aiCitations,
+  bingAiRows,
+  gbpLocations,
+  gbpEdits,
+  mentions,
+  inbound404s,
+  outreachDrafts,
+  verticalProfiles,
+} from "./surfaces.js";
+
+export {
+  tenants,
+  tenantSeats,
+  tenantSites,
+  subscriptions,
+  stripeEvents,
+  meteredUsage,
+  envelopeKeys,
+  quotaWindows,
+  erasureRequests,
+  connectorPairings,
+} from "./hosted.js";

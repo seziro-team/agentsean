@@ -11,6 +11,10 @@ import {
   CORE_TABLES,
   DASHBOARD_TABLES,
   GOOGLE_TABLES,
+  KEYWORD_TABLES,
+  MEASURE_TABLES,
+  SURFACE_TABLES,
+  HOSTED_TABLES,
 } from "./tables.js";
 
 type Dialect = "sqlite" | "pg";
@@ -133,6 +137,30 @@ describe("schema parity", () => {
 
   it("defines every Phase 5 content table on SQLite", () => {
     for (const name of CONTENT_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 6 keyword table on SQLite", () => {
+    for (const name of KEYWORD_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 7 measure table on SQLite", () => {
+    for (const name of MEASURE_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 9 surface table on SQLite", () => {
+    for (const name of SURFACE_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 10 hosted table on SQLite", () => {
+    for (const name of HOSTED_TABLES) {
       expect(sqliteTables.has(name), name).toBe(true);
     }
   });

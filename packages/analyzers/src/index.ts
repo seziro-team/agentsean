@@ -5,6 +5,14 @@ export { prioritize, PRIORITY_FORMULA, PRIORITY_VERSION } from "./priority.js";
 export { validateJsonLdBlocks, googleSupportedTypes, schemaVocab } from "./schemaorg.js";
 export { detectAll, detectorFor, FAMILY_DETECTORS } from "./detectors/index.js";
 export { OPENSEO_SEED_TO_CHECK, OPENSEO_COPY } from "./openseo-seed.js";
+export {
+  AI_CRAWLERS,
+  TRAINING_TOKENS,
+  CITATION_TOKENS,
+  analyzeAiRobots,
+  type AiCrawler,
+  type CrawlerClass,
+} from "./ai-crawlers.js";
 export type {
   CheckDefinition,
   FindingDraft,

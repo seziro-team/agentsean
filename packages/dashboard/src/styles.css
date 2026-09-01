@@ -77,5 +77,9 @@ pre, .diff { overflow: auto; background: var(--bg); padding: 0.75rem; border-rad
 .pill { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--bd); font-size: 0.75rem; }
 .sev-critical { color: var(--del); }
 .sev-high { color: var(--warn); }
+.tier-A { color: var(--ok); border-color: var(--ok); }
+.tier-B { color: var(--acc); }
+.tier-C { color: var(--warn); }
+.tier-D, .tier-E { color: var(--muted); }
 .formula { font-size: 0.82rem; white-space: pre-wrap; }
 .virtual { height: 480px; overflow: auto; border: 1px solid var(--bd); border-radius: 8px; }

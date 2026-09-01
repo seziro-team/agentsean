@@ -274,7 +274,7 @@ export const PLAYBOOKS: Playbook[] = [
     },
     guardrails: [
       "Do not mint a new URL to 'fix' decay.",
-      "Do not claim the rewrite caused a recovery (evidence tier E until Phase 7).",
+      "Do not claim the rewrite caused a recovery unless the change sits in a pre-registered experiment that has reached its analysis date (evidence ladder A–E; default E).",
     ],
   },
   {
@@ -384,5 +384,84 @@ export const PLAYBOOKS: Playbook[] = [
       properties: { blocked: { type: "boolean", description: "True if generation must not run" } },
     },
     guardrails: ["Not overridable.", "T4 kinds have no setting."],
+  },
+  {
+    id: "aeo-evidence",
+    version: "1.0.0",
+    title: "AEO extractable evidence",
+    summary:
+      "Citation selection and answer absorption are distinct. High-impact pages are dense in definitions, numeric facts, comparisons, and procedures. Do not sell schema, length, or llms.txt as AEO levers.",
+    inputs: [
+      { name: "origin", type: "url", required: true, notes: "Site origin" },
+      { name: "pages", type: "Page[]", required: true, notes: "Crawled pages" },
+    ],
+    decisionRules: [
+      { id: "no-schema-lever", when: "someone asks to add schema for AI citations", action: "Refuse; Ahrefs DiD found no measurable effect" },
+      { id: "no-llms", when: "someone asks to publish llms.txt for GEO", action: "Optional toggle only; 97% of files are never fetched" },
+      { id: "evidence-dense", when: "briefing a page for AI citation", action: "Require definitions, numeric facts, comparisons, procedures" },
+    ],
+    outputSchema: {
+      type: "object",
+      required: ["spec"],
+      properties: { spec: { type: "string", description: "Extractable-evidence content spec" } },
+    },
+    guardrails: ["Training crawlers ≠ citation crawlers.", "robots.txt is T3."],
+  },
+  {
+    id: "local-gbp",
+    version: "1.0.0",
+    title: "Local GBP",
+    summary: "Manage a Google Business Profile within quota. AI citation gap over rank tracking. Never generate reviews or city×service pages.",
+    inputs: [
+      { name: "locations", type: "GbpLocation[]", required: true, notes: "Connected profiles" },
+    ],
+    decisionRules: [
+      { id: "quota", when: "writing GBP", action: "Token-bucket 10 edits/min/profile, 300 QPM; degrade to read-only without approval" },
+      { id: "no-title", when: "tempted to keyword-stuff the GBP title", action: "Advisory only" },
+      { id: "t4-reviews", when: "review generation requested", action: "Refuse T4" },
+    ],
+    outputSchema: {
+      type: "object",
+      required: ["gap"],
+      properties: { gap: { type: "string", description: "AI citation gap report" } },
+    },
+    guardrails: ["Quota starts at 0 QPM until Google approves Basic API Access."],
+  },
+  {
+    id: "brand-mentions",
+    version: "1.0.0",
+    title: "Off-page brand authority",
+    summary: "Mention-first. Branded web mentions correlate 0.656–0.709 with AI visibility vs 0.266–0.326 for Domain Rating.",
+    inputs: [{ name: "brand", type: "string", required: true, notes: "Brand token" }],
+    decisionRules: [
+      { id: "unlinked", when: "mention exists without a link", action: "Queue as opportunity; draft outreach T3" },
+      { id: "inbound-404", when: "our URL 404s with inbound links", action: "Fix on our side autonomously" },
+      { id: "no-disavow", when: "disavow requested", action: "Lock unless a manual action exists" },
+    ],
+    outputSchema: {
+      type: "object",
+      required: ["opportunities"],
+      properties: { opportunities: { type: "array", description: "Mention and 404 rows" } },
+    },
+    guardrails: ["Send requires per-message approval.", "GSC has no links or disavow API."],
+  },
+  {
+    id: "hosted-packaging",
+    version: "1.0.0",
+    title: "Hosted packaging",
+    summary:
+      "Self-host is $0. Cloud Starter $9/mo. Agency $249/mo is the business. BYOK is required. Prefer a customer-side connector over holding CMS write credentials.",
+    inputs: [{ name: "plan", type: "string", required: true, notes: "Plan id" }],
+    decisionRules: [
+      { id: "byok", when: "hosted tenant has no LLM key", action: "Refuse to run generation; BYOK is not optional" },
+      { id: "site-cap", when: "tenant is at plan.sites", action: "Refuse add-site; upgrade" },
+      { id: "no-cms-keys", when: "hosted control plane would store a CMS write token", action: "Refuse; issue a connector pairing" },
+    ],
+    outputSchema: {
+      type: "object",
+      required: ["plan"],
+      properties: { plan: { type: "string", description: "Active plan id" } },
+    },
+    guardrails: ["Google refresh tokens stay sensitive-scope (no CASA).", "Rank tracking is weekly on Starter."],
   },
 ];

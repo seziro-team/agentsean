@@ -20,6 +20,7 @@ export type SecurityOptions = {
   authEnabled: boolean;
   /** Used when listen() assigned an ephemeral port (port 0). */
   getPort?: (() => number) | undefined;
+  publicOrigin?: string | undefined;
 };
 
 function readToken(req: FastifyRequest): string | undefined {
@@ -46,7 +47,7 @@ export function registerSecurity(
   const portOf = () => options.getPort?.() ?? options.port;
 
   app.addHook("onRequest", async (req: FastifyRequest, reply: FastifyReply) => {
-    const hosts = allowedHosts(portOf());
+    const hosts = allowedHosts(portOf(), options.publicOrigin);
     const host = req.headers.host ?? "";
     if (!hosts.has(host)) {
       return reply.code(403).send({ error: "forbidden_host" });
@@ -57,10 +58,14 @@ export function registerSecurity(
     if (SAFE_METHODS.has(req.method.toUpperCase()) && path === "/oauth/callback") {
       return;
     }
+    // Stripe webhooks cannot send CSRF or the session cookie. Signature is checked in-route.
+    if (req.method.toUpperCase() === "POST" && path === "/api/billing/webhook") {
+      return;
+    }
 
     const origin = req.headers.origin;
     if (typeof origin === "string" && origin.length > 0) {
-      if (!allowedOrigins(portOf()).has(origin)) {
+      if (!allowedOrigins(portOf(), options.publicOrigin).has(origin)) {
         return reply.code(403).send({ error: "forbidden_origin" });
       }
     }

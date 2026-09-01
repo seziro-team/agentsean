@@ -1,7 +1,8 @@
 /**
- * Commercial features live in this package and are licensed separately.
- * The AGPL tree must not import this module except behind a runtime
- * entitlement check that will land in Phase 10.
+ * Commercial features. AGPL code may import this module only behind a runtime
+ * entitlement / hosted-mode check.
  */
 export const EE_PACKAGE = "@agentsean/ee";
-export const isEeBuild = false;
+export { isEeBuild, assertEntitlement } from "./entitlement.js";
+export { traceLlm, type LangfuseEvent } from "./langfuse.js";
+export { stripeSignatureValid, createStripeCheckout } from "./stripe.js";

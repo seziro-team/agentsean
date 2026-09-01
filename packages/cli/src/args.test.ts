@@ -117,6 +117,51 @@ describe("parseArgs", () => {
     expect(a.dryRun).toBe(true);
   });
 
+  it("parses signup and tenant", () => {
+    const a = parseArgs(["node", "sean", "signup", "agency", "--json"]);
+    expect(a.command).toBe("signup");
+    expect(a.target).toBe("agency");
+    const b = parseArgs(["node", "sean", "tenant", "abc"]);
+    expect(b.command).toBe("tenant");
+    expect(b.target).toBe("abc");
+  });
+
+  it("parses visibility, local, and mentions", () => {
+    const a = parseArgs(["node", "sean", "visibility", "https://example.com", "--json"]);
+    expect(a.command).toBe("visibility");
+    expect(a.target).toBe("https://example.com");
+    const b = parseArgs(["node", "sean", "local", "--json"]);
+    expect(b.command).toBe("local");
+    const c = parseArgs(["node", "sean", "mentions", "https://example.com"]);
+    expect(c.command).toBe("mentions");
+    expect(c.target).toBe("https://example.com");
+  });
+
+  it("parses keywords, mcp, and measure", () => {
+    const a = parseArgs(["node", "sean", "keywords", "https://example.com", "--json"]);
+    expect(a.command).toBe("keywords");
+    expect(a.target).toBe("https://example.com");
+    const b = parseArgs(["node", "sean", "mcp", "--json"]);
+    expect(b.command).toBe("mcp");
+    expect(b.json).toBe(true);
+    const c = parseArgs(["node", "sean", "measure", "https://example.com", "--json"]);
+    expect(c.command).toBe("measure");
+    expect(c.target).toBe("https://example.com");
+    const d = parseArgs([
+      "node",
+      "sean",
+      "connect",
+      "wordpress",
+      "--api-key",
+      "user:pass",
+      "https://blog.example",
+    ]);
+    expect(d.command).toBe("connect");
+    expect(d.provider).toBe("wordpress");
+    expect(d.apiKey).toBe("user:pass");
+    expect(d.target).toBe("https://blog.example");
+  });
+
   it("flags unknown options", () => {
     const a = parseArgs(["node", "sean", "status", "--wat"]);
     expect(a.errors[0]).toMatch(/unknown flag/);

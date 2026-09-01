@@ -4503,7 +4503,7 @@
   {
     "id": "ROBOTS.BLOCKS_AI_UNINTENDED",
     "category": "ROBOTS",
-    "name": ", , , , , , , blocked",
+    "name": "Training crawler (GPTBot / ClaudeBot / Google-Extended) is blocked — policy choice, never auto-changed",
     "severity": "insight",
     "detectScope": "site",
     "requires": [
@@ -4511,8 +4511,8 @@
     ],
     "autonomyTier": "T3",
     "fixKind": "robots",
-    "fixTemplate": "parse",
-    "explanation": ", , , , , , , blocked"
+    "fixTemplate": "Surface as a policy choice. Training crawlers are distinct from citation crawlers.",
+    "explanation": "Blocking GPTBot/ClaudeBot/Google-Extended is a training-data choice. It must not be copied onto OAI-SearchBot/Claude-SearchBot/PerplexityBot."
   },
   {
     "id": "ROBOTS.BLOCKS_CSS_JS",

@@ -16,6 +16,10 @@ const REQUIRED = [
   "publish-gate",
   "brand-voice",
   "vertical-block",
+  "aeo-evidence",
+  "local-gbp",
+  "brand-mentions",
+  "hosted-packaging",
 ];
 
 describe("playbooks", () => {

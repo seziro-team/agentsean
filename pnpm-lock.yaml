@@ -40,7 +40,90 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
 
+  packages/adapters/cloudflare:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../../actions
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/adapters/factory:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../../actions
+      '@agentsean/adapter-cloudflare':
+        specifier: workspace:*
+        version: link:../cloudflare
+      '@agentsean/adapter-git':
+        specifier: workspace:*
+        version: link:../git
+      '@agentsean/adapter-saas':
+        specifier: workspace:*
+        version: link:../saas
+      '@agentsean/adapter-shopify':
+        specifier: workspace:*
+        version: link:../shopify
+      '@agentsean/adapter-wordpress':
+        specifier: workspace:*
+        version: link:../wordpress
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../../db
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
   packages/adapters/git:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../../actions
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/adapters/saas:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../../actions
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/adapters/shopify:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../../actions
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/adapters/wordpress:
     dependencies:
       '@agentsean/actions':
         specifier: workspace:*
@@ -74,6 +157,9 @@ importers:
       '@agentsean/actions':
         specifier: workspace:*
         version: link:../actions
+      '@agentsean/adapter-factory':
+        specifier: workspace:*
+        version: link:../adapters/factory
       '@agentsean/adapter-git':
         specifier: workspace:*
         version: link:../adapters/git
@@ -86,6 +172,9 @@ importers:
       '@agentsean/crawler':
         specifier: workspace:*
         version: link:../crawler
+      '@agentsean/credentials':
+        specifier: workspace:*
+        version: link:../credentials
       '@agentsean/daemon':
         specifier: workspace:*
         version: link:../daemon
@@ -95,9 +184,30 @@ importers:
       '@agentsean/google':
         specifier: workspace:*
         version: link:../google
+      '@agentsean/hosted':
+        specifier: workspace:*
+        version: link:../hosted
+      '@agentsean/keywords':
+        specifier: workspace:*
+        version: link:../keywords
       '@agentsean/llm':
         specifier: workspace:*
         version: link:../llm
+      '@agentsean/mcp':
+        specifier: workspace:*
+        version: link:../mcp
+      '@agentsean/measure':
+        specifier: workspace:*
+        version: link:../measure
+      '@agentsean/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@agentsean/scheduler':
+        specifier: workspace:*
+        version: link:../scheduler
+      '@agentsean/surfaces':
+        specifier: workspace:*
+        version: link:../surfaces
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
@@ -123,9 +233,15 @@ importers:
       '@agentsean/db':
         specifier: workspace:*
         version: link:../db
+      '@agentsean/hosted':
+        specifier: workspace:*
+        version: link:../hosted
       '@agentsean/llm':
         specifier: workspace:*
         version: link:../llm
+      '@agentsean/measure':
+        specifier: workspace:*
+        version: link:../measure
       '@agentsean/playbooks':
         specifier: workspace:*
         version: link:../playbooks
@@ -199,9 +315,24 @@ importers:
       '@agentsean/actions':
         specifier: workspace:*
         version: link:../actions
+      '@agentsean/adapter-cloudflare':
+        specifier: workspace:*
+        version: link:../adapters/cloudflare
+      '@agentsean/adapter-factory':
+        specifier: workspace:*
+        version: link:../adapters/factory
       '@agentsean/adapter-git':
         specifier: workspace:*
         version: link:../adapters/git
+      '@agentsean/adapter-saas':
+        specifier: workspace:*
+        version: link:../adapters/saas
+      '@agentsean/adapter-shopify':
+        specifier: workspace:*
+        version: link:../adapters/shopify
+      '@agentsean/adapter-wordpress':
+        specifier: workspace:*
+        version: link:../adapters/wordpress
       '@agentsean/analyzers':
         specifier: workspace:*
         version: link:../analyzers
@@ -220,12 +351,33 @@ importers:
       '@agentsean/db':
         specifier: workspace:*
         version: link:../db
+      '@agentsean/ee':
+        specifier: workspace:*
+        version: link:../ee
       '@agentsean/google':
         specifier: workspace:*
         version: link:../google
+      '@agentsean/hosted':
+        specifier: workspace:*
+        version: link:../hosted
+      '@agentsean/keywords':
+        specifier: workspace:*
+        version: link:../keywords
+      '@agentsean/llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@agentsean/measure':
+        specifier: workspace:*
+        version: link:../measure
+      '@agentsean/providers':
+        specifier: workspace:*
+        version: link:../providers
       '@agentsean/scheduler':
         specifier: workspace:*
         version: link:../scheduler
+      '@agentsean/surfaces':
+        specifier: workspace:*
+        version: link:../surfaces
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
@@ -295,6 +447,9 @@ importers:
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
 
   packages/google:
     dependencies:
@@ -304,6 +459,47 @@ importers:
       '@agentsean/db':
         specifier: workspace:*
         version: link:../db
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/hosted:
+    dependencies:
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
+      '@agentsean/ee':
+        specifier: workspace:*
+        version: link:../ee
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/keywords:
+    dependencies:
+      '@agentsean/credentials':
+        specifier: workspace:*
+        version: link:../credentials
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
+      '@agentsean/providers':
+        specifier: workspace:*
+        version: link:../providers
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
@@ -337,7 +533,73 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
 
+  packages/mcp:
+    dependencies:
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
+      '@agentsean/keywords':
+        specifier: workspace:*
+        version: link:../keywords
+      '@agentsean/measure':
+        specifier: workspace:*
+        version: link:../measure
+      '@agentsean/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@agentsean/surfaces':
+        specifier: workspace:*
+        version: link:../surfaces
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/measure:
+    dependencies:
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
+      '@agentsean/google':
+        specifier: workspace:*
+        version: link:../google
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
   packages/playbooks:
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/providers:
+    dependencies:
+      '@agentsean/credentials':
+        specifier: workspace:*
+        version: link:../credentials
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
     devDependencies:
       typescript:
         specifier: ~5.9.3
@@ -351,6 +613,9 @@ importers:
       '@agentsean/actions':
         specifier: workspace:*
         version: link:../actions
+      '@agentsean/adapter-factory':
+        specifier: workspace:*
+        version: link:../adapters/factory
       '@agentsean/adapter-git':
         specifier: workspace:*
         version: link:../adapters/git
@@ -372,6 +637,46 @@ importers:
       '@agentsean/google':
         specifier: workspace:*
         version: link:../google
+      '@agentsean/hosted':
+        specifier: workspace:*
+        version: link:../hosted
+      '@agentsean/keywords':
+        specifier: workspace:*
+        version: link:../keywords
+      '@agentsean/llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@agentsean/measure':
+        specifier: workspace:*
+        version: link:../measure
+      '@agentsean/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@agentsean/surfaces':
+        specifier: workspace:*
+        version: link:../surfaces
+      drizzle-orm:
+        specifier: 0.45.2
+        version: 0.45.2(@types/better-sqlite3@9.6.0)(better-sqlite3@13.0.3)
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2))
+
+  packages/surfaces:
+    dependencies:
+      '@agentsean/actions':
+        specifier: workspace:*
+        version: link:../actions
+      '@agentsean/analyzers':
+        specifier: workspace:*
+        version: link:../analyzers
+      '@agentsean/db':
+        specifier: workspace:*
+        version: link:../db
       '@agentsean/llm':
         specifier: workspace:*
         version: link:../llm

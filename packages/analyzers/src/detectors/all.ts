@@ -2,6 +2,7 @@ import type { CrawledPage } from "@agentsean/crawler";
 import { nearDuplicate } from "@agentsean/crawler";
 import { googleSupportedTypes, validateJsonLdBlocks, flattenTypes } from "../schemaorg.js";
 import { checksByCategory } from "../catalogue.js";
+import { analyzeAiRobots } from "../ai-crawlers.js";
 import type { AuditContext, FindingDraft } from "../types.js";
 import {
   absCanonical,
@@ -32,16 +33,6 @@ const GENERIC_ANCHORS = new Set([
 const FACET_PARAMS = /[?&](sort|order|orderby|view|display|limit|per_page|filter|color|size|price)=/i;
 const SESSION_RE = /[?&](sid|sessionid|phpsessid|jsessionid)=/i;
 const DATE_RE = /[?&](date|month|year|day)=/i;
-const AI_BOTS = [
-  "google-extended",
-  "gptbot",
-  "claudebot",
-  "perplexitybot",
-  "ccbot",
-  "applebot-extended",
-  "bytespider",
-  "meta-externalagent",
-];
 
 export function detectResp(ctx: AuditContext): FindingDraft[] {
   const out: FindingDraft[] = [];
@@ -227,8 +218,20 @@ export function detectRobots(ctx: AuditContext): FindingDraft[] {
     const gIdx = r.raw.toLowerCase().indexOf("user-agent: googlebot");
     if (starIdx >= 0 && gIdx > starIdx) push(out, "ROBOTS.UA_ORDER_TRAP", [origin], {});
   }
-  if (r && AI_BOTS.some((b) => r.raw.toLowerCase().includes(b) && /disallow:\s*\//i.test(r.raw))) {
-    push(out, "ROBOTS.BLOCKS_AI_UNINTENDED", [origin], {});
+  if (r) {
+    const ai = analyzeAiRobots(r.raw);
+    if (ai.blockedTraining.length) {
+      push(out, "ROBOTS.BLOCKS_AI_UNINTENDED", [origin], { bots: ai.blockedTraining });
+    }
+    if (ai.blockedCitation.length) {
+      push(out, "ROBOTS.BLOCKS_CITATION_CRAWLER", [origin], { bots: ai.blockedCitation });
+    }
+    if (ai.conflatesTrainingAndCitation) {
+      push(out, "ROBOTS.CONFLATES_TRAINING_CITATION", [origin], {
+        training: ai.blockedTraining,
+        citation: ai.blockedCitation,
+      });
+    }
   }
   if (ctx.previousRobotsHash && r && ctx.previousRobotsHash !== r.hash) {
     push(out, "ROBOTS.CHANGED", [origin], { previous: ctx.previousRobotsHash, current: r.hash });

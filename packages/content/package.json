@@ -24,6 +24,8 @@
     "@agentsean/crawler": "workspace:*",
     "@agentsean/db": "workspace:*",
     "@agentsean/llm": "workspace:*",
+    "@agentsean/measure": "workspace:*",
+    "@agentsean/hosted": "workspace:*",
     "@agentsean/playbooks": "workspace:*",
     "drizzle-orm": "0.45.2"
   },

@@ -1,5 +1,6 @@
 import { sites, type SqliteDatabase } from "@agentsean/db";
-import { CADENCES, idempotencyKey } from "./cadence.js";
+import { rankCadenceForTenant, tenantIdForSite } from "@agentsean/hosted";
+import { CADENCES, DAY_MS, WEEK_MS, idempotencyKey } from "./cadence.js";
 import { JOB_KINDS, type JobHandler, type JobKind, type JobQueue } from "./types.js";
 
 export type TickResult = {
@@ -17,13 +18,17 @@ export async function ensureCadences(
   const rows = db.select().from(sites).all();
   let n = 0;
   for (const site of rows) {
+    const tenantId = tenantIdForSite(db, site.id);
+    const rankMs =
+      tenantId && rankCadenceForTenant(db, tenantId) === "daily" ? DAY_MS : WEEK_MS;
     for (const kind of JOB_KINDS) {
+      const cadenceMs = kind === "rank_check" ? rankMs : CADENCES[kind].everyMs;
       const key = idempotencyKey(site.id, kind, now);
       const job = await queue.enqueue({
         siteId: site.id,
         kind,
         idempotencyKey: key,
-        payload: { origin: site.origin, cadenceMs: CADENCES[kind].everyMs },
+        payload: { origin: site.origin, cadenceMs },
         runAt: now,
       });
       if (job.createdAt && new Date(job.createdAt).getTime() >= now.getTime() - 2000) {

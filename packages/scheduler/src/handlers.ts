@@ -9,13 +9,34 @@ import {
   type SiteAdapter,
 } from "@agentsean/actions";
 import { createGitAdapter } from "@agentsean/adapter-git";
+import { adapterForSite } from "@agentsean/adapter-factory";
 import { buildReport, flattenForDb } from "@agentsean/analyzers";
 import { crawlSite, persistCrawl, persistFindings, type CrawlCheckpoint } from "@agentsean/crawler";
 import { loadAuditExtras, syncGoogle } from "@agentsean/google";
 import type { CredentialStore } from "@agentsean/credentials";
 import { loadLlmConfig } from "@agentsean/llm";
 import { runContentJob } from "@agentsean/content";
+import {
+  createBingClient,
+  createProviderStack,
+  loadProviderKeys,
+} from "@agentsean/providers";
+import {
+  createHashEmbeddings,
+  loadGscQueries,
+  runKeywordsJob,
+  runRankCheck,
+} from "@agentsean/keywords";
+import { runMeasureJob } from "@agentsean/measure";
+import { runSurfacesJob } from "@agentsean/surfaces";
 import type { HandlerContext, Job, JobHandler, JobKind } from "./types.js";
+
+function settingNumber(db: SqliteDatabase, key: string, fallback: number): number {
+  const raw = db.select().from(settings).where(eq(settings.key, key)).get()?.value;
+  if (raw === undefined || raw === null) return fallback;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallback;
+}
 
 export type HandlerDeps = {
   db: SqliteDatabase;
@@ -37,15 +58,19 @@ function originOf(job: Job, db: SqliteDatabase): string | null {
 function defaultAdapterFor(deps: HandlerDeps): (siteId: string) => SiteAdapter | null {
   return (siteId) => {
     if (deps.adapterFor) return deps.adapterFor(siteId);
-    const cfg = loadGitConnection(deps.db, siteId) ?? {};
-    const repoPath = typeof cfg["repoPath"] === "string" ? cfg["repoPath"] : null;
-    if (!repoPath) return null;
-    const token = typeof cfg["token"] === "string" ? cfg["token"] : undefined;
-    return createGitAdapter({
-      repoPath,
-      ...(token ? { token } : {}),
-      ...(deps.fetch ? { fetch: deps.fetch } : {}),
-    });
+    try {
+      return adapterForSite(deps.db, siteId, deps.fetch ? { fetch: deps.fetch } : undefined);
+    } catch {
+      const cfg = loadGitConnection(deps.db, siteId) ?? {};
+      const repoPath = typeof cfg["repoPath"] === "string" ? cfg["repoPath"] : null;
+      if (!repoPath) return null;
+      const token = typeof cfg["token"] === "string" ? cfg["token"] : undefined;
+      return createGitAdapter({
+        repoPath,
+        ...(token ? { token } : {}),
+        ...(deps.fetch ? { fetch: deps.fetch } : {}),
+      });
+    }
   };
 }
 
@@ -206,19 +231,88 @@ export function createHandlers(deps: HandlerDeps): Record<JobKind, JobHandler> {
     },
     async rank_check(job, ctx) {
       ctx.heartbeat();
-      // Paid rank tracking is Phase 6. Weekly GSC position is the free proxy.
       if (!job.siteId) return { skipped: true, reason: "no_site" };
-      const connected = deps.db
-        .select()
-        .from(gscConnections)
-        .where(eq(gscConnections.siteId, job.siteId))
-        .get();
-      return {
-        provider: "gsc",
-        cadence: "weekly",
-        connected: Boolean(connected),
-        note: "Daily 200-keyword tracking is $3.60/mo; weekly is the default.",
-      };
+      const origin = originOf(job, deps.db);
+      if (!origin) return { skipped: true, reason: "no_origin" };
+      const keys = await loadProviderKeys(deps.store);
+      const gsc = loadGscQueries(deps.db, job.siteId);
+      const stack = createProviderStack({
+        keys,
+        gsc: gsc.map((r) => ({
+          query: r.query,
+          source: "gsc",
+          clicks: r.clicks,
+          impressions: r.impressions,
+          position: r.position,
+        })),
+        ...(deps.fetch ? { fetch: deps.fetch } : {}),
+      });
+      const queries = [...new Set(gsc.map((r) => r.query))].slice(0, 50);
+      return runRankCheck({
+        db: deps.db,
+        siteId: job.siteId,
+        origin,
+        queries,
+        stack,
+        now: ctx.now,
+        dailyBudgetUsd: settingNumber(deps.db, "budgetUsdDaily", 8),
+      });
+    },
+    async keywords(job, ctx) {
+      ctx.heartbeat();
+      if (!job.siteId) return { skipped: true, reason: "no_site" };
+      const origin = originOf(job, deps.db);
+      if (!origin) return { skipped: true, reason: "no_origin" };
+      const keys = await loadProviderKeys(deps.store);
+      const gsc = loadGscQueries(deps.db, job.siteId);
+      const stack = createProviderStack({
+        keys,
+        gsc: gsc.map((r) => ({
+          query: r.query,
+          source: "gsc",
+          clicks: r.clicks,
+          impressions: r.impressions,
+          position: r.position,
+        })),
+        ...(deps.fetch ? { fetch: deps.fetch } : {}),
+      });
+      const bing = keys.bing
+        ? createBingClient({
+            apiKey: keys.bing,
+            ...(deps.fetch ? { fetch: deps.fetch } : {}),
+          })
+        : null;
+      return runKeywordsJob(deps.db, {
+        siteId: job.siteId,
+        origin,
+        now: ctx.now,
+        stack,
+        gsc,
+        embeddings: createHashEmbeddings(),
+        dailyBudgetUsd: settingNumber(deps.db, "budgetUsdDaily", 8),
+        ...(bing ? { expand: (seed: string) => bing.getRelatedKeywords(seed) } : {}),
+      });
+    },
+    async measure(job, ctx) {
+      ctx.heartbeat();
+      if (!job.siteId) return { skipped: true, reason: "no_site" };
+      return runMeasureJob(deps.db, { siteId: job.siteId, now: ctx.now });
+    },
+    async surfaces(job, ctx) {
+      ctx.heartbeat();
+      if (!job.siteId) return { skipped: true, reason: "no_site" };
+      const origin = originOf(job, deps.db);
+      if (!origin) return { skipped: true, reason: "no_origin" };
+      const llm = await loadLlmConfig({
+        ...(deps.store ? { store: deps.store } : {}),
+        ...(deps.fetch ? { fetch: deps.fetch } : {}),
+      });
+      return runSurfacesJob(deps.db, {
+        siteId: job.siteId,
+        origin,
+        now: ctx.now,
+        ...(llm?.generate ? { generate: llm.generate } : {}),
+      });
     },
     async content(job, ctx) {
       ctx.heartbeat();

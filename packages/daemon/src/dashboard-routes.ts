@@ -15,10 +15,63 @@ import {
   reports,
   searchFindingsFts,
   sites,
+  aiRuns,
+  bingAiRows,
+  verticalProfiles,
   type SqliteDatabase,
 } from "@agentsean/db";
 import { Secret, type CredentialStore } from "@agentsean/credentials";
 import { DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING, listContent } from "@agentsean/content";
+import {
+  analyzeExperiment,
+  getExperiment,
+  headline,
+  listClaims,
+  listCohortUrls,
+  listExperiments,
+  monthlyClicksForSite,
+  registerExperiment,
+  runMeasureJob,
+  seriesForUrls,
+  sitePowerBrief,
+  startExperiment,
+} from "@agentsean/measure";
+import {
+  createBingClient,
+  createProviderStack,
+  loadProviderKeys,
+  PROVIDER_ACCOUNTS,
+} from "@agentsean/providers";
+import {
+  createHashEmbeddings,
+  listClusters,
+  listKeywords,
+  listRanks,
+  loadGscQueries,
+  runKeywordsJob,
+} from "@agentsean/keywords";
+import { loadLlmConfig } from "@agentsean/llm";
+import {
+  AEO_REFUSALS,
+  GBP_EDITS_PER_MIN,
+  GBP_QPM,
+  GbpNotApprovedError,
+  GbpQuotaError,
+  ONBOARDING_QUESTIONS,
+  applyGbpEdit,
+  bingCitationShare,
+  draftOutreach,
+  listGbpLocations,
+  listInbound404s,
+  listMentions,
+  listOutreach,
+  localCitationGap,
+  runSurfacesJob,
+  runVerticalDetect,
+  saveOnboardingAnswers,
+  verticalRules,
+  type VerticalPreset,
+} from "@agentsean/surfaces";
 import {
   ACTION_KINDS,
   BLAST,
@@ -145,6 +198,8 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       .all()
       .filter((r) => r.ts >= weekAgo)
       .reduce((s, r) => s + r.costUsd, 0);
+    const claimRows = listClaims(opts.db, site.id);
+    const evidence = headline(claimRows);
     return {
       origin: site.origin,
       siteId: site.id,
@@ -153,6 +208,12 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       thisWeek,
       costUsd,
       observeUntil: site.observeUntil,
+      evidence: {
+        headline: evidence.line,
+        byTier: evidence.byTier,
+        defaultTier: DEFAULT_EVIDENCE_TIER,
+        meaning: EVIDENCE_MEANING,
+      },
     };
   });
 
@@ -186,6 +247,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       }),
     );
     await ensureCadences(queue, opts.db, new Date());
+    const power = sitePowerBrief({
+      monthlyClicks: monthlyClicksForSite(opts.db, siteId),
+      pageCount: report.pages,
+    });
+    const vertical = runVerticalDetect(opts.db, siteId);
     opts.bus.emit("sites");
     opts.bus.emit("findings");
     opts.bus.emit("overview");
@@ -197,7 +263,10 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       pages: report.pages,
       findingCount: report.findings.length,
       score: report.score,
+      vertical,
+      questions: ONBOARDING_QUESTIONS,
       elapsedMs: report.elapsedMs,
+      power,
     };
   });
 
@@ -464,10 +533,380 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     });
   });
 
-  app.get("/api/ai", () => ({
-    engines: [],
-    note: "Citation share lands with the provider/MCP layer (Phase 6 / 9).",
-  }));
+  app.get("/api/keywords", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    return {
+      origin: site.origin,
+      keywords: listKeywords(opts.db, site.id),
+      clusters: listClusters(opts.db, site.id),
+      ranks: listRanks(opts.db, site.id),
+      strikingDistance: listKeywords(opts.db, site.id).filter(
+        (r) => r.position !== null && r.position >= 8 && r.position <= 20,
+      ),
+    };
+  });
+
+  app.post("/api/keywords", async (req, reply) => {
+    const body = (req.body ?? {}) as { siteId?: string };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const keys = await loadProviderKeys(opts.store);
+    const gsc = loadGscQueries(opts.db, site.id);
+    const stack = createProviderStack({
+      keys,
+      gsc: gsc.map((r) => ({
+        query: r.query,
+        source: "gsc",
+        clicks: r.clicks,
+        impressions: r.impressions,
+        position: r.position,
+      })),
+    });
+    const bing = keys.bing ? createBingClient({ apiKey: keys.bing }) : null;
+    const result = await runKeywordsJob(opts.db, {
+      siteId: site.id,
+      origin: site.origin,
+      stack,
+      gsc,
+      brandTerms: brandTermsFromOrigin(site.origin),
+      embeddings: createHashEmbeddings(),
+      dailyBudgetUsd: getSettingNumber(opts.db, "budgetUsdDaily", 8),
+      ...(bing ? { expand: (seed: string) => bing.getRelatedKeywords(seed) } : {}),
+    });
+    opts.bus.emit("search");
+    return {
+      ok: true,
+      paidUpgrade: result.paidUpgrade,
+      opportunities: result.opportunities.length,
+      clusters: result.clusters.length,
+      strikingDistance: result.strikingDistance.length,
+      ranks: result.ranks.length,
+      embeddingsModel: result.embeddingsModel,
+      quotes: result.quotes,
+      reason: result.reason ?? null,
+    };
+  });
+
+  app.get("/api/providers", async () => {
+    const keys = await loadProviderKeys(opts.store);
+    return {
+      dataforseo: Boolean(keys.dataforseo),
+      bing: Boolean(keys.bing),
+      openpagerank: Boolean(keys.openpagerank),
+      paidUpgrade: Boolean(keys.dataforseo),
+      neverScrapesGoogle: true,
+      free: ["gsc", "bing_webmaster", "autocomplete", "openpagerank", "psi", "crux", "wayback", "jina", "wikidata"],
+    };
+  });
+
+  app.get("/api/ai", (req) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) {
+      return {
+        engines: [],
+        citationShare: 0,
+        shareOfVoice: 0,
+        estimatedUsd: 0,
+        bingShare: null,
+        refusals: AEO_REFUSALS,
+        note: "No site yet.",
+      };
+    }
+    const runs = opts.db.select().from(aiRuns).where(eq(aiRuns.siteId, site.id)).all();
+    const latest = runs.toSorted((a, b) => b.ranAt.localeCompare(a.ranAt))[0];
+    const bingRows = opts.db.select().from(bingAiRows).where(eq(bingAiRows.siteId, site.id)).all();
+    return {
+      engines: latest ? [latest.engine] : [],
+      citationShare: latest?.citationShare ?? 0,
+      shareOfVoice: latest?.shareOfVoice ?? 0,
+      estimatedUsd: latest?.estimatedUsd ?? 0,
+      bingShare: bingRows.length ? bingCitationShare(bingRows) : null,
+      bingRows: bingRows.slice(0, 20),
+      ranAt: latest?.ranAt ?? null,
+      refusals: AEO_REFUSALS,
+      note: "Schema, content length, and llms.txt are not sold as AEO levers. Training crawlers ≠ citation crawlers.",
+    };
+  });
+
+  app.post("/api/ai", async (req, reply) => {
+    const body = (req.body ?? {}) as { siteId?: string; bingCsv?: string };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const llm = await loadLlmConfig(opts.store ? { store: opts.store } : {});
+    const result = await runSurfacesJob(opts.db, {
+      siteId: site.id,
+      origin: site.origin,
+      ...(llm?.generate ? { generate: llm.generate } : {}),
+      ...(body.bingCsv ? { bingCsv: body.bingCsv } : {}),
+    });
+    opts.bus.emit("overview");
+    opts.bus.emit("ai");
+    return { ok: true, ...result, refusals: AEO_REFUSALS };
+  });
+
+  app.get("/api/local", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const locations = listGbpLocations(opts.db, site.id);
+    const gap = localCitationGap({
+      gbpListed: locations.length > 0,
+      aiMentions: listMentions(opts.db, site.id).length,
+      localPackVisible: locations.length > 0,
+    });
+    return {
+      locations,
+      gap,
+      editsPerMin: GBP_EDITS_PER_MIN,
+      qpm: GBP_QPM,
+      reviewGeneration: "t4_refused",
+      cityServicePages: "t4_refused",
+    };
+  });
+
+  app.post("/api/local", async (req, reply) => {
+    const body = (req.body ?? {}) as {
+      siteId?: string;
+      locationId?: string;
+      kind?: "hours" | "category" | "title";
+      payload?: Record<string, unknown>;
+    };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!body.locationId || !body.kind) return reply.code(400).send({ error: "missing_write" });
+    try {
+      const applied = await applyGbpEdit(opts.db, site.id, {
+        locationId: body.locationId,
+        kind: body.kind,
+        payload: body.payload ?? {},
+      });
+      opts.bus.emit("overview");
+      return { ok: true, id: applied.id };
+    } catch (err) {
+      if (err instanceof GbpNotApprovedError) {
+        return reply.code(409).send({ error: "gbp_not_approved", message: err.message });
+      }
+      if (err instanceof GbpQuotaError) {
+        return reply.code(429).send({ error: "gbp_quota", message: err.message });
+      }
+      throw err;
+    }
+  });
+
+  app.get("/api/mentions", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    return {
+      mentions: listMentions(opts.db, site.id),
+      inbound404s: listInbound404s(opts.db, site.id),
+      outreach: listOutreach(opts.db, site.id),
+      sendRequiresApproval: true,
+    };
+  });
+
+  app.post("/api/mentions", (req, reply) => {
+    const body = (req.body ?? {}) as { siteId?: string; mentionId?: string };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!body.mentionId) return reply.code(400).send({ error: "missing_mention" });
+    const draftId = draftOutreach(opts.db, site.id, body.mentionId);
+    opts.bus.emit("overview");
+    return { ok: true, draftId, sendRequiresApproval: true };
+  });
+
+  app.get("/api/vertical", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const stored = opts.db.select().from(verticalProfiles).where(eq(verticalProfiles.siteId, site.id)).get();
+    const detected = stored
+      ? {
+          preset: stored.preset as VerticalPreset,
+          confidence: stored.confidence,
+          suppressedChecks: stored.suppressedChecks,
+          v1: stored.preset === "b2b_saas" || stored.preset === "multi_location",
+        }
+      : runVerticalDetect(opts.db, site.id);
+    let answers: Record<string, string> = {};
+    try {
+      answers = stored?.answersJson ? (JSON.parse(stored.answersJson) as Record<string, string>) : {};
+    } catch {
+      answers = {};
+    }
+    return {
+      ...detected,
+      questions: ONBOARDING_QUESTIONS,
+      rules: verticalRules(detected.preset),
+      answers,
+    };
+  });
+
+  app.post("/api/vertical", (req, reply) => {
+    const body = (req.body ?? {}) as { siteId?: string; answers?: Record<string, string> };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const detected = saveOnboardingAnswers(opts.db, site.id, body.answers ?? {});
+    opts.bus.emit("overview");
+    return { ok: true, ...detected, questions: ONBOARDING_QUESTIONS, rules: verticalRules(detected.preset) };
+  });
+
+  app.get("/api/claims", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const rows = listClaims(opts.db, site.id);
+    return {
+      origin: site.origin,
+      claims: rows,
+      headline: headline(rows).line,
+      meaning: EVIDENCE_MEANING,
+    };
+  });
+
+  app.get("/api/experiments", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    return { experiments: listExperiments(opts.db, site.id) };
+  });
+
+  app.post("/api/experiments", (req, reply) => {
+    const body = (req.body ?? {}) as {
+      siteId?: string;
+      hypothesis?: string;
+      interventionKind?: string;
+      design?: "split_cohort" | "its_with_control_pool" | "uncontrolled";
+      unit?: "page_group" | "template" | "section";
+      preStart?: string;
+      preEnd?: string;
+      postStart?: string;
+      plannedEnd?: string;
+      treatmentUrls?: string[];
+      controlUrls?: string[];
+      reserveUrls?: string[];
+      preClicks?: Record<string, number>;
+    };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!body.hypothesis || !body.preStart || !body.plannedEnd) {
+      return reply.code(400).send({ error: "missing_preregistration" });
+    }
+    const registered = registerExperiment(opts.db, {
+      siteId: site.id,
+      hypothesis: body.hypothesis,
+      interventionKind: body.interventionKind ?? "title",
+      design: body.design ?? "split_cohort",
+      unit: body.unit ?? "page_group",
+      preStart: body.preStart,
+      preEnd: body.preEnd ?? body.preStart,
+      postStart: body.postStart ?? body.preEnd ?? body.preStart,
+      plannedEnd: body.plannedEnd,
+      treatmentUrls: body.treatmentUrls ?? [],
+      controlUrls: body.controlUrls ?? [],
+      reserveUrls: body.reserveUrls ?? [],
+      preClicks: body.preClicks ?? {},
+    });
+    if (registered.status !== "refused") startExperiment(opts.db, registered);
+    opts.bus.emit("overview");
+    return registered;
+  });
+
+  app.post("/api/experiments/:id/analyze", (req, reply) => {
+    const id = (req.params as { id: string }).id;
+    const exp = getExperiment(opts.db, id);
+    if (!exp) return reply.code(404).send({ error: "unknown_experiment" });
+    const urls = listCohortUrls(opts.db, exp.id);
+    const now = new Date();
+    const treatment = seriesForUrls(
+      opts.db,
+      exp.siteId,
+      urls.treatment,
+      exp.preStart,
+      exp.preEnd,
+      exp.postStart,
+      exp.plannedEnd,
+    );
+    const control = seriesForUrls(
+      opts.db,
+      exp.siteId,
+      urls.control,
+      exp.preStart,
+      exp.preEnd,
+      exp.postStart,
+      exp.plannedEnd,
+    );
+    const result = analyzeExperiment(opts.db, { experimentId: exp.id, now, treatment, control });
+    opts.bus.emit("overview");
+    return result;
+  });
+
+  app.get("/api/measure/power", (req, reply) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const pageCount = opts.db.select().from(pages).where(eq(pages.siteId, site.id)).all().length;
+    return sitePowerBrief({
+      monthlyClicks: monthlyClicksForSite(opts.db, site.id),
+      pageCount,
+    });
+  });
+
+  app.post("/api/measure", (req, reply) => {
+    const body = (req.body ?? {}) as { siteId?: string };
+    const site = body.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, body.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    const result = runMeasureJob(opts.db, { siteId: site.id });
+    opts.bus.emit("overview");
+    return {
+      ok: true,
+      headline: result.headline,
+      power: result.power,
+      claims: result.claims.length,
+      analysed: result.analysed.length,
+      waterfall: result.waterfall
+        ? {
+            residual: result.waterfall.residual,
+            anonymizedQueryShare: result.waterfall.anonymizedQueryShare,
+            euInvisibleShare: result.waterfall.euInvisibleShare,
+            causes: result.waterfall.steps.length,
+          }
+        : null,
+    };
+  });
 
   app.get("/api/reports", (req) => {
     const q = req.query as { siteId?: string };
@@ -554,6 +993,11 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
       llmProvider,
       llmConfigured,
       aiDisclosure: getSetting(opts.db, "aiDisclosure") ?? "html_comment",
+      providers: await loadProviderKeys(opts.store).then((k) => ({
+        dataforseo: Boolean(k.dataforseo),
+        bing: Boolean(k.bing),
+        openpagerank: Boolean(k.openpagerank),
+      })),
       caps: {
         newPagesPerDay: BLAST.newPagesPerDay,
         contentRefreshPerDay: BLAST.contentRefreshPerDay,
@@ -596,6 +1040,27 @@ export function registerDashboardRoutes(app: FastifyInstance, opts: DashboardRou
     if (typeof body.aiDisclosure === "string") setSetting(opts.db, "aiDisclosure", body.aiDisclosure);
     opts.bus.emit("settings");
     return { ok: true };
+  });
+
+  app.post("/api/settings/provider", async (req, reply) => {
+    if (!opts.store) return reply.code(400).send({ error: "no_store" });
+    const body = (req.body ?? {}) as { provider?: string; apiKey?: string };
+    const provider = body.provider ?? "";
+    if (!body.apiKey || body.apiKey.length < 4) {
+      return reply.code(400).send({ error: "missing_key" });
+    }
+    const account =
+      provider === "dataforseo"
+        ? PROVIDER_ACCOUNTS.dataforseo
+        : provider === "bing"
+          ? PROVIDER_ACCOUNTS.bing
+          : provider === "openpagerank"
+            ? PROVIDER_ACCOUNTS.openpagerank
+            : null;
+    if (!account) return reply.code(400).send({ error: "unknown_provider" });
+    await opts.store.set(account, new Secret(body.apiKey));
+    opts.bus.emit("settings");
+    return { ok: true, provider, configured: true };
   });
 
   app.post("/api/settings/llm", async (req, reply) => {

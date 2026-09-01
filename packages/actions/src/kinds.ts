@@ -51,6 +51,7 @@ export const ACTION_KINDS = [
   "scrape_serp",
   "generate_ymyl",
   "generate_affiliate",
+  "create_city_service_page",
 ] as const;
 
 export type ActionKind = (typeof ACTION_KINDS)[number];
@@ -109,6 +110,7 @@ export const KIND_TIER: Record<ActionKind, 0 | 1 | 2 | 3 | 4> = {
   scrape_serp: 4,
   generate_ymyl: 4,
   generate_affiliate: 4,
+  create_city_service_page: 4,
 };
 
 export const TWO_KEY_KINDS: ReadonlySet<ActionKind> = new Set([
@@ -120,6 +122,7 @@ export const TWO_KEY_KINDS: ReadonlySet<ActionKind> = new Set([
   "delete_page",
   "submit_disavow",
   "edit_llms_txt",
+  "send_outreach_email",
 ]);
 
 export const NEW_PAGE_KINDS: ReadonlySet<ActionKind> = new Set(["create_page"]);
@@ -131,6 +134,7 @@ export const CONTENT_GEN_KINDS: ReadonlySet<ActionKind> = new Set([
   "create_page",
   "generate_ymyl",
   "generate_affiliate",
+  "create_city_service_page",
 ]);
 
 export function isActionKind(value: string): value is ActionKind {

@@ -236,7 +236,8 @@ function parsePayload(kind: ActionKind, raw: unknown): ActionPayload {
     case "incentivize_reviews":
     case "scrape_serp":
     case "generate_ymyl":
-    case "generate_affiliate": {
+    case "generate_affiliate":
+    case "create_city_service_page": {
       const err = expectKeys(raw, ["reason"]);
       if (err) throw new Error(err);
       return { reason: str(raw, "reason", 1, 200) };

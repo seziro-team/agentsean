@@ -149,4 +149,117 @@ describe("dashboard routes", () => {
     await server.close();
     sqlite.close();
   });
+
+  it("lists keyword opportunities and provider status with zero paid keys", async () => {
+    const { server, sqlite } = await app();
+    const keys = await server.inject({
+      method: "GET",
+      url: "/api/providers",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(keys.statusCode).toBe(200);
+    expect(keys.json().paidUpgrade).toBe(false);
+    expect(keys.json().neverScrapesGoogle).toBe(true);
+
+    const kw = await server.inject({
+      method: "GET",
+      url: "/api/keywords?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(kw.statusCode).toBe(200);
+    expect(kw.json().keywords).toEqual([]);
+    expect(kw.json().clusters).toEqual([]);
+    await server.close();
+    sqlite.close();
+  });
+
+  it("labels claims with an evidence tier and will not claim causation", async () => {
+    const { server, sqlite } = await app();
+    const power = await server.inject({
+      method: "GET",
+      url: "/api/measure/power?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(power.statusCode).toBe(200);
+    expect(power.json().typicalTier).toBe("E");
+    expect(power.json().message).toMatch(/tier E/i);
+
+    const run = await server.inject({
+      method: "POST",
+      url: "/api/measure",
+      headers: {
+        host: "127.0.0.1:7777",
+        [TOKEN_HEADER]: TOKEN,
+        [CSRF_HEADER]: "1",
+        "content-type": "application/json",
+      },
+      payload: { siteId: "s1" },
+    });
+    expect(run.statusCode).toBe(200);
+    expect(run.json().ok).toBe(true);
+
+    const claims = await server.inject({
+      method: "GET",
+      url: "/api/claims?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(claims.statusCode).toBe(200);
+    expect(claims.json().meaning.E).toMatch(/not measurable/i);
+    await server.close();
+    sqlite.close();
+  });
+
+  it("reports AI citation share, GBP quota, mentions, and vertical rules", async () => {
+    const { server, sqlite } = await app();
+    const ai = await server.inject({
+      method: "GET",
+      url: "/api/ai?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(ai.statusCode).toBe(200);
+    expect(ai.json().citationShare).toBe(0);
+    expect(ai.json().refusals).toHaveLength(3);
+
+    const local = await server.inject({
+      method: "GET",
+      url: "/api/local?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(local.statusCode).toBe(200);
+    expect(local.json().editsPerMin).toBe(10);
+    expect(local.json().reviewGeneration).toBe("t4_refused");
+
+    const mentions = await server.inject({
+      method: "GET",
+      url: "/api/mentions?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(mentions.statusCode).toBe(200);
+    expect(mentions.json().sendRequiresApproval).toBe(true);
+
+    const vertical = await server.inject({
+      method: "GET",
+      url: "/api/vertical?siteId=s1",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(vertical.statusCode).toBe(200);
+    expect(vertical.json().preset).toBe("b2b_saas");
+    expect(vertical.json().questions).toHaveLength(6);
+    await server.close();
+    sqlite.close();
+  });
+
+  it("serves self-host billing with $0 and no tenant", async () => {
+    const { server, sqlite } = await app();
+    const billing = await server.inject({
+      method: "GET",
+      url: "/api/billing",
+      headers: { host: "127.0.0.1:7777" },
+    });
+    expect(billing.statusCode).toBe(200);
+    expect(billing.json().plan).toBe("self_host");
+    expect(billing.json().priceUsd).toBe(0);
+    await server.close();
+    sqlite.close();
+  });
 });

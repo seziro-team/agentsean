@@ -10,6 +10,7 @@ import {
   type SqliteDatabase,
 } from "@agentsean/db";
 import { BLAST, countsForLedger, executeAction, saveAction } from "@agentsean/actions";
+import { reportArticleUsage, tenantIdForSite } from "@agentsean/hosted";
 import { recordLlmCost, type LlmConfig } from "@agentsean/llm";
 import { buildBrief } from "./brief.js";
 import { decayingPages } from "./decay.js";
@@ -289,6 +290,10 @@ export async function runContentJob(
     if (published) {
       result.applied++;
       refreshToday++;
+      if (candidate.kind === "create") {
+        const tenantId = tenantIdForSite(db, opts.siteId);
+        if (tenantId) reportArticleUsage(db, tenantId, 1, now);
+      }
     } else if (exec.status === "queued") result.queued++;
     else result.rejected++;
     result.actions.push(action);

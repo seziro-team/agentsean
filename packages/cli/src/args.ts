@@ -8,7 +8,15 @@ export type CommandName =
   | "revert"
   | "freeze"
   | "unfreeze"
-  | "content";
+  | "content"
+  | "keywords"
+  | "mcp"
+  | "measure"
+  | "visibility"
+  | "local"
+  | "mentions"
+  | "signup"
+  | "tenant";
 
 export type CliArgs = {
   command: CommandName | undefined;
@@ -44,6 +52,14 @@ const COMMANDS = new Set<string>([
   "freeze",
   "unfreeze",
   "content",
+  "keywords",
+  "mcp",
+  "measure",
+  "visibility",
+  "local",
+  "mentions",
+  "signup",
+  "tenant",
 ]);
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -182,6 +198,38 @@ export function parseArgs(argv: string[]): CliArgs {
       args.target = a;
       continue;
     }
+    if (args.command === "keywords" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "mcp" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "measure" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "visibility" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "local" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "mentions" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "signup" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
+    if (args.command === "tenant" && args.target === undefined) {
+      args.target = a;
+      continue;
+    }
     args.errors.push(`unexpected argument ${a}`);
   }
 
@@ -201,6 +249,20 @@ Usage:
   sean freeze [--off] [--json]
   sean unfreeze [--json]
   sean content [origin] [--repo /path/to/site] [--dry-run] [--json]
+  sean keywords [origin] [--json]
+  sean mcp [--json]
+  sean measure [origin] [--json]
+  sean visibility [origin] [--json]
+  sean local [origin] [--json]
+  sean mentions [origin] [--json]
+  sean signup [plan] [--json]
+  sean tenant [tenantId] [--json]
+  sean connect dataforseo --api-key login:password
+  sean connect bing --api-key KEY
+  sean connect openpagerank --api-key KEY
+  sean connect wordpress --api-key USER:APP_PASSWORD [origin]
+  sean connect shopify --api-key shpat_… [shop]
+  sean connect cloudflare [origin]
 
 Every command accepts --json. The daemon binds 127.0.0.1 only and refuses to
 start off-loopback without auth. Audit crawls a URL with zero credentials.
@@ -210,5 +272,14 @@ Apply plans title-tag fixes, validates them, and opens a Git PR. Revert
 restores the shadow-ledger snapshot. Freeze writes HALT and stops every write
 across every site; it survives restart. Content identifies a decaying page from
 GSC clicks, rewrites it, runs PublishGate, and publishes via the Git adapter.
-New pages are capped at 2/day/site and the cap is not overridable.
+New pages are capped at 2/day/site and the cap is not overridable. Keywords
+builds opportunities and clusters from GSC + Bing with zero paid keys; a
+DataForSEO key upgrades rank tracking in place. sean mcp is a stdio MCP server.
+sean measure labels every claim with an evidence tier and will not claim
+causation it cannot support. Platform adapters write the same title-tag Action
+to WordPress, Shopify, Git, or a Cloudflare edge overlay, then re-fetch live
+HTML to verify. The edge worker never branches on user-agent. Hosted Cloud
+Starter is $9/mo (1 site, BYOK); Agency is $249/mo (25–50 sites). Self-host is
+$0 with everything. Hosted never stores CMS write credentials — pair a
+customer-side connector. Sean never scrapes Google.
 `;

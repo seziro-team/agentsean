@@ -23,3 +23,4 @@ export {
 export { readPid, writePid, removePid, isPidAlive, type PidInfo } from "./pid.js";
 export { VERSION } from "./version.js";
 export { loadOrCreateToken, openDaemonStore, tokensEqual } from "./token.js";
+export { getSetting, setSetting, getSettingNumber } from "./settings.js";

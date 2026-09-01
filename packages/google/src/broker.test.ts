@@ -25,6 +25,31 @@ describe("stateless OAuth broker", () => {
     ).toThrow(/127\.0\.0\.1/);
   });
 
+  it("allows the hosted public origin when SEAN_HOSTED=1", () => {
+    const prevH = process.env["SEAN_HOSTED"];
+    const prevO = process.env["SEAN_PUBLIC_ORIGIN"];
+    process.env["SEAN_HOSTED"] = "1";
+    process.env["SEAN_PUBLIC_ORIGIN"] = "https://app.agentsean.com";
+    try {
+      const url = brokerStartUrl({
+        secrets: {
+          clientId: "cid",
+          clientSecret: "sec",
+          stateKey: randomBytes(32),
+        },
+        redirectUri: "https://app.agentsean.com/oauth/callback",
+        wrapKeyB64: "x",
+        localState: "s",
+      });
+      expect(url).toContain("accounts.google.com");
+    } finally {
+      if (prevH === undefined) delete process.env["SEAN_HOSTED"];
+      else process.env["SEAN_HOSTED"] = prevH;
+      if (prevO === undefined) delete process.env["SEAN_PUBLIC_ORIGIN"];
+      else process.env["SEAN_PUBLIC_ORIGIN"] = prevO;
+    }
+  });
+
   it("hands a sealed refresh token to loopback, never as plaintext", async () => {
     setBrokerRegisteredCallback("https://oauth.agentsean.com/google/callback");
     const pending = createPendingStore();

@@ -57,7 +57,12 @@ function candidatesFor(repoRoot: string, pathname: string): string[] {
         out.push(path.join(pages, ...segs, "index.tsx"));
       }
       out.push(path.join(repoRoot, "src/pages", `${rel}.astro`));
+      out.push(path.join(repoRoot, "src/pages", rel, "index.astro"));
       out.push(path.join(repoRoot, "content", `${rel}.md`));
+      out.push(path.join(repoRoot, "content", rel, "_index.md"));
+      out.push(path.join(repoRoot, "docs", `${rel}.md`));
+      out.push(path.join(repoRoot, "blog", `${rel}.md`));
+      out.push(path.join(repoRoot, "_posts", `${rel}.md`));
       out.push(path.join(repoRoot, `${rel}.md`));
     }
   }

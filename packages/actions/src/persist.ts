@@ -324,18 +324,17 @@ export function recordEntity(
     .run();
 }
 
-export function upsertGitConnection(
+export function upsertAdapterConnection(
   db: SqliteDatabase,
   siteId: string,
+  kind: string,
   config: Record<string, unknown>,
 ): void {
   const now = new Date().toISOString();
   const existing = db
     .select()
     .from(adapterConnections)
-    .where(
-      and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, "git")),
-    )
+    .where(and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)))
     .get();
   if (existing) {
     db.update(adapterConnections)
@@ -348,7 +347,7 @@ export function upsertGitConnection(
     .values({
       id: randomUUID(),
       siteId,
-      kind: "git",
+      kind,
       config: JSON.stringify(config),
       createdAt: now,
       updatedAt: now,
@@ -356,14 +355,15 @@ export function upsertGitConnection(
     .run();
 }
 
-export function loadGitConnection(
+export function loadAdapterConnection(
   db: SqliteDatabase,
   siteId: string,
+  kind: string,
 ): Record<string, unknown> | null {
   const row = db
     .select()
     .from(adapterConnections)
-    .where(and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, "git")))
+    .where(and(eq(adapterConnections.siteId, siteId), eq(adapterConnections.kind, kind)))
     .get();
   if (!row) return null;
   try {
@@ -375,6 +375,44 @@ export function loadGitConnection(
     return null;
   }
   return null;
+}
+
+export function listAdapterConnections(
+  db: SqliteDatabase,
+  siteId: string,
+): Array<{ kind: string; config: Record<string, unknown> }> {
+  return db
+    .select()
+    .from(adapterConnections)
+    .where(eq(adapterConnections.siteId, siteId))
+    .all()
+    .map((row) => {
+      let config: Record<string, unknown> = {};
+      try {
+        const parsed = JSON.parse(row.config) as unknown;
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          config = parsed as Record<string, unknown>;
+        }
+      } catch {
+        config = {};
+      }
+      return { kind: row.kind, config };
+    });
+}
+
+export function upsertGitConnection(
+  db: SqliteDatabase,
+  siteId: string,
+  config: Record<string, unknown>,
+): void {
+  upsertAdapterConnection(db, siteId, "git", config);
+}
+
+export function loadGitConnection(
+  db: SqliteDatabase,
+  siteId: string,
+): Record<string, unknown> | null {
+  return loadAdapterConnection(db, siteId, "git");
 }
 
 export function countsForLedger(

@@ -65,7 +65,12 @@ export function brokerStartUrl(opts: {
   localState: string;
   scopes?: readonly string[] | undefined;
 }): string {
-  if (!opts.redirectUri.startsWith("http://127.0.0.1:")) {
+  const hostedOrigin = process.env["SEAN_PUBLIC_ORIGIN"]?.replace(/\/$/, "");
+  const hosted =
+    process.env["SEAN_HOSTED"] === "1" &&
+    hostedOrigin &&
+    opts.redirectUri.startsWith(hostedOrigin);
+  if (!opts.redirectUri.startsWith("http://127.0.0.1:") && !hosted) {
     throw new Error("Broker will only hand tokens to http://127.0.0.1 loopback.");
   }
   const pkce = generatePkce();

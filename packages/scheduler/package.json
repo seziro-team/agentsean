@@ -21,6 +21,7 @@
   "dependencies": {
     "@agentsean/actions": "workspace:*",
     "@agentsean/adapter-git": "workspace:*",
+    "@agentsean/adapter-factory": "workspace:*",
     "@agentsean/analyzers": "workspace:*",
     "@agentsean/content": "workspace:*",
     "@agentsean/credentials": "workspace:*",
@@ -28,6 +29,11 @@
     "@agentsean/crawler": "workspace:*",
     "@agentsean/db": "workspace:*",
     "@agentsean/google": "workspace:*",
+    "@agentsean/keywords": "workspace:*",
+    "@agentsean/measure": "workspace:*",
+    "@agentsean/surfaces": "workspace:*",
+    "@agentsean/hosted": "workspace:*",
+    "@agentsean/providers": "workspace:*",
     "drizzle-orm": "0.45.2"
   },
   "devDependencies": {

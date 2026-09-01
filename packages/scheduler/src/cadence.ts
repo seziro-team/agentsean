@@ -13,7 +13,10 @@ export const CADENCES: Record<JobKind, { everyMs: number; label: string }> = {
   gsc_sync: { everyMs: DAY_MS, label: "daily GSC / GA4 sync" },
   cwv: { everyMs: WEEK_MS, label: "weekly CrUX / PSI" },
   rank_check: { everyMs: WEEK_MS, label: "weekly rank check" },
+  keywords: { everyMs: WEEK_MS, label: "weekly keyword clusters" },
   content: { everyMs: DAY_MS, label: "daily content tasks (T2 cap)" },
+  measure: { everyMs: DAY_MS, label: "daily measurement / experiment analysis" },
+  surfaces: { everyMs: 30 * DAY_MS, label: "monthly AI visibility / local / mentions" },
   plan_and_apply: { everyMs: DAY_MS, label: "plan and auto-apply T1/T2" },
 };
 
@@ -27,6 +30,7 @@ export function isoWeek(now: Date): string {
 }
 
 export function periodBucket(kind: JobKind, now: Date): string {
+  if (kind === "surfaces") return now.toISOString().slice(0, 7);
   if (CADENCES[kind].everyMs >= WEEK_MS) return isoWeek(now);
   return now.toISOString().slice(0, 10);
 }

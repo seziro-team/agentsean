@@ -34,19 +34,30 @@ export function assertBindAllowed(host: string, authEnabled: boolean): void {
   }
 }
 
-export function allowedHosts(port: number): Set<string> {
-  return new Set([
+export function allowedHosts(port: number, publicOrigin?: string | undefined): Set<string> {
+  const hosts = new Set([
     `127.0.0.1:${port}`,
     `localhost:${port}`,
     `[::1]:${port}`,
     `::1:${port}`,
   ]);
+  if (publicOrigin) {
+    try {
+      const u = new URL(publicOrigin);
+      hosts.add(u.host);
+    } catch {
+      // ignore malformed
+    }
+  }
+  return hosts;
 }
 
-export function allowedOrigins(port: number): Set<string> {
-  return new Set([
+export function allowedOrigins(port: number, publicOrigin?: string | undefined): Set<string> {
+  const origins = new Set([
     `http://127.0.0.1:${port}`,
     `http://localhost:${port}`,
     `http://[::1]:${port}`,
   ]);
+  if (publicOrigin) origins.add(publicOrigin.replace(/\/$/, ""));
+  return origins;
 }

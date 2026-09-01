@@ -3,7 +3,10 @@ export const JOB_KINDS = [
   "gsc_sync",
   "cwv",
   "rank_check",
+  "keywords",
   "content",
+  "measure",
+  "surfaces",
   "plan_and_apply",
 ] as const;
 

@@ -75,6 +75,23 @@ export {
   NUM100_END,
 } from "./integrity.js";
 export { computeResidual, reconcileSite } from "./reconcile.js";
+export {
+  DISCREPANCY_CAUSES,
+  GSC_ANONYMIZED_SHARE,
+  EU_GA4_INVISIBLE_LOW,
+  EU_GA4_INVISIBLE_HIGH,
+  isEuTimeZone,
+  type DiscrepancyCause,
+  type DiscrepancyCauseCode,
+} from "./causes.js";
+export {
+  buildWaterfall,
+  waterfallFromSite,
+  persistWaterfall,
+  type WaterfallInput,
+  type WaterfallResult,
+  type WaterfallStep,
+} from "./waterfall.js";
 export { syncGoogle, type SyncResult } from "./sync.js";
 export { loadAuditExtras } from "./audit-extras.js";
 export {

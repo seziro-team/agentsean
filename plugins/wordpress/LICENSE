@@ -1,0 +1,10 @@
+Agent Sean Bridge is licensed under the GNU General Public License
+version 2 or later (GPL-2.0-or-later).
+
+You may obtain a copy of the GNU General Public License at
+https://www.gnu.org/licenses/gpl-2.0.html
+
+The Agent Sean daemon remains AGPL-3.0-only. This plugin is a separate
+work licensed GPL-2.0-or-later so it can be distributed through
+WordPress.org. AGPLv3 §13 permits combining with GPLv3; WordPress core
+is GPLv2-or-later.

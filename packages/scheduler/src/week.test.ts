@@ -172,7 +172,15 @@ describe("unattended week", () => {
     for (const [kind, handler] of Object.entries(handlers) as [JobKind, JobHandler][]) {
       wrapped[kind] = async (job, ctx) => {
         counts[kind] = (counts[kind] ?? 0) + 1;
-        if (kind === "crawl" || kind === "gsc_sync" || kind === "cwv" || kind === "plan_and_apply") {
+        if (
+          kind === "crawl" ||
+          kind === "gsc_sync" ||
+          kind === "cwv" ||
+          kind === "plan_and_apply" ||
+          kind === "keywords" ||
+          kind === "measure" ||
+          kind === "surfaces"
+        ) {
           return { skipped: true, simulated: true };
         }
         return handler(job, ctx);
@@ -189,8 +197,11 @@ describe("unattended week", () => {
     expect(counts.gsc_sync).toBe(7);
     expect(counts.plan_and_apply).toBe(7);
     expect(counts.rank_check).toBe(1);
+    expect(counts.keywords).toBe(1);
     expect(counts.crawl).toBe(1);
     expect(counts.content).toBe(7);
+    expect(counts.measure).toBe(7);
+    expect(counts.surfaces).toBe(1);
     expect(applied.length).toBe(1);
     expect(
       applied.every((k) => KIND_TIER[k as ActionKind] <= 2),

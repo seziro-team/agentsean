@@ -53,12 +53,64 @@ export const CONTENT_TABLES = [
   "publish_gate_results",
 ] as const;
 
+/** Phase 6 keywords, ranks, provider quotes. */
+export const KEYWORD_TABLES = [
+  "keywords",
+  "keyword_clusters",
+  "rank_snapshots",
+  "serp_cache",
+  "provider_quotes",
+  "embedding_cache",
+] as const;
+
+/** Phase 7 experiments, claims, GA4↔GSC waterfall. */
+export const MEASURE_TABLES = [
+  "experiments",
+  "cohorts",
+  "cohort_members",
+  "experiment_results",
+  "data_anomalies",
+  "claims",
+  "reconciliation_waterfall",
+] as const;
+
+/** Phase 10 hosted tenants, billing, isolation. */
+export const HOSTED_TABLES = [
+  "tenants",
+  "tenant_seats",
+  "tenant_sites",
+  "subscriptions",
+  "stripe_events",
+  "metered_usage",
+  "envelope_keys",
+  "quota_windows",
+  "erasure_requests",
+  "connector_pairings",
+] as const;
+
+/** Phase 9 AI visibility, local, off-page, verticals. */
+export const SURFACE_TABLES = [
+  "ai_runs",
+  "ai_citations",
+  "bing_ai_rows",
+  "gbp_locations",
+  "gbp_edits",
+  "mentions",
+  "inbound_404s",
+  "outreach_drafts",
+  "vertical_profiles",
+] as const;
+
 export const ALL_TABLES = [
   ...CORE_TABLES,
   ...GOOGLE_TABLES,
   ...ACTION_TABLES,
   ...DASHBOARD_TABLES,
   ...CONTENT_TABLES,
+  ...KEYWORD_TABLES,
+  ...MEASURE_TABLES,
+  ...SURFACE_TABLES,
+  ...HOSTED_TABLES,
 ] as const;
 
 export type CoreTable = (typeof CORE_TABLES)[number];
@@ -66,4 +118,8 @@ export type GoogleTable = (typeof GOOGLE_TABLES)[number];
 export type ActionTable = (typeof ACTION_TABLES)[number];
 export type DashboardTable = (typeof DASHBOARD_TABLES)[number];
 export type ContentTable = (typeof CONTENT_TABLES)[number];
+export type KeywordTable = (typeof KEYWORD_TABLES)[number];
+export type MeasureTable = (typeof MEASURE_TABLES)[number];
+export type SurfaceTable = (typeof SURFACE_TABLES)[number];
+export type HostedTable = (typeof HOSTED_TABLES)[number];
 export type AppTable = (typeof ALL_TABLES)[number];

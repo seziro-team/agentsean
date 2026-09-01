@@ -44,6 +44,35 @@ describe("cli", () => {
     }
   });
 
+  it("mcp --json lists tools and does not start stdio", async () => {
+    const home = tmpHome();
+    const chunks: string[] = [];
+    const orig = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((s: string | Uint8Array) => {
+      chunks.push(String(s));
+      return true;
+    }) as typeof process.stdout.write;
+    try {
+      const code = await run(["node", "sean", "mcp", "--json", "--home", home]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(chunks.join("").trim()) as {
+        command: string;
+        transport: string;
+        tools: string[];
+      };
+      expect(parsed.command).toBe("mcp");
+      expect(parsed.transport).toBe("stdio");
+      expect(parsed.tools).toContain("keyword_opportunities");
+      expect(parsed.tools).toContain("estimate_provider_cost");
+      expect(parsed.tools).toContain("list_claims");
+      expect(parsed.tools).toContain("estimate_mde");
+      expect(parsed.tools).toContain("ai_citation_share");
+      expect(parsed.tools).toContain("brand_mentions");
+    } finally {
+      process.stdout.write = orig;
+    }
+  });
+
   it("rejects a missing command with --json", async () => {
     const chunks: string[] = [];
     const orig = process.stdout.write.bind(process.stdout);

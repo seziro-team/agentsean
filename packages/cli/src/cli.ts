@@ -9,6 +9,14 @@ import { applyCommand } from "./commands/apply.js";
 import { revertCommand } from "./commands/revert.js";
 import { freezeCommand } from "./commands/freeze.js";
 import { contentCommand } from "./commands/content.js";
+import { keywordsCommand } from "./commands/keywords.js";
+import { mcpCommand } from "./commands/mcp.js";
+import { measureCommand } from "./commands/measure.js";
+import { visibilityCommand } from "./commands/visibility.js";
+import { localCommand } from "./commands/local.js";
+import { mentionsCommand } from "./commands/mentions.js";
+import { signupCommand } from "./commands/signup.js";
+import { tenantCommand } from "./commands/tenant.js";
 
 const VERSION = "0.0.0";
 
@@ -35,7 +43,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     emitError(
       args.json,
       { error: "missing_command" },
-      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, `sean content`, or `sean freeze`.\n\n" + HELP,
+      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, `sean content`, `sean keywords`, `sean mcp`, `sean measure`, `sean visibility`, `sean local`, `sean mentions`, `sean signup`, `sean tenant`, or `sean freeze`.\n\n" + HELP,
     );
     return 2;
   }
@@ -97,6 +105,53 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         target: args.target,
         repo: args.repo,
         dryRun: args.dryRun,
+      });
+    case "keywords":
+      return keywordsCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "mcp":
+      return mcpCommand({
+        json: args.json,
+        home: args.home,
+      });
+    case "measure":
+      return measureCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "visibility":
+      return visibilityCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "local":
+      return localCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "mentions":
+      return mentionsCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "signup":
+      return signupCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+      });
+    case "tenant":
+      return tenantCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
       });
     default:
       return 2;

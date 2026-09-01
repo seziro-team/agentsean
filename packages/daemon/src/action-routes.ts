@@ -10,6 +10,7 @@ import {
   pages,
   sites,
 } from "@agentsean/db";
+import { claimForChange, DEFAULT_EVIDENCE_TIER, EVIDENCE_MEANING } from "@agentsean/measure";
 import {
   actionFromRow,
   executeAction,
@@ -19,9 +20,12 @@ import {
   planTitleActions,
   revertChange,
   saveAction,
+  listAdapterConnections,
+  upsertAdapterConnection,
   upsertGitConnection,
 } from "@agentsean/actions";
-import { createGitAdapter } from "@agentsean/adapter-git";
+import { adapterForSite } from "@agentsean/adapter-factory";
+import { isCmsWriteKind, isHostedMode, refuseHostedCmsCredential } from "@agentsean/hosted";
 import { isHalted } from "./paths.js";
 import { activityPageHtml } from "./activity-page.js";
 
@@ -49,15 +53,14 @@ function adapterFor(
   opts: ActionRouteOptions,
   repoOverride?: string,
 ) {
-  const cfg = loadGitConnection(db, siteId) ?? {};
-  const repoPath = repoOverride ?? (typeof cfg["repoPath"] === "string" ? cfg["repoPath"] : null);
-  if (!repoPath) throw new Error("git adapter is not connected; pass repoPath");
-  const token = typeof cfg["token"] === "string" ? cfg["token"] : undefined;
-  return createGitAdapter({
-    repoPath,
-    ...(token ? { token } : {}),
-    ...(opts.gitFetch ? { fetch: opts.gitFetch } : {}),
-  });
+  if (repoOverride) {
+    upsertGitConnection(db, siteId, {
+      ...loadGitConnection(db, siteId),
+      repoPath: repoOverride,
+    });
+  }
+  const factoryOpts = opts.gitFetch ? { fetch: opts.gitFetch } : undefined;
+  return adapterForSite(db, siteId, factoryOpts);
 }
 
 export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOptions): void {
@@ -106,6 +109,7 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
           prUrl = null;
         }
       }
+      const claim = claimForChange(opts.db, row.id);
       return {
         id: row.id,
         actionId: row.actionId,
@@ -116,6 +120,9 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
         before,
         after,
         prUrl,
+        evidenceTier: claim?.evidenceTier ?? DEFAULT_EVIDENCE_TIER,
+        causationClaimed: claim?.causationClaimed ?? false,
+        evidenceStatement: claim?.statement ?? EVIDENCE_MEANING.E,
       };
     });
     return { changes: out };
@@ -134,6 +141,40 @@ export function registerActionRoutes(app: FastifyInstance, opts: ActionRouteOpti
     if (body.token) config["token"] = body.token;
     upsertGitConnection(opts.db, site.id, config);
     return { ok: true, siteId: site.id, kind: "git" };
+  });
+
+  app.get("/api/adapters", (req) => {
+    const q = req.query as { siteId?: string };
+    const site = q.siteId
+      ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
+      : opts.db.select().from(sites).all()[0];
+    if (!site) return { adapters: [] };
+    return {
+      adapters: listAdapterConnections(opts.db, site.id).map((r) => ({
+        kind: r.kind,
+        connected: true,
+      })),
+    };
+  });
+
+  app.post("/api/adapters", async (req, reply) => {
+    const body = (req.body ?? {}) as {
+      origin?: string;
+      kind?: string;
+      config?: Record<string, unknown>;
+    };
+    const site = siteOf(opts.db, body.origin);
+    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!body.kind || !body.config) return reply.code(400).send({ error: "missing_kind_or_config" });
+    if (isHostedMode() && isCmsWriteKind(body.kind)) {
+      try {
+        refuseHostedCmsCredential(body.kind);
+      } catch (err) {
+        return reply.code(403).send({ error: "hosted_connector", message: err instanceof Error ? err.message : "refused" });
+      }
+    }
+    upsertAdapterConnection(opts.db, site.id, body.kind, body.config);
+    return { ok: true, siteId: site.id, kind: body.kind };
   });
 
   app.post("/api/actions/plan", async (req, reply) => {

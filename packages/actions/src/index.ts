@@ -27,6 +27,9 @@ export {
   recordEntity,
   upsertGitConnection,
   loadGitConnection,
+  upsertAdapterConnection,
+  loadAdapterConnection,
+  listAdapterConnections,
   countsForLedger,
   actionFromRow,
   envelopeOf,
@@ -63,3 +66,11 @@ export {
   type SitePolicy,
   type PageRow,
 } from "./types.js";
+export {
+  htmlTitle,
+  patchHtmlTitle,
+  fetchHtml,
+  verifyLiveTitle,
+  titleFromPayload,
+  requireTitle,
+} from "./html.js";

@@ -5,11 +5,12 @@ import type { CredentialStore } from "@agentsean/credentials";
 import type { PendingStore } from "@agentsean/google";
 import type { JobQueue } from "@agentsean/scheduler";
 import { VERSION } from "./version.js";
-import { registerSecurity, TOKEN_COOKIE } from "./security.js";
+import { registerSecurity, TOKEN_COOKIE, type SecurityOptions } from "./security.js";
 import { isHalted } from "./paths.js";
 import { registerGoogleRoutes } from "./google-routes.js";
 import { registerActionRoutes } from "./action-routes.js";
 import { registerDashboardRoutes } from "./dashboard-routes.js";
+import { registerHostedRoutes } from "./hosted-routes.js";
 import { registerSpa } from "./spa.js";
 import { createEventBus, type EventBus } from "./events.js";
 
@@ -27,6 +28,7 @@ export type CreateServerOptions = {
   fetch?: typeof fetch | undefined;
   queue?: JobQueue | undefined;
   bus?: EventBus | undefined;
+  publicOrigin?: string | undefined;
 };
 
 export async function createServer(
@@ -38,12 +40,14 @@ export async function createServer(
     routerOptions: { ignoreTrailingSlash: true },
   });
 
-  registerSecurity(app, {
+  const security: SecurityOptions = {
     port: options.port,
     token: options.token,
     authEnabled: options.authEnabled,
-    getPort: options.getPort,
-  });
+  };
+  if (options.getPort) security.getPort = options.getPort;
+  if (options.publicOrigin) security.publicOrigin = options.publicOrigin;
+  registerSecurity(app, security);
 
   app.get("/api/health", async () => ({
     ok: true,
@@ -92,6 +96,10 @@ export async function createServer(
   }
 
   const sqlite = options.sqlite;
+  if (options.db) {
+    registerHostedRoutes(app, { db: options.db });
+  }
+
   if (options.db && sqlite) {
     registerDashboardRoutes(app, {
       db: options.db,

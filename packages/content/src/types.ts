@@ -1,5 +1,8 @@
 import type { Action } from "@agentsean/actions";
 import type { GenerateFn, LlmConfig } from "@agentsean/llm";
+import type { EvidenceTier } from "@agentsean/measure";
+
+export type { EvidenceTier };
 
 export type ContentKind = "refresh" | "create";
 
@@ -70,8 +73,6 @@ export type PublishGateResult = {
   ok: boolean;
   checks: GateCheck[];
 };
-
-export type EvidenceTier = "A" | "B" | "C" | "D" | "E";
 
 export type DecayingPage = {
   url: string;

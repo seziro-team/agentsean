@@ -73,20 +73,39 @@ export async function startDaemon(options: BootOptions = {}): Promise<RunningDae
   });
 
   const bound = { port };
-  const app = await createServer({
-    host,
-    port,
-    token: tokenValue,
-    authEnabled: true,
-    seanHome,
-    getPort: () => bound.port,
-    db,
-    sqlite,
-    store,
-    pending,
-    queue,
-    bus,
-  });
+  const publicOrigin = process.env["SEAN_PUBLIC_ORIGIN"]?.trim();
+  const app = await createServer(
+    publicOrigin
+      ? {
+          host,
+          port,
+          token: tokenValue,
+          authEnabled: true,
+          seanHome,
+          getPort: () => bound.port,
+          db,
+          sqlite,
+          store,
+          pending,
+          queue,
+          bus,
+          publicOrigin,
+        }
+      : {
+          host,
+          port,
+          token: tokenValue,
+          authEnabled: true,
+          seanHome,
+          getPort: () => bound.port,
+          db,
+          sqlite,
+          store,
+          pending,
+          queue,
+          bus,
+        },
+  );
 
   try {
     await app.listen({ host, port, listenTextResolver: () => "" });

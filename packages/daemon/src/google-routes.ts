@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import type { SqliteDatabase } from "@agentsean/db";
-import { googleChangepoints, gscConnections, ga4Connections, gscGa4Reconciliation, sites } from "@agentsean/db";
+import { googleChangepoints, gscConnections, ga4Connections, gscGa4Reconciliation, reconciliationWaterfall, sites } from "@agentsean/db";
 import type { CredentialStore } from "@agentsean/credentials";
 import {
   bindProperties,
@@ -276,6 +276,30 @@ export function registerGoogleRoutes(app: FastifyInstance, opts: GoogleRouteOpti
       .where(eq(gscGa4Reconciliation.siteId, site.id))
       .all();
     return { rows };
+  });
+
+  app.get("/api/google/waterfall", async () => {
+    const site = opts.db.select().from(sites).all()[0];
+    if (!site) return { rows: [] };
+    const rows = opts.db
+      .select()
+      .from(reconciliationWaterfall)
+      .where(eq(reconciliationWaterfall.siteId, site.id))
+      .all();
+    return {
+      rows: rows.map((r) => ({
+        windowStart: r.windowStart,
+        windowEnd: r.windowEnd,
+        gscClicks: r.gscClicks,
+        ga4OrganicSessions: r.ga4OrganicSessions,
+        residual: r.residual,
+        residualPct: r.residualPct,
+        anonymizedQueryShare: r.anonymizedQueryShare,
+        euInvisibleShare: r.euInvisibleShare,
+        causes: JSON.parse(r.causesJson) as unknown[],
+        notes: r.notes,
+      })),
+    };
   });
 
   app.get("/api/google/incidents", async () => {

@@ -43,6 +43,31 @@ describe("git adapter", () => {
     expect(file).toBe(path.join(dir, "app/page.tsx"));
   });
 
+  it("resolves Astro, Hugo, Jekyll, and Docusaurus files", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sean-fw-"));
+    dirs.push(dir);
+    fs.mkdirSync(path.join(dir, "src/pages"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "content"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "docs"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "_posts"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "src/pages/about.astro"), "<title>Astro</title>");
+    expect(resolvePageFile(dir, "https://example.com/about")).toBe(
+      path.join(dir, "src/pages/about.astro"),
+    );
+    fs.writeFileSync(path.join(dir, "content/guide.md"), "---\ntitle: Hugo\n---\n");
+    expect(resolvePageFile(dir, "https://example.com/guide")).toBe(
+      path.join(dir, "content/guide.md"),
+    );
+    fs.writeFileSync(path.join(dir, "docs/intro.md"), "# Docusaurus");
+    expect(resolvePageFile(dir, "https://example.com/intro")).toBe(
+      path.join(dir, "docs/intro.md"),
+    );
+    fs.writeFileSync(path.join(dir, "_posts/hello.md"), "---\ntitle: Jekyll\n---\n");
+    expect(resolvePageFile(dir, "https://example.com/hello")).toBe(
+      path.join(dir, "_posts/hello.md"),
+    );
+  });
+
   it("commits a title rewrite, verifies, and reverts from the shadow ledger", async () => {
     const dir = initNextRepo();
     const prs: unknown[] = [];
