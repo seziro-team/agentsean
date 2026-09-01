@@ -276,6 +276,16 @@ export type Database = {
         Args: Record<never, never>;
         Returns: boolean;
       };
+      /** Atomic single-use pairing burn. See migration 0003. */
+      redeem_daemon_pairing: {
+        Args: { p_code_hash: string; p_session_token_hash: string };
+        Returns: { id: string; tenant_id: string; session_id: string }[];
+      };
+      /** Sweeps pending pairings past their expiry. Returns the count. */
+      expire_daemon_pairings: {
+        Args: Record<never, never>;
+        Returns: number;
+      };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;
