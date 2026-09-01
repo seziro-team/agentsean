@@ -87,8 +87,18 @@ function markdownToHtml(md: string): string {
 }
 
 export function titleInSource(source: string): string | null {
-  const html = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(source);
-  if (html?.[1]) return html[1].trim();
+  // Same linear `<title>` reader as TITLE_PATTERNS above: negated-close inner
+  // plus a `|$` close fallback. The lazy `[\s\S]*?` this replaced rescanned to
+  // end-of-input from every `<title` start on unterminated input (measured
+  // ~7s at 80k repetitions of `<title>`, ~6ms after) — O(n^2). The source can
+  // be a fetched file, so it must be linear (js/polynomial-redos). The close
+  // `</title[^>]*>` also tolerates attributes on the end tag the way a parser
+  // does, so `</title >` and `</title foo=bar>` are read as closes rather than
+  // leaving the title unmatched (js/bad-tag-filter) — matching line 13.
+  const html = /<title\b[^>]*>((?:[^<]|<(?!\/title[\s>]))*)(?:<\/title[^>]*>|$)/i.exec(
+    source,
+  );
+  if (html?.[1]?.trim()) return html[1].trim();
   const def = /title:\s*\{[^{}]*default:\s*(["'`])([\s\S]*?)\1/.exec(source);
   if (def?.[2]) return def[2];
   const simple = /title:\s*(["'`])([\s\S]*?)\1/.exec(source);
