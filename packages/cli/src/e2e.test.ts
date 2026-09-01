@@ -68,4 +68,75 @@ describe("cli e2e against a live daemon", () => {
     expect(parsed.port).toBe(running.port);
     expect(parsed.health?.ok).toBe(true);
   });
+
+  it("serves the local Google connect page from the daemon", async () => {
+    home = tmpHome();
+    running = await startDaemon({
+      host: "127.0.0.1",
+      port: 0,
+      seanHome: home,
+      registerSignals: false,
+    });
+    const res = await fetch(`http://127.0.0.1:${running.port}/connect`, {
+      headers: { Host: `127.0.0.1:${running.port}` },
+    });
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("Connect Google");
+    expect(html).toContain("Under two minutes");
+  });
+
+  it("serves the activity dashboard with a revert control", async () => {
+    home = tmpHome();
+    running = await startDaemon({
+      host: "127.0.0.1",
+      port: 0,
+      seanHome: home,
+      registerSignals: false,
+    });
+    const res = await fetch(`http://127.0.0.1:${running.port}/activity`, {
+      headers: { Host: `127.0.0.1:${running.port}` },
+    });
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("Activity");
+    expect(html).toContain("One click reverts it");
+    expect(html).toContain("/api/changes/");
+  });
+
+  it("serves the dashboard shell on GET / with no CORS", async () => {
+    home = tmpHome();
+    running = await startDaemon({
+      host: "127.0.0.1",
+      port: 0,
+      seanHome: home,
+      registerSignals: false,
+    });
+    const res = await fetch(`http://127.0.0.1:${running.port}/`, {
+      headers: { Host: `127.0.0.1:${running.port}` },
+    });
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("Agent Sean");
+    expect(res.headers.get("access-control-allow-origin")).toBeNull();
+  });
+
+  it("freeze writes HALT and status reports it", async () => {
+    home = tmpHome();
+    const frozen = await captureRun(["node", "sean", "freeze", "--json", "--home", home]);
+    expect(frozen.code).toBe(0);
+    expect(JSON.parse(frozen.out).halted).toBe(true);
+    running = await startDaemon({
+      host: "127.0.0.1",
+      port: 0,
+      seanHome: home,
+      registerSignals: false,
+    });
+    const health = await fetch(`http://127.0.0.1:${running.port}/api/health`, {
+      headers: { Host: `127.0.0.1:${running.port}` },
+    });
+    expect((await health.json()).halted).toBe(true);
+    const thawed = await captureRun(["node", "sean", "unfreeze", "--json", "--home", home]);
+    expect(JSON.parse(thawed.out).halted).toBe(false);
+  });
 });

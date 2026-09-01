@@ -26,8 +26,16 @@
     "node": ">=22.19.0"
   },
   "dependencies": {
+    "@agentsean/actions": "workspace:*",
+    "@agentsean/adapter-git": "workspace:*",
+    "@agentsean/analyzers": "workspace:*",
     "@agentsean/credentials": "workspace:*",
+    "@agentsean/crawler": "workspace:*",
+    "@agentsean/dashboard": "workspace:*",
     "@agentsean/db": "workspace:*",
+    "@agentsean/google": "workspace:*",
+    "@agentsean/scheduler": "workspace:*",
+    "drizzle-orm": "0.45.2",
     "fastify": "5.12.1"
   },
   "devDependencies": {

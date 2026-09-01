@@ -17,7 +17,9 @@ export {
   dbPath,
   haltPath,
   isHalted,
+  setHalted,
   TOKEN_ACCOUNT,
 } from "./paths.js";
 export { readPid, writePid, removePid, isPidAlive, type PidInfo } from "./pid.js";
 export { VERSION } from "./version.js";
+export { loadOrCreateToken, openDaemonStore, tokensEqual } from "./token.js";

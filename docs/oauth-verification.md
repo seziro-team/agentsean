@@ -25,8 +25,13 @@ App type for the OSS daemon: **Desktop app** + **Web application**.
   forbids it verbatim.
 
 Self-hosters who do not want our broker create their own Cloud project. That
-escape hatch is documented in Phase 2; the verification we submit is for the
-first-party broker.
+escape hatch is documented in [`docs/google.md`](google.md); the verification
+we submit is for the first-party broker.
+
+The broker is **stateless**. It holds `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+in the hosted environment only, encrypts the refresh token with a wrap key the
+local daemon generated, and 302s to `http://127.0.0.1:<port>/oauth/callback`.
+The hosted origin never fetches the daemon.
 
 ## Full 12-month scope set — declare at once
 

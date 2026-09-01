@@ -1,0 +1,9 @@
+{
+  "gsc.searchAnalytics": { "qpm": 1200, "rowLimitMax": 25000, "rowsPerDayPerType": 50000 },
+  "gsc.urlInspection": { "qpdPerSite": 2000, "qpmPerSite": 600 },
+  "gsc.other": { "qps": 20, "qpm": 200 },
+  "ga4.data": { "tokensPerHourProjectProperty": 14000, "tokensPerDayProperty": 200000, "maxRows": 250000 },
+  "psi": { "qpd": 25000, "qpm": 240 },
+  "crux": { "qpm": 150, "purchasable": false },
+  "indexing": { "qpd": 200, "allowedTypes": ["JobPosting", "BroadcastEvent"] }
+}

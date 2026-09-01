@@ -4,11 +4,17 @@ import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as sqliteSchema from "./sqlite/schema.js";
 import { SQLITE_INIT_SQL } from "./sqlite/init-sql.js";
+import { backfillFindingsFts } from "./fts.js";
 
 export type SqliteDatabase = ReturnType<typeof openSqlite>["db"];
 
 export function applySqliteSchema(sqlite: Database.Database): void {
   sqlite.exec(SQLITE_INIT_SQL);
+  try {
+    backfillFindingsFts(sqlite);
+  } catch {
+    // FTS5 is optional on exotic builds; search falls back to LIKE.
+  }
 }
 
 export function openSqlite(

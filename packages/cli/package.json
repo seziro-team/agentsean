@@ -23,7 +23,14 @@
     "start": "node dist/bin.js"
   },
   "dependencies": {
-    "@agentsean/daemon": "workspace:*"
+    "@agentsean/actions": "workspace:*",
+    "@agentsean/adapter-git": "workspace:*",
+    "@agentsean/analyzers": "workspace:*",
+    "@agentsean/crawler": "workspace:*",
+    "@agentsean/daemon": "workspace:*",
+    "@agentsean/db": "workspace:*",
+    "@agentsean/google": "workspace:*",
+    "drizzle-orm": "0.45.2"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

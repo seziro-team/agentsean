@@ -3,6 +3,11 @@ import { emit, emitError } from "./output.js";
 import { startCommand } from "./commands/start.js";
 import { stopCommand } from "./commands/stop.js";
 import { statusCommand } from "./commands/status.js";
+import { auditCommand } from "./commands/audit.js";
+import { connectCommand } from "./commands/connect.js";
+import { applyCommand } from "./commands/apply.js";
+import { revertCommand } from "./commands/revert.js";
+import { freezeCommand } from "./commands/freeze.js";
 
 const VERSION = "0.0.0";
 
@@ -29,7 +34,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     emitError(
       args.json,
       { error: "missing_command" },
-      "Missing command. Try `sean start`, `sean stop`, or `sean status`.\n\n" + HELP,
+      "Missing command. Try `sean start`, `sean stop`, `sean status`, `sean audit <url>`, `sean connect google`, `sean apply --repo ./site`, `sean revert <id>`, or `sean freeze`.\n\n" + HELP,
     );
     return 2;
   }
@@ -47,6 +52,43 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       return stopCommand({ json: args.json, home: args.home });
     case "status":
       return statusCommand({ json: args.json, home: args.home });
+    case "audit":
+      return auditCommand({
+        json: args.json,
+        target: args.target,
+        home: args.home,
+        maxPages: args.maxPages,
+        concurrency: args.concurrency,
+        render: args.render,
+      });
+    case "connect":
+      return connectCommand({
+        json: args.json,
+        home: args.home,
+        provider: args.provider,
+        target: args.target,
+        byo: args.byo,
+        credentialsPath: args.credentialsPath,
+        apiKey: args.apiKey,
+      });
+    case "apply":
+      return applyCommand({
+        json: args.json,
+        home: args.home,
+        target: args.target,
+        repo: args.repo,
+        dryRun: args.dryRun,
+      });
+    case "revert":
+      return revertCommand({
+        json: args.json,
+        home: args.home,
+        changeId: args.target,
+      });
+    case "freeze":
+      return freezeCommand({ json: args.json, home: args.home, off: args.off });
+    case "unfreeze":
+      return freezeCommand({ json: args.json, home: args.home, off: true });
     default:
       return 2;
   }

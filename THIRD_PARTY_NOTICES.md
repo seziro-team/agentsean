@@ -25,9 +25,16 @@ Selected OpenSEO TypeScript modules will be adapted or copied under MIT:
 | DataForSEO wrappers | ADAPT behind our provider interface | Phase 6 |
 | `.agents/skills/**` | ADAPT into playbooks | Phase 5 |
 
-**Phase 0 ships none of that code.** When a module is ported, the adapted file
-will carry a per-file header naming OpenSEO and Ben Senescu, and this table
-will gain a "shipped in" commit link.
+Adapted in this tree:
+
+| Module | Treatment | Shipped in |
+| --- | --- | --- |
+| `src/shared/audit-issues.ts` | ADAPT — descriptor shape (title, explanation, howToFix) remapped onto Sean check IDs | `packages/analyzers/src/openseo-seed.ts` |
+| `src/server/lib/gscErrors.ts`, `gscClient.ts`, `src/server/features/gsc/searchAnalytics.ts` | ADAPT — error taxonomy, sites.list / searchAnalytics / URL Inspection; Workers and Better Auth stripped; rowLimit 25,000 | `packages/google/src/errors.ts`, `gsc.ts` |
+| `src/server/lib/ga4Errors.ts`, `ga4Client.ts` | ADAPT — Admin + Data API clients, sparse-response handling | `packages/google/src/errors.ts`, `ga4.ts` |
+
+When a module is ported, the adapted file carries a per-file header naming
+OpenSEO and Ben Senescu.
 
 The MIT license text for OpenSEO is reproduced in
 `reference/open-seo/LICENSE` in development checkouts; that tree is not
@@ -46,5 +53,10 @@ on the npm registry. The notable security-sensitive ones:
 | `drizzle-orm` | schema / queries | Apache-2.0 |
 | `fastify` | daemon HTTP | MIT |
 | `@noble/ciphers` | encrypted-file fallback | MIT |
+| `undici` | crawler HTTP | MIT |
+| `cheerio` / `htmlparser2` | HTML parse (htmlparser2 mode) | MIT |
+| `linkedom` | spec-critical DOM | MIT |
+| `saxes` | sitemap SAX | MIT |
+| `playwright` | optional adaptive JS rendering | Apache-2.0 |
 
 `keytar` is **not** a dependency and must not be added (archived).

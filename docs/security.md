@@ -39,7 +39,22 @@ exposed instances.
 require a token. That is so `sean status` works without printing secrets. It
 returns process liveness only — never credentials, never site data.
 
-## Kill switch (stub in Phase 0)
+## Kill switch
 
-`~/.sean/HALT` (or `SEAN_HALT=1`) is reserved. Phase 4 wires it to halt all
-writes. The path is defined now so later code has one place to look.
+`~/.sean/HALT` (or `SEAN_HALT=1`) is checked by the Action validator and the
+scheduler before every write. `sean freeze` / `sean unfreeze` and the dashboard
+Settings kill switch write or remove that file. It survives restart.
+
+## Realtime
+
+Exactly one SSE stream per tab at `GET /api/events`. It emits invalidation
+keys (`findings`, `changes`, `jobs`, …). The stream requires the session
+cookie or token — it is not a second anonymous surface. Two streams would hit
+the HTTP/1.1 six-connection limit on plain-HTTP localhost.
+
+## Action validator
+
+Writes go through `packages/actions`: closed-schema `Action` objects, a
+15-check deterministic reference monitor, and an executor that snapshots,
+applies, verifies by re-reading, and records a revertible change. The LLM
+never holds credentials. See [`actions.md`](actions.md).

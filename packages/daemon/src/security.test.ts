@@ -28,6 +28,18 @@ describe("security middleware", () => {
     await server.close();
   });
 
+  it("returns 403 for Host: evil.com on the dashboard shell", async () => {
+    const server = await app();
+    const res = await server.inject({
+      method: "GET",
+      url: "/",
+      headers: { host: "evil.com" },
+    });
+    expect(res.statusCode).toBe(403);
+    expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+    await server.close();
+  });
+
   it("returns 200 for Host: 127.0.0.1:7777 on health", async () => {
     const server = await app();
     const res = await server.inject({
@@ -54,6 +66,21 @@ describe("security middleware", () => {
     });
     expect(res.statusCode).toBe(403);
     expect(res.json()).toEqual({ error: "forbidden_origin" });
+    await server.close();
+  });
+
+  it("allows GET /oauth/callback from Google (RFC 8252 loopback)", async () => {
+    const server = await app();
+    const res = await server.inject({
+      method: "GET",
+      url: "/oauth/callback?error=access_denied",
+      headers: {
+        host: "127.0.0.1:7777",
+        origin: "https://accounts.google.com",
+        "sec-fetch-site": "cross-site",
+      },
+    });
+    expect(res.statusCode).not.toBe(403);
     await server.close();
   });
 

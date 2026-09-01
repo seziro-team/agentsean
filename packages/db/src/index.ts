@@ -1,5 +1,16 @@
 export { getDatabaseProvider, type DatabaseProvider } from "./provider.js";
-export { CORE_TABLES, type CoreTable } from "./tables.js";
+export {
+  CORE_TABLES,
+  GOOGLE_TABLES,
+  ACTION_TABLES,
+  DASHBOARD_TABLES,
+  ALL_TABLES,
+  type CoreTable,
+  type GoogleTable,
+  type ActionTable,
+  type DashboardTable,
+  type AppTable,
+} from "./tables.js";
 export {
   sites,
   crawls,
@@ -14,6 +25,26 @@ export {
   jobs,
   settings,
   auditLog,
+  gscConnections,
+  ga4Connections,
+  gscDaily,
+  gscPageDaily,
+  gscQueryDaily,
+  gscUrlInspections,
+  ga4Daily,
+  ga4LandingDaily,
+  cruxRecords,
+  psiAudits,
+  googleIncidents,
+  googleChangepoints,
+  gscGa4Reconciliation,
+  siteVerifications,
+  quotaUsage,
+  adapterConnections,
+  urlAllowlist,
+  entitySightings,
+  twoKeyApprovals,
+  reports,
   sqliteSchema,
   pgSchema,
 } from "./schema.js";
@@ -23,3 +54,8 @@ export {
   assertDbNotWorldReadable,
   type SqliteDatabase,
 } from "./client.js";
+export {
+  searchFindingsFts,
+  type FindingSearchHit,
+  type FindingSearchQuery,
+} from "./fts.js";

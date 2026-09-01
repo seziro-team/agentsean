@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { openSqlite } from "./client.js";
-import { CORE_TABLES } from "./tables.js";
+import { ALL_TABLES } from "./tables.js";
 import { sites, settings } from "./sqlite/schema.js";
 
 describe("sqlite client", () => {
@@ -11,8 +11,10 @@ describe("sqlite client", () => {
     const names = sqlite
       .prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`)
       .all() as { name: string }[];
-    const tableNames = names.map((r) => r.name).filter((n) => !n.startsWith("sqlite_"));
-    expect(tableNames.toSorted()).toEqual([...CORE_TABLES].toSorted());
+    const tableNames = names
+      .map((r) => r.name)
+      .filter((n) => !n.startsWith("sqlite_") && !n.startsWith("findings_fts"));
+    expect(tableNames.toSorted()).toEqual([...ALL_TABLES].toSorted());
 
     const now = new Date().toISOString();
     const id = randomUUID();

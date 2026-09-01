@@ -1,6 +1,7 @@
 import {
   defaultSeanHome,
   isPidAlive,
+  isHalted,
   readPid,
   DEFAULT_HOST,
   DEFAULT_PORT,
@@ -43,9 +44,10 @@ export async function statusCommand(opts: {
       pid: info.pid,
       host,
       port,
+      halted: isHalted(home),
       health,
     },
-    `Sean is running (pid ${info.pid}) on http://${host}:${port}`,
+    `Sean is running (pid ${info.pid}) on http://${host}:${port}${isHalted(home) ? " (frozen)" : ""}`,
   );
   return 0;
 }

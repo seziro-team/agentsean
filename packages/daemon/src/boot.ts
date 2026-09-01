@@ -1,4 +1,7 @@
+import { createHash } from "node:crypto";
 import { openSqlite, assertDbNotWorldReadable } from "@agentsean/db";
+import { createPendingStore } from "@agentsean/google";
+import { createHandlers, createSqliteQueue, startLoop } from "@agentsean/scheduler";
 import { assertBindAllowed, BindError } from "./bind.js";
 import {
   dbPath,
@@ -6,10 +9,12 @@ import {
   DEFAULT_HOST,
   DEFAULT_PORT,
   ensureSeanHome,
+  isHalted,
 } from "./paths.js";
 import { isPidAlive, readPid, removePid, writePid } from "./pid.js";
 import { createServer } from "./server.js";
 import { loadOrCreateToken, openDaemonStore } from "./token.js";
+import { createEventBus } from "./events.js";
 
 export type BootOptions = {
   host?: string | undefined;
@@ -46,17 +51,41 @@ export async function startDaemon(options: BootOptions = {}): Promise<RunningDae
   const store = openDaemonStore(seanHome);
   const token = await loadOrCreateToken(store);
   const dbFile = dbPath(seanHome);
-  const { sqlite } = openSqlite(dbFile);
+  const { sqlite, db } = openSqlite(dbFile);
   assertDbNotWorldReadable(dbFile);
+  const pending = createPendingStore();
+  const bus = createEventBus();
+  const queue = createSqliteQueue(db);
+  await queue.recoverStale();
+  const tokenValue = token.unwrap();
+  const handlers = createHandlers({
+    db,
+    store,
+    approvalKey: createHash("sha256").update(tokenValue).digest(),
+  });
+  const stopLoop = startLoop(queue, handlers, {
+    db,
+    halted: () => isHalted(seanHome),
+    intervalMs: 15_000,
+    onTick: (result) => {
+      if (result.ran > 0 || result.recovered > 0) bus.emit("jobs");
+    },
+  });
 
   const bound = { port };
   const app = await createServer({
     host,
     port,
-    token: token.unwrap(),
+    token: tokenValue,
     authEnabled: true,
     seanHome,
     getPort: () => bound.port,
+    db,
+    sqlite,
+    store,
+    pending,
+    queue,
+    bus,
   });
 
   try {
@@ -79,6 +108,7 @@ export async function startDaemon(options: BootOptions = {}): Promise<RunningDae
   });
 
   const close = async () => {
+    await stopLoop();
     await app.close();
     sqlite.close();
     const current = readPid(seanHome);

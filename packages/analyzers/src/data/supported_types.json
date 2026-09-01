@@ -1,0 +1,71 @@
+{
+  "version": "google-search-gallery-2026-08-31",
+  "fetched": "2026-08-31",
+  "supported": [
+    "Article",
+    "NewsArticle",
+    "BlogPosting",
+    "BreadcrumbList",
+    "ItemList",
+    "Course",
+    "Dataset",
+    "DiscussionForumPosting",
+    "Event",
+    "JobPosting",
+    "LocalBusiness",
+    "Movie",
+    "Organization",
+    "Product",
+    "Offer",
+    "ProfilePage",
+    "QAPage",
+    "Question",
+    "Recipe",
+    "SoftwareApplication",
+    "SpeakableSpecification",
+    "VideoObject",
+    "VacationRental",
+    "Restaurant"
+  ],
+  "deprecated": {
+    "FAQPage": "2026-05-07 FAQ rich results no longer appear in Google Search",
+    "HowTo": "Removed from rich results (2023)",
+    "SpecialAnnouncement": "Retired June 2025",
+    "ClaimReview": "Retired June 2025",
+    "EstimatedSalary": "Retired June 2025"
+  },
+  "features": {
+    "Article": {
+      "required": ["headline", "image", "datePublished", "author"],
+      "recommended": ["dateModified", "publisher"]
+    },
+    "Product": {
+      "required": ["name", "image", "offers"],
+      "recommended": ["description", "sku", "brand", "aggregateRating"]
+    },
+    "BreadcrumbList": {
+      "required": ["itemListElement"],
+      "recommended": []
+    },
+    "Organization": {
+      "required": ["name"],
+      "recommended": ["logo", "url", "sameAs"]
+    },
+    "Event": {
+      "required": ["name", "startDate", "location"],
+      "recommended": ["image", "description", "endDate"]
+    },
+    "JobPosting": {
+      "required": ["title", "description", "datePosted", "hiringOrganization"],
+      "recommended": ["jobLocation", "baseSalary"]
+    },
+    "Recipe": {
+      "required": ["name", "image"],
+      "recommended": ["author", "datePublished", "prepTime", "recipeIngredient"]
+    },
+    "LocalBusiness": {
+      "required": ["name", "address"],
+      "recommended": ["telephone", "openingHours", "geo"]
+    }
+  }
+}

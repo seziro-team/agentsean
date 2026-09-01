@@ -43,3 +43,12 @@ export function isHalted(home: string): boolean {
   if (process.env["SEAN_HALT"] === "1") return true;
   return fs.existsSync(haltPath(home));
 }
+
+export function setHalted(home: string, halted: boolean): void {
+  const file = haltPath(ensureSeanHome(home));
+  if (halted) {
+    fs.writeFileSync(file, `halted ${new Date().toISOString()}\n`, { mode: 0o600 });
+    return;
+  }
+  if (fs.existsSync(file)) fs.unlinkSync(file);
+}

@@ -1,7 +1,17 @@
 import Fastify, { type FastifyInstance } from "fastify";
+import type { SqliteDatabase } from "@agentsean/db";
+import { searchFindingsFts } from "@agentsean/db";
+import type { CredentialStore } from "@agentsean/credentials";
+import type { PendingStore } from "@agentsean/google";
+import type { JobQueue } from "@agentsean/scheduler";
 import { VERSION } from "./version.js";
 import { registerSecurity, TOKEN_COOKIE } from "./security.js";
 import { isHalted } from "./paths.js";
+import { registerGoogleRoutes } from "./google-routes.js";
+import { registerActionRoutes } from "./action-routes.js";
+import { registerDashboardRoutes } from "./dashboard-routes.js";
+import { registerSpa } from "./spa.js";
+import { createEventBus, type EventBus } from "./events.js";
 
 export type CreateServerOptions = {
   host: string;
@@ -10,6 +20,13 @@ export type CreateServerOptions = {
   authEnabled: boolean;
   seanHome: string;
   getPort?: (() => number) | undefined;
+  db?: SqliteDatabase | undefined;
+  sqlite?: Parameters<typeof searchFindingsFts>[0] | undefined;
+  store?: CredentialStore | undefined;
+  pending?: PendingStore | undefined;
+  fetch?: typeof fetch | undefined;
+  queue?: JobQueue | undefined;
+  bus?: EventBus | undefined;
 };
 
 export async function createServer(
@@ -36,8 +53,7 @@ export async function createServer(
     halted: isHalted(options.seanHome),
   }));
 
-  // Sets the SameSite=Strict cookie so a later dashboard can use it.
-  // Token still required on mutating routes via header or cookie.
+  // Sets the SameSite=Strict cookie so the dashboard EventSource can auth.
   app.get("/api/session", async (req, reply) => {
     const presented =
       (typeof req.headers["x-sean-token"] === "string" &&
@@ -55,6 +71,39 @@ export async function createServer(
     );
     return { ok: true };
   });
+
+  if (options.db && options.store && options.pending) {
+    registerGoogleRoutes(app, {
+      db: options.db,
+      store: options.store,
+      pending: options.pending,
+      getPort: options.getPort ?? (() => options.port),
+      fetch: options.fetch,
+    });
+  }
+
+  if (options.db) {
+    registerActionRoutes(app, {
+      db: options.db,
+      seanHome: options.seanHome,
+      token: options.token,
+      gitFetch: options.fetch,
+    });
+  }
+
+  const sqlite = options.sqlite;
+  if (options.db && sqlite) {
+    registerDashboardRoutes(app, {
+      db: options.db,
+      sqlite,
+      seanHome: options.seanHome,
+      token: options.token,
+      bus: options.bus ?? createEventBus(),
+      queue: options.queue,
+    });
+  }
+
+  registerSpa(app);
 
   return app;
 }

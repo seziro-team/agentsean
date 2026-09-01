@@ -7,7 +7,9 @@ import {
   DEFAULT_PORT,
   ensureSeanHome,
   isPidAlive,
+  loadOrCreateToken,
   logPath,
+  openDaemonStore,
   pidPath,
   readPid,
   startDaemon,
@@ -29,25 +31,34 @@ export async function startCommand(opts: {
   host?: string | undefined;
   port?: number | undefined;
   home?: string | undefined;
+  quiet?: boolean | undefined;
 }): Promise<number> {
   const host = opts.host ?? DEFAULT_HOST;
   const port = opts.port ?? DEFAULT_PORT;
   const home = ensureSeanHome(opts.home ?? defaultSeanHome());
 
   const existing = readPid(home);
+  const store = openDaemonStore(home);
+  const token = await loadOrCreateToken(store);
+  const dashFor = (h: string, p: number) =>
+    `http://${h}:${p}/#token=${token.unwrap()}`;
+
   if (existing && isPidAlive(existing.pid)) {
-    emit(
-      opts.json,
-      {
-        ok: true,
-        command: "start",
-        alreadyRunning: true,
-        pid: existing.pid,
-        host: existing.host,
-        port: existing.port,
-      },
-      `Sean is already running (pid ${existing.pid}) on http://${existing.host}:${existing.port}`,
-    );
+    if (!opts.quiet) {
+      emit(
+        opts.json,
+        {
+          ok: true,
+          command: "start",
+          alreadyRunning: true,
+          pid: existing.pid,
+          host: existing.host,
+          port: existing.port,
+          dashboard: dashFor(existing.host, existing.port),
+        },
+        `Sean is already running (pid ${existing.pid}) on http://${existing.host}:${existing.port}\nDashboard: ${dashFor(existing.host, existing.port)}`,
+      );
+    }
     return 0;
   }
 
@@ -62,8 +73,9 @@ export async function startCommand(opts: {
         host: running.host,
         port: running.port,
         health: `http://${running.host}:${running.port}/api/health`,
+        dashboard: dashFor(running.host, running.port),
       },
-      `Sean started on http://${running.host}:${running.port} (pid ${running.pid})\nHealth: http://${running.host}:${running.port}/api/health`,
+      `Sean started on http://${running.host}:${running.port} (pid ${running.pid})\nDashboard: ${dashFor(running.host, running.port)}\nHealth: http://${running.host}:${running.port}/api/health`,
     );
     await new Promise(() => {
       /* run until signal */
@@ -90,18 +102,21 @@ export async function startCommand(opts: {
     await sleep(100);
     const info = readPid(home);
     if (info && isPidAlive(info.pid)) {
-      emit(
-        opts.json,
-        {
-          ok: true,
-          command: "start",
-          pid: info.pid,
-          host: info.host,
-          port: info.port,
-          health: `http://${info.host}:${info.port}/api/health`,
-        },
-        `Sean started on http://${info.host}:${info.port} (pid ${info.pid})`,
-      );
+      if (!opts.quiet) {
+        emit(
+          opts.json,
+          {
+            ok: true,
+            command: "start",
+            pid: info.pid,
+            host: info.host,
+            port: info.port,
+            health: `http://${info.host}:${info.port}/api/health`,
+            dashboard: dashFor(info.host, info.port),
+          },
+          `Sean started on http://${info.host}:${info.port} (pid ${info.pid})\nDashboard: ${dashFor(info.host, info.port)}`,
+        );
+      }
       return 0;
     }
     // If the child already died, don't keep waiting.

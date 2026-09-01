@@ -8,6 +8,12 @@ export const TOKEN_COOKIE = "sean_token";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
+function pathOnly(url: string): string {
+  const q = url.indexOf("?");
+  const path = q === -1 ? url : url.slice(0, q);
+  return path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
+}
+
 export type SecurityOptions = {
   port: number;
   token: string;
@@ -46,6 +52,12 @@ export function registerSecurity(
       return reply.code(403).send({ error: "forbidden_host" });
     }
 
+    const path = pathOnly(req.url);
+    // RFC 8252 loopback: Google / the broker 302 here. Host is still checked.
+    if (SAFE_METHODS.has(req.method.toUpperCase()) && path === "/oauth/callback") {
+      return;
+    }
+
     const origin = req.headers.origin;
     if (typeof origin === "string" && origin.length > 0) {
       if (!allowedOrigins(portOf()).has(origin)) {
@@ -59,7 +71,18 @@ export function registerSecurity(
     }
 
     const method = req.method.toUpperCase();
-    if (SAFE_METHODS.has(method)) return;
+    if (SAFE_METHODS.has(method)) {
+      if (path === "/api/events") {
+        if (!options.authEnabled) {
+          return reply.code(401).send({ error: "unauthorized" });
+        }
+        const presented = readToken(req);
+        if (!presented || !tokensEqual(presented, options.token)) {
+          return reply.code(401).send({ error: "unauthorized" });
+        }
+      }
+      return;
+    }
 
     const csrf = req.headers[CSRF_HEADER];
     if (csrf !== "1") {

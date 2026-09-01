@@ -10,9 +10,11 @@ the work — 24/7, on your real website.
 > WordPress, in Shopify, in your Git repo, at the edge — as a diff you can read
 > and revert, on a schedule you set, forever.
 
-**Status:** Phase 0 (foundations). The daemon boots, binds loopback, and refuses
-to start if you try to expose it without auth. Crawl, audit, and write-back land
-in later phases. See [`PLAN.md`](PLAN.md).
+**Status:** Phase 4 (daemon, dashboard, hardening). Point Sean at a URL for a
+scored audit with zero credentials, connect Google as an upgrade, then `sean
+apply --repo` to fix a title tag by opening a Git PR you can revert. The
+daemon runs unattended: weekly crawl, daily GSC, T1/T2 auto, T3 queued,
+`sean freeze` to halt writes. See [`PLAN.md`](PLAN.md).
 
 ## Install
 
@@ -27,11 +29,23 @@ auth. Remote access is via Tailscale Serve or a Cloudflare Tunnel — never by
 opening the port to the world.
 
 ```bash
+npx agentsean audit https://example.com --json
+npx agentsean connect google
+npx agentsean apply --repo ./my-next-app
+npx agentsean revert <changeId>
+npx agentsean freeze
 npx agentsean status --json
 npx agentsean stop
 ```
 
-Every command accepts `--json`.
+Every command accepts `--json`. Audit does not need the daemon or any
+credentials. Connect Google opens the local dashboard at
+`http://127.0.0.1:7777/connect` — a hosted page never talks to the daemon.
+Default metric is clicks (GSC impressions from 2025-05-13 to 2026-04-27 are
+contaminated). BYO Cloud project: `sean connect google --byo --credentials ./client_secret.json`.
+See [`docs/google.md`](docs/google.md). Action system:
+[`docs/actions.md`](docs/actions.md). Site Score and priority formulas:
+[`docs/site-score.md`](docs/site-score.md), [`docs/priority.md`](docs/priority.md).
 
 ## Repo
 
@@ -41,8 +55,15 @@ This is the canonical source for Agent Sean. The planned long-term home is
 
 ```
 packages/
-  cli/           # npx agentsean entrypoint
-  daemon/        # Fastify server, loopback bind, security middleware
+  cli/           # npx agentsean (start | stop | status | audit | connect | apply | revert | freeze)
+  daemon/        # Fastify, loopback bind, security middleware, SSE, SPA
+  dashboard/     # React + Vite SPA (same origin, no CORS)
+  scheduler/     # JobQueue (SQLite locally, pg-boss on Postgres), cadences
+  crawler/       # undici + cheerio + adaptive Playwright, resumable crawls
+  analyzers/     # 300+ check catalogue, site score, priority, schema.org
+  google/        # OAuth broker + BYO, GSC, GA4, PSI, CrUX, incidents, residual
+  actions/       # typed Action, 15-check validator, executor, shadow ledger
+  adapters/git/  # branch, commit, open PR, verify, revert
   db/            # Drizzle schema (SQLite local + Postgres hosted)
   credentials/   # OS keychain + encrypted-file fallback
   ee/            # commercial features (separate license)
@@ -69,7 +90,8 @@ MIT with attribution; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 The daemon is fail-closed. Host-header allowlisting, Origin / `Sec-Fetch-Site`
 checks, a CSRF custom header on mutating requests, a random token, and
-`SameSite=Strict` cookies are enforced before any feature code. Details:
-[`docs/security.md`](docs/security.md).
+`SameSite=Strict` cookies are enforced before any feature code. `sean freeze`
+halts every write. Details: [`docs/security.md`](docs/security.md),
+[`docs/daemon.md`](docs/daemon.md).
 
 If you find a vulnerability, see [`SECURITY.md`](SECURITY.md).

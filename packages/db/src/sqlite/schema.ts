@@ -288,3 +288,46 @@ export const auditLog = sqliteTable(
     index("audit_log_event_idx").on(t.event),
   ],
 );
+
+/** Immutable dashboard snapshots. The hash covers payload_json; body_html is derived. */
+export const reports = sqliteTable(
+  "reports",
+  {
+    id: text("id").primaryKey(),
+    siteId: text("site_id")
+      .notNull()
+      .references(() => sites.id, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull(),
+    title: text("title").notNull(),
+    bodyHtml: text("body_html").notNull(),
+    payloadJson: text("payload_json").notNull(),
+    hash: text("hash").notNull(),
+    whiteLabel: integer("white_label").notNull().default(0),
+  },
+  (t) => [index("reports_site_id_idx").on(t.siteId)],
+);
+
+export {
+  gscConnections,
+  ga4Connections,
+  gscDaily,
+  gscPageDaily,
+  gscQueryDaily,
+  gscUrlInspections,
+  ga4Daily,
+  ga4LandingDaily,
+  cruxRecords,
+  psiAudits,
+  googleIncidents,
+  googleChangepoints,
+  gscGa4Reconciliation,
+  siteVerifications,
+  quotaUsage,
+} from "./google.js";
+
+export {
+  adapterConnections,
+  urlAllowlist,
+  entitySightings,
+  twoKeyApprovals,
+} from "./actions.js";

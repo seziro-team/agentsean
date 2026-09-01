@@ -1,0 +1,40 @@
+{
+  "lighthouseMajor": 13,
+  "note": "Lighthouse 13 renamed performance audits to *-insight IDs. Store by major version; never hard-code in detectors.",
+  "insightIds": [
+    "cls-culprits-insight",
+    "document-latency-insight",
+    "dom-size-insight",
+    "duplicated-javascript-insight",
+    "font-display-insight",
+    "forced-reflow-insight",
+    "image-delivery-insight",
+    "interaction-to-next-paint-insight",
+    "lcp-discovery-insight",
+    "lcp-phases-insight",
+    "legacy-javascript-insight",
+    "network-dependency-tree-insight",
+    "render-blocking-insight",
+    "third-parties-insight",
+    "use-efficient-cache-lifetimes"
+  ],
+  "removed": [
+    "first-meaningful-paint",
+    "font-size",
+    "no-document-write",
+    "uses-passive-event-listeners",
+    "offscreen-images",
+    "preload-fonts",
+    "uses-rel-preload",
+    "third-party-facades"
+  ],
+  "checkMap": {
+    "PERF.LCP_IS_IMAGE_NO_PRELOAD": "lcp-discovery-insight",
+    "PERF.RENDER_BLOCKING": "render-blocking-insight",
+    "PERF.LEGACY_JS": "legacy-javascript-insight",
+    "PERF.DUPLICATE_JS": "duplicated-javascript-insight",
+    "PERF.DOM_SIZE": "dom-size-insight",
+    "PERF.THIRD_PARTY_BLOCKING": "third-parties-insight",
+    "PERF.FONT_NO_DISPLAY_SWAP": "font-display-insight"
+  }
+}

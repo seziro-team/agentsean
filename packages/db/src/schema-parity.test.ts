@@ -4,7 +4,13 @@ import { getTableConfig as getPgTableConfig } from "drizzle-orm/pg-core";
 import { describe, expect, it } from "vitest";
 import * as sqliteSchema from "./sqlite/schema.js";
 import * as pgSchema from "./pg/schema.js";
-import { CORE_TABLES } from "./tables.js";
+import {
+  ACTION_TABLES,
+  ALL_TABLES,
+  CORE_TABLES,
+  DASHBOARD_TABLES,
+  GOOGLE_TABLES,
+} from "./tables.js";
 
 type Dialect = "sqlite" | "pg";
 
@@ -101,8 +107,32 @@ const pgTables = tablesFrom(pgSchema);
 
 describe("schema parity", () => {
   it("defines every Phase 0 core table on SQLite", () => {
+    for (const name of CORE_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 2 google table on SQLite", () => {
+    for (const name of GOOGLE_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 3 action table on SQLite", () => {
+    for (const name of ACTION_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines every Phase 4 dashboard table on SQLite", () => {
+    for (const name of DASHBOARD_TABLES) {
+      expect(sqliteTables.has(name), name).toBe(true);
+    }
+  });
+
+  it("defines only known tables", () => {
     expect(sortStrings([...sqliteTables.keys()])).toEqual(
-      sortStrings([...CORE_TABLES]),
+      sortStrings([...ALL_TABLES]),
     );
   });
 

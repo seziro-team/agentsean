@@ -1,0 +1,38 @@
+{
+  "name": "@agentsean/crawler",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "@agentsean/db": "workspace:*",
+    "drizzle-orm": "0.45.2",
+    "cheerio": "1.2.0",
+    "htmlparser2": "12.0.0",
+    "linkedom": "0.18.13",
+    "parse5": "8.0.1",
+    "saxes": "6.0.0",
+    "undici": "8.10.1"
+  },
+  "optionalDependencies": {
+    "playwright": "1.62.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.11"
+  }
+}
