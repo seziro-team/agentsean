@@ -118,9 +118,9 @@ describe("parseArgs", () => {
   });
 
   it("parses signup and tenant", () => {
-    const a = parseArgs(["node", "sean", "signup", "agency", "--json"]);
+    const a = parseArgs(["node", "sean", "signup", "team", "--json"]);
     expect(a.command).toBe("signup");
-    expect(a.target).toBe("agency");
+    expect(a.target).toBe("team");
     const b = parseArgs(["node", "sean", "tenant", "abc"]);
     expect(b.command).toBe("tenant");
     expect(b.target).toBe("abc");

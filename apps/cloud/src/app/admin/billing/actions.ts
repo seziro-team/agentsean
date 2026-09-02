@@ -142,8 +142,8 @@ export async function sendTestWebhook(
   formData: FormData,
 ): Promise<BillingAdminState> {
   await requireSuperadmin();
-  const planRaw = String(formData.get("plan") ?? "cloud_pro");
-  const plan: PlanId = isPlanId(planRaw) ? planRaw : "cloud_pro";
+  const planRaw = String(formData.get("plan") ?? "team");
+  const plan: PlanId = isPlanId(planRaw) ? planRaw : "team";
   const provider = await getBillingProvider();
 
   const sample =

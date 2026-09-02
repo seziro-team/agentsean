@@ -21,7 +21,7 @@ export async function signupCommand(opts: {
     emitError(
       opts.json,
       { command: "signup", error: "unknown_plan" },
-      "Plan must be cloud_starter, cloud_pro, business, or agency.",
+      "Plan must be cloud_starter, team, or enterprise.",
     );
     return 2;
   }

@@ -5,6 +5,8 @@ import {
   CMS_WRITE_KINDS,
   NON_LLM_COGS_USD,
   PLANS,
+  PLAN_IDS,
+  monthlyPriceUsd,
   activateConnector,
   addTenantSite,
   allowTenantJob,
@@ -34,33 +36,52 @@ function db() {
 }
 
 describe("Phase 10 hosted tier", () => {
-  it("prices the locked ladder and keeps BYOK required", () => {
+  it("prices four tiers and keeps BYOK required", () => {
+    // Free, one site, a team, or a quote. The four-rung $9/$29/$79/$249 ladder
+    // made a buyer read four feature matrices to find their own box.
+    expect(PLAN_IDS).toEqual(["self_host", "cloud_starter", "team", "enterprise"]);
+
     expect(PLANS.self_host.priceUsdMonth).toBe(0);
     expect(PLANS.self_host.sites).toBe(Number.POSITIVE_INFINITY);
     expect(PLANS.cloud_starter.priceUsdMonth).toBe(9);
     expect(PLANS.cloud_starter.sites).toBe(1);
-    expect(PLANS.cloud_pro.priceUsdMonth).toBe(29);
-    expect(PLANS.business.priceUsdMonth).toBe(79);
-    expect(PLANS.business.sites).toBe(10);
-    expect(PLANS.agency.priceUsdMonth).toBe(249);
-    expect(PLANS.agency.sites).toBe(50);
+    expect(PLANS.team.priceUsdMonth).toBe(14.99);
+    expect(PLANS.team.billing).toBe("per_seat");
+    expect(PLANS.enterprise.billing).toBe("quote");
+
+    // Enterprise is quoted, never listed. A price here would leak into the
+    // pricing page, which must only ever say "talk to us".
+    expect(PLANS.enterprise.priceUsdMonth).toBe(0);
+
+    // Per-seat multiplies; flat does not.
+    expect(monthlyPriceUsd("team", 1)).toBe(14.99);
+    expect(monthlyPriceUsd("team", 5)).toBe(74.95);
+    expect(monthlyPriceUsd("team", 0)).toBe(14.99); // never bills zero seats
+    expect(monthlyPriceUsd("cloud_starter", 5)).toBe(9);
+
     expect(BYOK_REQUIRED).toBe(true);
     expect(NON_LLM_COGS_USD).toBe(2.29);
     expect(grossMargin(9)).toBeGreaterThan(0.7);
+    expect(grossMargin(14.99)).toBeGreaterThan(0.8);
+
     expect(hasFeature(PLANS.cloud_starter, "aiVisibility")).toBe(false);
-    expect(hasFeature(PLANS.cloud_pro, "aiVisibility")).toBe(true);
-    expect(hasFeature(PLANS.agency, "whiteLabel")).toBe(true);
+    expect(hasFeature(PLANS.team, "aiVisibility")).toBe(true);
+    expect(hasFeature(PLANS.team, "whiteLabel")).toBe(true);
+    expect(hasFeature(PLANS.team, "advancedAnalytics")).toBe(true);
+    // SSO stays an Enterprise conversation.
+    expect(hasFeature(PLANS.team, "sso")).toBe(false);
+    expect(hasFeature(PLANS.enterprise, "sso")).toBe(true);
   });
 
-  it("exit: paying customer signs up, adds 10 client sites, cost is visible", async () => {
+  it("exit: a Team customer signs up, adds 10 client sites, cost is visible", async () => {
     const { db: database, sqlite } = db();
     const signed = await signupTenant(database, {
       name: "Northwind Agency",
       email: "owner@northwind.test",
-      plan: "agency",
+      plan: "team",
     });
-    expect(signed.checkoutUrl).toContain("agency");
-    completeCheckout(database, { tenantId: signed.tenantId, plan: "agency" });
+    expect(signed.checkoutUrl).toContain("team");
+    completeCheckout(database, { tenantId: signed.tenantId, plan: "team" });
     const origins: string[] = [];
     for (let i = 0; i < 10; i++) {
       const origin = `https://client${i}.example`;
@@ -78,14 +99,15 @@ describe("Phase 10 hosted tier", () => {
         origin: "https://client-extra.example",
       }),
     ).not.toThrow();
-    const extras = 40;
-    for (let i = 0; i < extras - 1; i++) {
+    // Walk up to Team's 25-site ceiling.
+    const extras = 25 - 11;
+    for (let i = 0; i < extras; i++) {
       addTenantSite(database, {
         tenantId: signed.tenantId,
         origin: `https://more${i}.example`,
       });
     }
-    expect(tenantSiteCount(database, signed.tenantId)).toBe(50);
+    expect(tenantSiteCount(database, signed.tenantId)).toBe(25);
     expect(() =>
       addTenantSite(database, {
         tenantId: signed.tenantId,
@@ -95,9 +117,9 @@ describe("Phase 10 hosted tier", () => {
 
     reportArticleUsage(database, signed.tenantId, 2);
     const cost = tenantCostVisibility(database, signed.tenantId);
-    expect(cost.plan).toBe("agency");
-    expect(cost.sites).toBe(50);
-    expect(cost.siteCap).toBe(50);
+    expect(cost.plan).toBe("team");
+    expect(cost.sites).toBe(25);
+    expect(cost.siteCap).toBe(25);
     expect(cost.byok).toBe(true);
     expect(cost.articles).toBe(2);
     expect(cost.cogsUsd).toBeGreaterThanOrEqual(NON_LLM_COGS_USD);

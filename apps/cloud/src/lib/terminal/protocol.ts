@@ -1,3 +1,4 @@
+import { PLANS, isPlanId } from "../plans";
 /**
  * Terminal relay protocol.
  *
@@ -68,10 +69,12 @@ export function canForwardInput(opts: {
 
 /** Which plans may run an interactive (input-enabled) terminal. */
 export function planAllowsInteractiveTerminal(planId: string): boolean {
-  // Interactive attach is a power-user / operator capability; gate it to plans
-  // with API access (Business, Agency) and self-host. Read-only attach is
-  // available to everyone with a connected daemon.
-  return planId === "self_host" || planId === "business" || planId === "agency";
+  // Gate on the capability, not on a hardcoded list of plan names — a list has
+  // to be found and updated every time packaging changes, and missing one is a
+  // silent privilege change. Read-only attach stays available to anyone with a
+  // connected daemon.
+  if (!isPlanId(planId)) return false;
+  return PLANS[planId].apiAccess;
 }
 
 export function isTerminalMessage(value: unknown): value is TerminalMessage {

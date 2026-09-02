@@ -9,11 +9,12 @@ State as of 2026-09-02.
 | Public repo | [`seziro-team/agentsean`](https://github.com/seziro-team/agentsean) | AGPL-3.0, 20 topics, Discussions |
 | npm | [`agentsean`](https://www.npmjs.com/package/agentsean) + 25 `@agentsean/*` | `1.0.4`, verified by a clean-room `npx` install |
 | Release | [`v1.0.4`](https://github.com/seziro-team/agentsean/releases/tag/v1.0.4) | notes, install matrix |
-| Site | `agentsean.dev` (GitHub Pages) | deploy gated on an internal-link check |
+| Site | [`agentsean.dev`](https://agentsean.dev) | GitHub Pages; DNS live, deploy gated on a link check |
+| DNS + mail | Hostinger | apex → Pages; MX/SPF/DKIM/DMARC intact |
 | CI | Node 22/24 × Linux/macOS/Windows | green |
 | Security | CodeQL · Scorecard · dependency review · Dependabot | 0 open Dependabot alerts |
 | Supply chain | Actions + base image pinned by digest, workflow token read-only | branch protection on `main` |
-| **Billing** | Polar org `agentsean` | **active**, webhook live, 4 products |
+| **Billing** | Polar org `agentsean` | **active**, webhook live, Cloud + Team products |
 | Cloud control plane | `apps/cloud` | builds with an empty env; **not yet deployed** |
 
 `npx agentsean audit https://example.com` works from a cold cache with no
@@ -28,9 +29,11 @@ Polar organization `agentsean` (Prajura Consultancy Services), id
 | Plan | Product id | Price |
 | --- | --- | --- |
 | `cloud_starter` | `c1e5161e-82c8-4846-b9fb-4fe2c87d2be1` | $9/mo (+ ₹799/mo) |
-| `cloud_pro` | `bab6b78c-cf14-430f-ab9d-4a13d6032ebc` | $29/mo |
-| `business` | `346d58e1-ecfb-4791-9d3e-083599f88989` | $79/mo |
-| `agency` | `b7fba45b-14dc-4631-80a1-d16463d9a1b5` | $249/mo |
+| `team` | `d97329d1-308f-492e-b141-7ece9d43044a` | $14.99 per seat/mo |
+| `enterprise` | — | quoted, never listed |
+
+Cloud Pro, Business and Agency are **archived** in Polar — the four-rung ladder
+collapsed to one Team tier.
 
 Webhook: `https://app.agentsean.dev/api/webhooks/billing`, format **raw**, all
 events subscribed. The handler acts on eight of them and records the rest.
@@ -51,36 +54,28 @@ Four secrets were pasted into a transcript. Treat all four as compromised:
 Client **IDs** are public and safe. The Polar token is a live all-access org
 token — rotate it too once the app is deployed and reading it from env.
 
-### 2. DNS for `agentsean.dev`
+### 2. DNS and mail — done
 
-GitHub Pages needs an apex `A`/`AAAA` set plus a `www` CNAME. At your registrar:
+`agentsean.dev` resolves to GitHub Pages. Set via the Hostinger API:
 
 ```
-Type   Name   Value
-────   ────   ─────────────────────────
-A      @      185.199.108.153
-A      @      185.199.109.153
-A      @      185.199.110.153
-A      @      185.199.111.153
-AAAA   @      2606:50c0:8000::153
-AAAA   @      2606:50c0:8001::153
-AAAA   @      2606:50c0:8002::153
-AAAA   @      2606:50c0:8003::153
+A      @      185.199.108-111.153        (GitHub Pages)
+AAAA   @      2606:50c0:800{0..3}::153
 CNAME  www    seziro-team.github.io.
+CNAME  app    cname.vercel-dns.com.      (cloud app, once deployed)
+CNAME  oauth  cname.vercel-dns.com.      (OAuth broker)
 ```
 
-For the app (once deployed to Vercel), add `CNAME app → cname.vercel-dns.com.`
-and `CNAME oauth → cname.vercel-dns.com.` for the OAuth broker.
+The Hostinger `ALIAS @` and its `www` CNAME were removed — an ALIAS on the apex
+conflicts with the `A` records Pages needs. **Mail was left untouched and
+verified after every step**: MX, SPF, all three DKIM CNAMEs, DMARC,
+autoconfig and autodiscover are intact, so `support@` and `noreply@` keep
+working.
 
-Then: repo → **Settings → Pages → Custom domain** → `agentsean.dev` → wait for
-the DNS check → tick **Enforce HTTPS**. `web/CNAME` is already committed.
-
-### 3. Mail on the domain
-
-`support@agentsean.dev` and `noreply@agentsean.dev` are referenced by the site,
-`SECURITY.md`, `CODE_OF_CONDUCT.md`, `SUPPORT.md` and the privacy policy. Add
-SPF, DKIM and DMARC — a transactional sender that fails DMARC lands OTP mail in
-spam, which reads as a broken product.
+Remaining: repo → **Settings → Pages** → confirm the custom domain validates,
+then tick **Enforce HTTPS**. DMARC is currently `p=none` (monitor only);
+consider `p=quarantine` with a `rua=` reporting address once you have seen a
+week of reports.
 
 ### 4. Google OAuth
 

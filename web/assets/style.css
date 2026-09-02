@@ -926,15 +926,20 @@ td.hl {
 /* ---------------------------------------------------------------- pricing */
 .price-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   align-items: stretch;
+}
+@media (max-width: 1100px) and (min-width: 981px) {
+  .price-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 .plan-card {
   background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  padding: 30px 27px;
+  padding: 28px 22px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -974,11 +979,20 @@ td.hl {
   line-height: 1.5;
 }
 .amt {
-  font-size: 2.85rem;
+  font-size: 2.45rem;
   font-weight: 640;
   letter-spacing: -0.045em;
   line-height: 1;
   font-family: var(--mono);
+}
+/* The mono period has wide sidebearings, so "$14.99" reads as "$14 . 99" at
+   display size. Setting the cents smaller both fixes the spacing and is the
+   conventional way to letter a price. */
+.amt .cents {
+  font-size: 0.52em;
+  letter-spacing: -0.01em;
+  vertical-align: baseline;
+  margin-left: -0.06em;
 }
 .amt.text {
   font-size: 1.65rem;

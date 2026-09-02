@@ -1320,7 +1320,7 @@ function Mentions(props: { siteId: string | undefined }) {
 
 function Billing() {
   const [email, setEmail] = useState("");
-  const [plan, setPlan] = useState("agency");
+  const [plan, setPlan] = useState("team");
   const [origin, setOrigin] = useState("https://");
   const q = useQuery({
     queryKey: ["billing"],
@@ -1375,9 +1375,8 @@ function Billing() {
         <label>Plan</label>
         <select value={plan} onChange={(e) => setPlan(e.target.value)}>
           <option value="cloud_starter">Cloud Starter $9</option>
-          <option value="cloud_pro">Cloud Pro $29</option>
-          <option value="business">Business $79</option>
-          <option value="agency">Agency $249</option>
+          <option value="team">Team $14.99 / seat</option>
+          <option value="enterprise">Enterprise — talk to us</option>
         </select>
         <button
           onClick={() => {

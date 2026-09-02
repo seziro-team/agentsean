@@ -1,34 +1,34 @@
 /**
  * Plan definitions — mirrored verbatim from the source of truth at
- * `packages/hosted/src/plans.ts` (PLAN Phase 10 locked packaging).
+ * `packages/hosted/src/plans.ts`.
  *
- * They are copied rather than imported because `@agentsean/hosted` pulls in
- * `@agentsean/db` (better-sqlite3, a native module) and `@agentsean/ee`, which
- * do not belong in a Next.js edge/serverless bundle. Prices, entitlements, and
- * ids MUST stay identical to that file; do not invent new prices here. If the
- * packaging changes there, change it here in the same commit.
+ * Copied rather than imported because `@agentsean/hosted` pulls in
+ * `@agentsean/db` (better-sqlite3, a native module) and `@agentsean/ee`,
+ * neither of which belongs in a Next.js serverless bundle. Prices,
+ * entitlements and ids MUST stay identical to that file. If packaging changes
+ * there, change it here in the same commit.
  */
 
-export const PLAN_IDS = [
-  "self_host",
-  "cloud_starter",
-  "cloud_pro",
-  "business",
-  "agency",
-] as const;
+export const PLAN_IDS = ["self_host", "cloud_starter", "team", "enterprise"] as const;
 
 export type PlanId = (typeof PLAN_IDS)[number];
 
 export type RankCadence = "weekly" | "daily";
 
+/** Fixed monthly price, or per-seat billing where `seats` is the multiplier. */
+export type Billing = "free" | "flat" | "per_seat" | "quote";
+
 export type Plan = {
   id: PlanId;
   name: string;
+  /** Flat monthly price, or the per-seat price when `billing` is per_seat. */
   priceUsdMonth: number;
+  billing: Billing;
   sites: number;
   ranks: RankCadence;
   aiVisibility: boolean;
   articlesMetered: boolean;
+  /** Included seats. Team bills each additional seat at priceUsdMonth. */
   seats: number;
   whiteLabel: boolean;
   apiAccess: boolean;
@@ -36,6 +36,12 @@ export type Plan = {
   priorityQueue: boolean;
   clientSeats: boolean;
   bulkOps: boolean;
+  /** Deeper reporting: cohorts, experiments, per-template attribution. */
+  advancedAnalytics: boolean;
+  /** SSO/SAML/SCIM, audit export, SLA. Enterprise only. */
+  sso: boolean;
+  auditExport: boolean;
+  sla: boolean;
 };
 
 export const PLANS: Record<PlanId, Plan> = {
@@ -43,6 +49,7 @@ export const PLANS: Record<PlanId, Plan> = {
     id: "self_host",
     name: "Self-host",
     priceUsdMonth: 0,
+    billing: "free",
     sites: Number.POSITIVE_INFINITY,
     ranks: "weekly",
     aiVisibility: true,
@@ -54,11 +61,16 @@ export const PLANS: Record<PlanId, Plan> = {
     priorityQueue: false,
     clientSeats: true,
     bulkOps: true,
+    advancedAnalytics: true,
+    sso: false,
+    auditExport: false,
+    sla: false,
   },
   cloud_starter: {
     id: "cloud_starter",
-    name: "Cloud Starter",
+    name: "Cloud",
     priceUsdMonth: 9,
+    billing: "flat",
     sites: 1,
     ranks: "weekly",
     aiVisibility: false,
@@ -70,64 +82,57 @@ export const PLANS: Record<PlanId, Plan> = {
     priorityQueue: false,
     clientSeats: false,
     bulkOps: false,
+    advancedAnalytics: false,
+    sso: false,
+    auditExport: false,
+    sla: false,
   },
-  cloud_pro: {
-    id: "cloud_pro",
-    name: "Cloud Pro",
-    priceUsdMonth: 29,
-    sites: 3,
+  team: {
+    id: "team",
+    name: "Team",
+    priceUsdMonth: 14.99,
+    billing: "per_seat",
+    sites: 25,
     ranks: "daily",
     aiVisibility: true,
     articlesMetered: true,
-    seats: 3,
-    whiteLabel: false,
-    apiAccess: false,
-    hostedOauth: true,
-    priorityQueue: false,
-    clientSeats: false,
-    bulkOps: false,
-  },
-  business: {
-    id: "business",
-    name: "Business",
-    priceUsdMonth: 79,
-    sites: 10,
-    ranks: "daily",
-    aiVisibility: true,
-    articlesMetered: true,
-    seats: 10,
-    whiteLabel: false,
-    apiAccess: true,
-    hostedOauth: true,
-    priorityQueue: true,
-    clientSeats: false,
-    bulkOps: false,
-  },
-  agency: {
-    id: "agency",
-    name: "Agency",
-    priceUsdMonth: 249,
-    sites: 50,
-    ranks: "daily",
-    aiVisibility: true,
-    articlesMetered: true,
-    seats: 25,
+    seats: 1, // billed per additional seat
     whiteLabel: true,
     apiAccess: true,
     hostedOauth: true,
     priorityQueue: true,
     clientSeats: true,
     bulkOps: true,
+    advancedAnalytics: true,
+    sso: false,
+    auditExport: false,
+    sla: false,
+  },
+  enterprise: {
+    id: "enterprise",
+    name: "Enterprise",
+    priceUsdMonth: 0, // quoted, never listed
+    billing: "quote",
+    sites: Number.POSITIVE_INFINITY,
+    ranks: "daily",
+    aiVisibility: true,
+    articlesMetered: true,
+    seats: Number.POSITIVE_INFINITY,
+    whiteLabel: true,
+    apiAccess: true,
+    hostedOauth: true,
+    priorityQueue: true,
+    clientSeats: true,
+    bulkOps: true,
+    advancedAnalytics: true,
+    sso: true,
+    auditExport: true,
+    sla: true,
   },
 };
 
-/** Plans a hosted customer can self-serve checkout for (self_host is free/OSS). */
-export const BILLABLE_PLAN_IDS: PlanId[] = [
-  "cloud_starter",
-  "cloud_pro",
-  "business",
-  "agency",
-];
+/** Plans a hosted customer can self-serve checkout for. Enterprise is quoted. */
+export const BILLABLE_PLAN_IDS: PlanId[] = ["cloud_starter", "team"];
 
 export function isPlanId(value: string): value is PlanId {
   return (PLAN_IDS as readonly string[]).includes(value);
@@ -138,11 +143,34 @@ export function planOf(id: string): Plan {
   return PLANS[id];
 }
 
-export function priceCents(plan: Plan): number {
-  return Math.round(plan.priceUsdMonth * 100);
+/** Monthly charge for a plan at a given seat count. */
+export function monthlyPriceUsd(id: PlanId, seats = 1): number {
+  const plan = PLANS[id];
+  if (plan.billing === "per_seat") {
+    return Math.round(plan.priceUsdMonth * Math.max(1, seats) * 100) / 100;
+  }
+  return plan.priceUsdMonth;
 }
 
-/** Human display for possibly-infinite quota fields. */
+/** Render a quota, where an infinite cap reads as "Unlimited" rather than "∞". */
 export function quotaLabel(n: number): string {
   return Number.isFinite(n) ? String(n) : "Unlimited";
+}
+
+/** Price as shown in the UI. Per-seat plans say so; Enterprise is never priced. */
+export function priceLabel(id: PlanId): string {
+  const plan = PLANS[id];
+  if (plan.billing === "free") return "$0";
+  if (plan.billing === "quote") return "Talk to us";
+  if (plan.billing === "per_seat") return `$${plan.priceUsdMonth.toFixed(2)}`;
+  return `$${plan.priceUsdMonth}`;
+}
+
+/** Sub-label under the price. */
+export function priceSuffix(id: PlanId): string {
+  const plan = PLANS[id];
+  if (plan.billing === "free") return "forever · AGPL-3.0";
+  if (plan.billing === "quote") return "annual · invoice billing";
+  if (plan.billing === "per_seat") return "per seat / month";
+  return "per month";
 }

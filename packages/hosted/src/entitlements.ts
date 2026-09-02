@@ -8,7 +8,11 @@ export type EntitlementFeature =
   | "priorityQueue"
   | "clientSeats"
   | "bulkOps"
-  | "dailyRanks";
+  | "dailyRanks"
+  | "advancedAnalytics"
+  | "sso"
+  | "auditExport"
+  | "sla";
 
 export class EntitlementError extends Error {
   override readonly name = "EntitlementError";
@@ -24,6 +28,14 @@ export function hasFeature(plan: Plan, feature: EntitlementFeature): boolean {
       return plan.whiteLabel;
     case "apiAccess":
       return plan.apiAccess;
+    case "advancedAnalytics":
+      return plan.advancedAnalytics;
+    case "sso":
+      return plan.sso;
+    case "auditExport":
+      return plan.auditExport;
+    case "sla":
+      return plan.sla;
     case "priorityQueue":
       return plan.priorityQueue;
     case "clientSeats":

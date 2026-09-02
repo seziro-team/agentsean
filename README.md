@@ -272,19 +272,26 @@ are published deliberately.
 
 ## Pricing
 
-| | Self-host | Cloud | Enterprise |
-| --- | --- | --- | --- |
-| **Price** | **$0 forever** | from **$9/mo** | Talk to us |
-| Sites | Unlimited | 1 → 50 | Unlimited |
-| All 425 checks | Yes | Yes | Yes |
-| Autonomous fixes | Yes | Yes | Yes |
-| Your data leaves your machine | Never | Encrypted, EU-hosted | Your choice, incl. air-gapped |
-| Managed Google OAuth | — | Yes | Yes |
-| Rank tracking | Weekly | Weekly → daily | Daily |
-| White-label + client seats | Yes | Agency tier | Yes |
-| SSO / SAML / SCIM | — | — | Yes |
-| Audit log, SLA, DPA | — | DPA | Yes |
-| Support | Community | Email | Named contact + SLA |
+| | Self-host | Cloud | Team | Enterprise |
+| --- | --- | --- | --- | --- |
+| **Price** | **$0 forever** | **$9**/mo | **$14.99**/seat/mo | Talk to us |
+| Sites | Unlimited | 1 | 25 | Unlimited |
+| Seats | Unlimited | 1 | Unlimited | Unlimited |
+| All 425 checks | Yes | Yes | Yes | Yes |
+| Autonomous fixes | Yes | Yes | Yes | Yes |
+| Your data leaves your machine | Never | Encrypted | Encrypted | Your choice, incl. air-gapped |
+| Managed Google OAuth | — | Yes | Yes | Yes |
+| Rank tracking | Weekly | Weekly | Daily | Daily |
+| AI visibility | Yes | — | Yes | Yes |
+| Advanced analytics | Yes | — | Yes | Yes |
+| White-label + client seats | Yes | — | Yes | Yes |
+| API access, bulk ops | Yes | — | Yes | Yes |
+| SSO / SAML / SCIM | — | — | — | Yes |
+| Audit export, SLA, DPA | — | DPA | DPA | Yes |
+| Support | Community | Email | Email | Named contact + SLA |
+
+Team is billed **per seat, not per site** — charging more for adding a small
+client is a bad reason not to add it.
 
 Self-hosting is not a crippled tier. It is the whole product, and it is free
 forever. The Cloud tier exists because not everyone wants to run a daemon.

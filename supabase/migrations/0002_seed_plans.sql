@@ -42,9 +42,8 @@ insert into public.plan_catalogue
 values
   ('self_host',     'Self-host',     0,   null, 'weekly', null, true,  false, true,  true),
   ('cloud_starter', 'Cloud Starter', 9,   1,    'weekly', 1,    false, true,  false, false),
-  ('cloud_pro',     'Cloud Pro',     29,  3,    'daily',  3,    true,  true,  false, false),
-  ('business',      'Business',      79,  10,   'daily',  10,   true,  true,  false, true),
-  ('agency',        'Agency',        249, 50,   'daily',  25,   true,  true,  true,  true)
+  ('team',          'Team',          15,  25,   'daily',  1,    true,  true,  true,  true),
+  ('enterprise',    'Enterprise',    0,   999999,'daily',  999999, true, true, true, true)
 on conflict (id) do update set
   name             = excluded.name,
   price_usd_month  = excluded.price_usd_month,

@@ -75,6 +75,20 @@ variable: `BILLING_PROVIDER=polar|paddle`.
 | **Cashfree / PayU** | Excellent INR settlement with clean FIRC, but gateways, not MoRs. Viable if you later decide to own global tax compliance. |
 | **Gumroad / Instamojo** | Not built for tiered SaaS subscriptions with programmatic entitlement. |
 
+## Packaging
+
+Four tiers: **Self-host $0**, **Cloud $9/mo** (one site), **Team $14.99 per
+seat/month** (25 sites, everything switched on), **Enterprise** (quoted).
+
+This replaced a $9 / $29 / $79 / $249 ladder. Four priced rungs made a buyer
+read four feature matrices to work out which box they were in, and made each
+box somewhere to argue about a missing feature. Team is priced per seat rather
+than per site because per-site pricing penalises an agency for adding a small
+client — the exact behaviour you want to encourage.
+
+Enterprise carries no listed price by design. `PLANS.enterprise.priceUsdMonth`
+is 0 and a test asserts it, so a number cannot leak onto the pricing page.
+
 ## What the operator must do
 
 1. Create a Polar organization and complete KYC. Budget up to 14 days.
