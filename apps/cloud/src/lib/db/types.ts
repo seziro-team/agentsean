@@ -84,6 +84,13 @@ export type BillingEvent = {
   tenant_id: string | null;
   payload: Record<string, unknown>;
   received_at: string;
+  /**
+   * When the event was successfully applied; null means recorded but not yet
+   * applied. Recording and applying are separate steps, so a row can exist for
+   * an event whose apply failed — and treating every duplicate as finished is
+   * what made such a failure unrecoverable. See 0004_billing_events_applied.
+   */
+  applied_at: string | null;
 };
 
 export type PaymentInviteStatus = "pending" | "paid" | "expired" | "canceled";
@@ -221,7 +228,7 @@ export type Database = {
       >;
       billing_events: TableDef<
         BillingEvent,
-        Insertable<BillingEvent, "received_at" | "id" | "tenant_id">,
+        Insertable<BillingEvent, "received_at" | "id" | "tenant_id" | "applied_at">,
         Partial<BillingEvent>
       >;
       payment_invites: TableDef<

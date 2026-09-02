@@ -51,9 +51,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // 3. Idempotency: insert the ledger row first. A unique (provider, event id)
-  // constraint means a duplicate insert fails, and we return 200 without
-  // re-applying.
+  // 3. Idempotency: insert the ledger row first, with applied_at null. A unique
+  // (provider, event id) constraint means a duplicate insert fails.
+  //
+  // A duplicate is NOT automatically "already handled". Recording and applying
+  // are two steps, so a row can exist for an event whose apply failed. Treating
+  // every duplicate as done is what made a failed apply unrecoverable: the
+  // route answered 200 so the provider stopped retrying, and any retry that did
+  // arrive was waved through here without applying anything. Only a row with
+  // applied_at set is finished.
   const { error: insertError } = await db.from("billing_events").insert({
     provider: provider.name,
     provider_event_id: event.id,
@@ -62,26 +68,50 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     payload: safeJson(rawBody),
   });
   if (insertError) {
-    // 23505 = unique_violation → already processed.
+    // 23505 = unique_violation → seen before. Finished, or unfinished?
     if (insertError.code === "23505") {
-      return NextResponse.json({ ok: true, duplicate: true });
+      const { data: prior } = await db
+        .from("billing_events")
+        .select("applied_at")
+        .eq("provider", provider.name)
+        .eq("provider_event_id", event.id)
+        .maybeSingle();
+      if (prior?.applied_at) {
+        return NextResponse.json({ ok: true, duplicate: true });
+      }
+      // Recorded but never applied — fall through and finish the job.
+      console.warn("[webhook] retrying an event that was recorded but not applied");
+    } else {
+      console.error("[webhook] failed to record event", insertError.message);
+      return NextResponse.json(
+        { ok: false, reason: "ledger write failed" },
+        { status: 500 },
+      );
     }
-    console.error("[webhook] failed to record event", insertError.message);
-    return NextResponse.json(
-      { ok: false, reason: "ledger write failed" },
-      { status: 500 },
-    );
   }
 
-  // 4. Apply.
+  // 4. Apply, then mark applied. A failure here must be retryable: the customer
+  // has paid and their plan is not set yet, so the worst possible answer is a
+  // 200 that stops the provider from trying again.
   try {
     const applied = await applyBillingEvent(db, event);
+    const { error: markError } = await db
+      .from("billing_events")
+      .update({ applied_at: new Date().toISOString() })
+      .eq("provider", provider.name)
+      .eq("provider_event_id", event.id);
+    if (markError) {
+      // Applying succeeded; only the bookkeeping failed. Say so rather than ask
+      // for a retry that would redo work that is already done.
+      console.error("[webhook] applied but could not mark applied", markError.message);
+    }
     return NextResponse.json({ ok: true, ...applied });
   } catch (err) {
     console.error("[webhook] apply failed", err);
-    // The ledger row is written; return 200 so the provider does not retry a
-    // duplicate we would reject anyway. The failure is logged for follow-up.
-    return NextResponse.json({ ok: true, applied: false, note: "apply error" });
+    return NextResponse.json(
+      { ok: false, reason: "apply failed", retryable: true },
+      { status: 500 },
+    );
   }
 }
 

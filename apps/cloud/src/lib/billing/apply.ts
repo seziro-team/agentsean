@@ -5,6 +5,30 @@ import { safeLog } from "../log";
 import type { Database, SubscriptionStatus } from "../db/types";
 import type { NormalizedEvent } from "./provider";
 
+/** Raised when a billing write fails, so the webhook can ask for a retry. */
+export class BillingWriteError extends Error {
+  constructor(what: string, cause: string) {
+    super(`billing write failed (${what}): ${cause}`);
+    this.name = "BillingWriteError";
+  }
+}
+
+/**
+ * Unwrap a supabase-js result, turning `{ error }` into a throw.
+ *
+ * supabase-js resolves rather than rejects on a failed query, so `await
+ * db.from(...).update(...)` succeeds whether or not the row changed. Passing
+ * every write through here is what makes a failure visible.
+ */
+async function must<T>(
+  what: string,
+  op: PromiseLike<{ data: T; error: { message: string } | null }>,
+): Promise<T> {
+  const { data, error } = await op;
+  if (error) throw new BillingWriteError(what, error.message);
+  return data;
+}
+
 /**
  * Apply a verified, normalized billing event to the database.
  *
@@ -12,6 +36,14 @@ import type { NormalizedEvent } from "./provider";
  * event has been recorded in `billing_events` for idempotency. Uses the
  * service-role client (webhooks have no user session). Never throws on
  * unknown/irrelevant events — it simply records nothing beyond the ledger row.
+ *
+ * It DOES throw when a write fails, and that is deliberate. supabase-js does
+ * not reject on a failed query; it resolves with `{ data, error }`. Every write
+ * on this path used to discard that, so a rejected update returned normally,
+ * this function reported `applied: true`, and the webhook answered 200. The
+ * customer's money was taken, their plan was never set, and nothing anywhere
+ * recorded that anything had gone wrong. A throw is the only way the caller can
+ * tell the provider to retry.
  */
 export async function applyBillingEvent(
   db: SupabaseClient<Database>,
@@ -56,21 +88,30 @@ export async function applyBillingEvent(
     case "subscription.canceled":
     case "subscription.revoked": {
       if (!tenantId) return { applied: false, note: "no tenant resolved" };
-      await db
-        .from("tenants")
-        .update({ status: "canceled", updated_at: now })
-        .eq("id", tenantId);
+      await must(
+        "tenants.cancel",
+        db
+          .from("tenants")
+          .update({ status: "canceled", updated_at: now })
+          .eq("id", tenantId),
+      );
       if (event.subscriptionId) {
-        await db
-          .from("subscriptions")
-          .update({ status: "canceled", updated_at: now })
-          .eq("tenant_id", tenantId)
-          .eq("provider_subscription_id", event.subscriptionId);
+        await must(
+          "subscriptions.cancel",
+          db
+            .from("subscriptions")
+            .update({ status: "canceled", updated_at: now })
+            .eq("tenant_id", tenantId)
+            .eq("provider_subscription_id", event.subscriptionId),
+        );
       } else {
-        await db
-          .from("subscriptions")
-          .update({ status: "canceled", updated_at: now })
-          .eq("tenant_id", tenantId);
+        await must(
+          "subscriptions.cancelAll",
+          db
+            .from("subscriptions")
+            .update({ status: "canceled", updated_at: now })
+            .eq("tenant_id", tenantId),
+        );
       }
       return { applied: true, note: `${event.type} → canceled` };
     }
@@ -102,7 +143,10 @@ async function upsertActiveSubscription(
   if (planId) tenantUpdate.plan = planId;
   if (event.customerId) tenantUpdate.billing_customer_id = event.customerId;
   if (event.subscriptionId) tenantUpdate.billing_subscription_id = event.subscriptionId;
-  await db.from("tenants").update(tenantUpdate).eq("id", tenantId);
+  await must(
+    "tenants.update",
+    db.from("tenants").update(tenantUpdate).eq("id", tenantId),
+  );
 
   // Upsert the subscription mirror. Match on provider_subscription_id when we
   // have it so repeated updates don't create duplicates.
@@ -125,9 +169,12 @@ async function upsertActiveSubscription(
       updated_at: now,
     };
     if (existing) {
-      await db.from("subscriptions").update(row).eq("id", existing.id);
+      await must(
+        "subscriptions.update",
+        db.from("subscriptions").update(row).eq("id", existing.id),
+      );
     } else {
-      await db.from("subscriptions").insert(row);
+      await must("subscriptions.insert", db.from("subscriptions").insert(row));
     }
   }
 }
@@ -180,10 +227,13 @@ async function markInvitePaidForEvent(
 
   const data = row;
   if (!data) return false;
-  await db
-    .from("payment_invites")
-    .update({ status: "paid", paid_at: now })
-    .eq("id", data.id);
+  await must(
+    "payment_invites.markPaid",
+    db
+      .from("payment_invites")
+      .update({ status: "paid", paid_at: now })
+      .eq("id", data.id),
+  );
 
   // If the invite grants a plan, activate it on the buyer's owned tenant.
   if (data.grant_plan) {
@@ -204,10 +254,13 @@ async function markInvitePaidForEvent(
       // carrying an unknown plan must grant nothing, not write a bogus value
       // into tenants.plan that every entitlement check then has to cope with.
       if (tenant && isPlanId(data.grant_plan)) {
-        await db
-          .from("tenants")
-          .update({ plan: data.grant_plan, status: "active", updated_at: now })
-          .eq("id", tenant.id);
+        await must(
+          "tenants.grantInvitePlan",
+          db
+            .from("tenants")
+            .update({ plan: data.grant_plan, status: "active", updated_at: now })
+            .eq("id", tenant.id),
+        );
       } else if (tenant) {
         console.warn(
           `[billing] invite ${data.id} has unknown grant_plan ${safeLog(data.grant_plan)}; not granting`,

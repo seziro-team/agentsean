@@ -45,10 +45,22 @@ export default defineConfig({
       "@agentsean/launch": path.join(root, "packages/launch/src/index.ts"),
       "@agentsean/ee": path.join(root, "packages/ee/src/index.ts"),
       "@agentsean/daemon": path.join(root, "packages/daemon/src/index.ts"),
+      // apps/cloud is a Next app: "@/..." is its src, and "server-only" is a
+      // Next guard that throws outside a server context. Stubbing it lets the
+      // billing logic — which is plain functions over a Supabase client — be
+      // tested without standing up Next.
+      "@/": path.join(root, "apps/cloud/src") + "/",
+      "server-only": path.join(root, "apps/cloud/src/test/server-only-stub.ts"),
     },
   },
   test: {
-    include: ["packages/*/src/**/*.test.ts", "packages/adapters/*/src/**/*.test.ts"],
+    include: [
+      "packages/*/src/**/*.test.ts",
+      "packages/adapters/*/src/**/*.test.ts",
+      // apps/cloud was outside the runner entirely, so the code that decides
+      // whether a paying customer gets their plan had no tests at all.
+      "apps/*/src/**/*.test.ts",
+    ],
     environment: "node",
     testTimeout: 30_000,
     hookTimeout: 30_000,
