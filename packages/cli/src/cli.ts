@@ -1,4 +1,4 @@
-import { parseArgs, HELP } from "./args.js";
+import { parseArgs, helpText, invokedAs } from "./args.js";
 import { emit, emitError } from "./output.js";
 import { startCommand } from "./commands/start.js";
 import { stopCommand } from "./commands/stop.js";
@@ -31,7 +31,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
   const args = parseArgs(argv);
 
   if (args.help) {
-    process.stdout.write(HELP);
+    process.stdout.write(helpText(invokedAs(argv)));
     return 0;
   }
   if (args.version) {

@@ -84,10 +84,18 @@ provisions Node if you don't. There is **no `postinstall` script** — npm v12
 disables those by default, so Sean provisions on first *run*.
 
 ```bash
-# npm
-npx agentsean
+# Try it once — nothing installed, nothing left behind
+npx agentsean audit https://your-site.com
+```
 
-# macOS / Linux
+`npx` runs the package a single time from a temp directory. It does **not** put
+`sean` on your PATH. For a persistent `sean` command, install it:
+
+```bash
+# npm — gives you `sean` and `agentsean` everywhere
+npm install -g agentsean
+
+# macOS / Linux — provisions Node too if you do not have it
 curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh
 
 # Windows
@@ -103,6 +111,7 @@ brew install seziro-team/tap/agentsean
 Then:
 
 ```bash
+sean                   # first run: onboard, then start
 sean doctor            # environment preflight, every check explained
 sean audit https://…   # full audit — no daemon, no credentials, no account
 sean start             # daemon + dashboard on http://127.0.0.1:7777
@@ -111,6 +120,10 @@ sean status            # what changed, when, and how to undo it
 sean revert <id>       # undo one change
 sean freeze            # halt every write, everywhere, immediately
 ```
+
+Without a global install, prefix any of these with `npx agentsean` —
+`npx agentsean doctor`, `npx agentsean audit https://…`. The CLI's own `--help`
+prints whichever form applies to how you launched it.
 
 Every command accepts `--json`. `sean audit` works with zero credentials and zero
 account — that is the whole free tier, and it is genuinely useful on its own.

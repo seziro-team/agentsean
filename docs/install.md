@@ -1,5 +1,11 @@
 # Install
 
+> **`npx agentsean` runs the package once and does *not* put `sean` on your
+> PATH.** That is npx working as designed — it resolves the package into a temp
+> directory, runs it, and leaves nothing behind. For a persistent `sean`
+> command use `npm install -g agentsean`, the curl installer, or Homebrew.
+> Otherwise prefix everything: `npx agentsean doctor`.
+
 Phase 11. The growth lever is the one-liner, not the license.
 
 ```bash

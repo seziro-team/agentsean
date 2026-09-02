@@ -310,43 +310,72 @@ export function parseArgs(argv: string[]): CliArgs {
   return args;
 }
 
-export const HELP = `Agent Sean — the SEO engineer that never sleeps.
+/**
+ * How the binary was invoked, so the help can echo back a command that will
+ * actually work.
+ *
+ * The package ships two bins, `sean` and `agentsean`, but `npx agentsean` does
+ * NOT put `sean` on PATH — npx resolves the package into a temp directory and
+ * runs it once. Printing "sean doctor" to someone who arrived via npx sends
+ * them straight to a "command not found", which is the first thing a real user
+ * hit.
+ *
+ * Node does not resolve symlinks in `process.argv[1]`, so the invoked name
+ * survives: a global install run as `sean` reports `.../bin/sean`, and npx
+ * reports `.../_npx/<hash>/node_modules/.bin/agentsean`. That `_npx` segment is
+ * what separates "you have a global install" from "this was a one-off run".
+ */
+export function invokedAs(argv: readonly string[] = process.argv): string {
+  const raw = argv[1] ?? "";
+  const viaNpx = /[/\\]_npx[/\\]/.test(raw);
+  const base = (raw.split(/[/\\]/).pop() ?? "").replace(/\.(js|cjs|mjs)$/, "");
+
+  if (viaNpx) return "npx agentsean";
+  if (base === "sean") return "sean";
+  if (base === "agentsean") return "agentsean";
+  // Unknown launcher (bundled, symlinked oddly, run as `node dist/bin.js`).
+  // Prefer the form that always works over one that may not exist.
+  return "npx agentsean";
+}
+
+export function helpText(cmd = invokedAs()): string {
+  return `Agent Sean — the SEO engineer that never sleeps.
 
 Every SEO tool tells you what's wrong. Agent Sean fixes it.
 
 Usage:
-  sean                    # first run: onboard, then start
-  sean onboard [url] [--cms wordpress|shopify|git|cloudflare|other] [--telemetry on|off] [--no-start] [--json]
-  sean doctor [--json]
-  sean update [--channel stable|extended-stable|dev] [--json]
-  sean service [status|install|uninstall] [--json]
-  sean uninstall [--purge] [--json]
-  sean telemetry [status|log|on|off] [--json]
-  sean recipes [id] [--json]
-  sean start [--foreground] [--host 127.0.0.1] [--port 7777] [--json]
-  sean stop [--json]
-  sean status [--json]
-  sean audit <url> [--max-pages N] [--concurrency N] [--no-js] [--json]
-  sean connect google [origin] [--byo] [--credentials client_secret.json] [--api-key KEY] [--json]
-  sean apply [origin] --repo /path/to/site [--dry-run] [--json]
-  sean revert <changeId> [--json]
-  sean freeze [--off] [--json]
-  sean unfreeze [--json]
-  sean content [origin] [--repo /path/to/site] [--dry-run] [--json]
-  sean keywords [origin] [--json]
-  sean mcp [--json]
-  sean measure [origin] [--json]
-  sean visibility [origin] [--json]
-  sean local [origin] [--json]
-  sean mentions [origin] [--json]
-  sean signup [plan] [--json]
-  sean tenant [tenantId] [--json]
-  sean connect dataforseo --api-key login:password
-  sean connect bing --api-key KEY
-  sean connect openpagerank --api-key KEY
-  sean connect wordpress --api-key USER:APP_PASSWORD [origin]
-  sean connect shopify --api-key shpat_… [shop]
-  sean connect cloudflare [origin]
+  ${cmd}                    # first run: onboard, then start
+  ${cmd} onboard [url] [--cms wordpress|shopify|git|cloudflare|other] [--telemetry on|off] [--no-start] [--json]
+  ${cmd} doctor [--json]
+  ${cmd} update [--channel stable|extended-stable|dev] [--json]
+  ${cmd} service [status|install|uninstall] [--json]
+  ${cmd} uninstall [--purge] [--json]
+  ${cmd} telemetry [status|log|on|off] [--json]
+  ${cmd} recipes [id] [--json]
+  ${cmd} start [--foreground] [--host 127.0.0.1] [--port 7777] [--json]
+  ${cmd} stop [--json]
+  ${cmd} status [--json]
+  ${cmd} audit <url> [--max-pages N] [--concurrency N] [--no-js] [--json]
+  ${cmd} connect google [origin] [--byo] [--credentials client_secret.json] [--api-key KEY] [--json]
+  ${cmd} apply [origin] --repo /path/to/site [--dry-run] [--json]
+  ${cmd} revert <changeId> [--json]
+  ${cmd} freeze [--off] [--json]
+  ${cmd} unfreeze [--json]
+  ${cmd} content [origin] [--repo /path/to/site] [--dry-run] [--json]
+  ${cmd} keywords [origin] [--json]
+  ${cmd} mcp [--json]
+  ${cmd} measure [origin] [--json]
+  ${cmd} visibility [origin] [--json]
+  ${cmd} local [origin] [--json]
+  ${cmd} mentions [origin] [--json]
+  ${cmd} signup [plan] [--json]
+  ${cmd} tenant [tenantId] [--json]
+  ${cmd} connect dataforseo --api-key login:password
+  ${cmd} connect bing --api-key KEY
+  ${cmd} connect openpagerank --api-key KEY
+  ${cmd} connect wordpress --api-key USER:APP_PASSWORD [origin]
+  ${cmd} connect shopify --api-key shpat_… [shop]
+  ${cmd} connect cloudflare [origin]
 
 Every command accepts --json. npx agentsean provisions on first run — there is
 no postinstall (npm 12+ disables those by default). The daemon binds 127.0.0.1
@@ -369,3 +398,7 @@ Starter is $9/mo (1 site, BYOK); Agency is $249/mo (25–50 sites). Self-host is
 $0 with everything. Hosted never stores CMS write credentials — pair a
 customer-side connector. Sean never scrapes Google.
 `;
+}
+
+/** Back-compat for callers that want the default rendering. */
+export const HELP = helpText("sean");
