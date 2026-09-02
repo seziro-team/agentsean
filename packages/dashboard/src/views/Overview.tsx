@@ -2,11 +2,11 @@ import type { JSX } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api.js";
 import type { Ctx } from "../router.js";
-import { PageHeader, Card, Stat, Pill, Note } from "../components/Page.js";
+import { PageHeader, Card, Stat, Pill, Note, Money } from "../components/Page.js";
 import { AsyncBoundary } from "../components/State.js";
 import { Arc } from "../components/Arc.js";
 import { IconArrow, IconCheck, IconWarn } from "../components/icons.js";
-import { money, num, daysUntil, bareHost } from "../lib/format.js";
+import { num, daysUntil, bareHost } from "../lib/format.js";
 import { Onboarding } from "./Onboarding.js";
 
 type OverviewData = {
@@ -75,7 +75,7 @@ export function Overview(ctx: Ctx): JSX.Element {
                 />
                 <Stat
                   label="Cost this week"
-                  value={money(d.costUsd)}
+                  value={<Money usd={d.costUsd} />}
                   foot="BYOK — your keys, your bill"
                   plain
                 />
@@ -84,7 +84,10 @@ export function Overview(ctx: Ctx): JSX.Element {
               <Card
                 title="Findings by severity"
                 sub={
-                  <button className="btn btn-sm btn-ghost" onClick={() => ctx.go("/findings")}>
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => ctx.go("/findings")}
+                  >
                     Open findings <IconArrow className="ico" />
                   </button>
                 }
@@ -126,10 +129,16 @@ export function Overview(ctx: Ctx): JSX.Element {
                     "No measured claims yet. Most changes on a small site land in tier E — applied, not measurable. Only Sean says so out loud."}
                 </p>
                 <div className="row">
-                  <button className="btn btn-sm btn-ghost" onClick={() => ctx.go("/evidence")}>
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => ctx.go("/evidence")}
+                  >
                     Evidence ladder
                   </button>
-                  <button className="btn btn-sm btn-ghost" onClick={() => ctx.go("/changes")}>
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => ctx.go("/changes")}
+                  >
                     Activity &amp; revert
                   </button>
                 </div>

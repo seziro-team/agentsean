@@ -25,7 +25,12 @@ import { Crawls } from "./views/Crawls.js";
 import { Billing } from "./views/Billing.js";
 import { Settings } from "./views/Settings.js";
 
-type Site = { id: string; origin: string; name: string | null; observeUntil: string | null };
+type Site = {
+  id: string;
+  origin: string;
+  name: string | null;
+  observeUntil: string | null;
+};
 
 type Overview = {
   findings: Record<string, number>;
@@ -95,9 +100,8 @@ export function App(): JSX.Element {
   });
 
   const list = sites.data?.sites ?? [];
-  const siteId = activeSite && list.some((s) => s.id === activeSite)
-    ? activeSite
-    : list[0]?.id;
+  const siteId =
+    activeSite && list.some((s) => s.id === activeSite) ? activeSite : list[0]?.id;
   const origin = list.find((s) => s.id === siteId)?.origin;
 
   // Overview drives the nav badges (open findings, pending approvals).
@@ -139,9 +143,9 @@ export function App(): JSX.Element {
           </div>
           <h2 style={{ marginBottom: 12 }}>Open this from the daemon</h2>
           <p className="lead" style={{ margin: "0 auto 20px" }}>
-            The dashboard talks only to Sean running on this machine. Start it and
-            open the link it prints, so the local session cookie can be set — a
-            hosted page can never reach <code>127.0.0.1</code>.
+            The dashboard talks only to Sean running on this machine. Start it and open
+            the link it prints, so the local session cookie can be set — a hosted page
+            can never reach <code>127.0.0.1</code>.
           </p>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="cmd">
@@ -158,42 +162,54 @@ export function App(): JSX.Element {
 
   // Empty install: no sites yet → the whole app is the onboarding flow.
   const empty = list.length === 0;
-  const screen = empty ? "/onboarding" : path;
   const ctx: Ctx = { siteId, origin, go };
+
+  // First run: no site yet. Render the onboarding flow full-width with just a
+  // brand bar, not the app grid (which would strand it in the sidebar column).
+  if (empty) {
+    return (
+      <div className="onboard-shell">
+        <div className="onboard-bar">
+          <div className="brand">
+            <BrandMark />
+            <span>Agent Sean</span>
+          </div>
+        </div>
+        <main className="page rv">
+          <View path="/onboarding" ctx={ctx} />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="shell">
-      {empty ? null : (
-        <Nav
-          path={path}
-          go={go}
-          sites={list}
-          siteId={siteId}
-          onSite={setActiveSite}
-          counts={{ findings: findingCount, approvals: approvalCount }}
-          halted={halted}
-        />
-      )}
+      <Nav
+        path={path}
+        go={go}
+        sites={list}
+        siteId={siteId}
+        onSite={setActiveSite}
+        counts={{ findings: findingCount, approvals: approvalCount }}
+        halted={halted}
+      />
       <div className="content">
         {halted ? (
           <div className="banner halt" role="status">
             <BrandMark />
             <span>
-              <strong>Writes are frozen.</strong> Sean will not apply any change
-              until you unfreeze.
+              <strong>Writes are frozen.</strong> Sean will not apply any change until
+              you unfreeze.
             </span>
             <span className="b-act">
-              <button
-                className="btn btn-sm btn-ghost"
-                onClick={() => go("/settings")}
-              >
+              <button className="btn btn-sm btn-ghost" onClick={() => go("/settings")}>
                 Manage
               </button>
             </span>
           </div>
         ) : null}
-        <main className="page rv" key={screen}>
-          <View path={screen} ctx={ctx} />
+        <main className="page rv" key={path}>
+          <View path={path} ctx={ctx} />
         </main>
       </div>
     </div>

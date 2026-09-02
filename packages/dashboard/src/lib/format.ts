@@ -5,6 +5,15 @@ export function money(n: number | null | undefined, digits = 2): string {
   return `$${n.toFixed(digits)}`;
 }
 
+/** Split a price into dollars and cents for display sizing. See <Money>. */
+export function splitMoney(
+  n: number | null | undefined,
+): { dollars: string; cents: string } | null {
+  if (n === null || n === undefined || Number.isNaN(n)) return null;
+  const [d = "0", c = "00"] = n.toFixed(2).split(".");
+  return { dollars: `$${d}`, cents: `.${c}` };
+}
+
 export function pct(n: number | null | undefined): string {
   if (n === null || n === undefined || Number.isNaN(n)) return "—";
   return `${Math.round(n * 100)}%`;

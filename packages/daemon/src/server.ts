@@ -5,7 +5,12 @@ import type { CredentialStore } from "@agentsean/credentials";
 import type { PendingStore } from "@agentsean/google";
 import type { JobQueue } from "@agentsean/scheduler";
 import { VERSION } from "./version.js";
-import { registerSecurity, TOKEN_COOKIE, type SecurityOptions } from "./security.js";
+import {
+  readToken,
+  registerSecurity,
+  TOKEN_COOKIE,
+  type SecurityOptions,
+} from "./security.js";
 import { isHalted } from "./paths.js";
 import { registerGoogleRoutes } from "./google-routes.js";
 import { registerActionRoutes } from "./action-routes.js";
@@ -58,15 +63,16 @@ export async function createServer(
   }));
 
   // Sets the SameSite=Strict cookie so the dashboard EventSource can auth.
+  //
+  // Reads the cookie as well as the header. The SPA strips `#token=` from the
+  // URL once the session exists, so on every load after the first the cookie
+  // is the only credential the browser still holds; a header-only check
+  // answered 401 there, and the dashboard drew its "open this from the daemon"
+  // gate over every route while a perfectly good cookie sat in the browser.
+  // Same token comparison either way, and the onRequest hook has already
+  // enforced host and origin.
   app.get("/api/session", async (req, reply) => {
-    const presented =
-      (typeof req.headers["x-sean-token"] === "string" &&
-        req.headers["x-sean-token"]) ||
-      (typeof req.headers.authorization === "string" &&
-      req.headers.authorization.startsWith("Bearer ")
-        ? req.headers.authorization.slice("Bearer ".length)
-        : undefined);
-    if (presented !== options.token) {
+    if (readToken(req) !== options.token) {
       return reply.code(401).send({ error: "unauthorized" });
     }
     reply.header(

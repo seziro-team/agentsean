@@ -2,6 +2,25 @@
 import { useState } from "react";
 import type { JSX, ReactNode } from "react";
 import { IconCopy } from "./icons.js";
+import { splitMoney } from "../lib/format.js";
+
+/**
+ * A price at display size.
+ *
+ * The mono period carries wide sidebearings, so "$1.24" reads as "$1 . 24" in
+ * a stat. Setting the cents smaller closes the gap and is how prices are
+ * conventionally lettered; the marketing site solves it the same way.
+ */
+export function Money(props: { usd: number | null | undefined }): JSX.Element {
+  const parts = splitMoney(props.usd);
+  if (!parts) return <>—</>;
+  return (
+    <>
+      {parts.dollars}
+      <span className="cents">{parts.cents}</span>
+    </>
+  );
+}
 
 export function PageHeader(props: {
   kicker?: string;

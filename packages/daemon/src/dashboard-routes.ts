@@ -69,6 +69,7 @@ import {
   GbpNotApprovedError,
   GbpQuotaError,
   ONBOARDING_QUESTIONS,
+  PANEL_COST_USD,
   applyGbpEdit,
   bingCitationShare,
   draftOutreach,
@@ -738,6 +739,10 @@ export function registerDashboardRoutes(
         shareOfVoice: 0,
         estimatedUsd: 0,
         bingShare: null,
+        // What a panel run is forecast to cost, distinct from estimatedUsd,
+        // which is what the last run actually cost. The dashboard had this
+        // number copied in as a literal; it belongs to @agentsean/surfaces.
+        panelCostUsd: PANEL_COST_USD,
         refusals: AEO_REFUSALS,
         note: "No site yet.",
       };
@@ -757,6 +762,7 @@ export function registerDashboardRoutes(
       bingShare: bingRows.length ? bingCitationShare(bingRows) : null,
       bingRows: bingRows.slice(0, 20),
       ranAt: latest?.ranAt ?? null,
+      panelCostUsd: PANEL_COST_USD,
       refusals: AEO_REFUSALS,
       note: "Schema, content length, and llms.txt are not sold as AEO levers. Training crawlers ≠ citation crawlers.",
     };

@@ -23,7 +23,16 @@ export type SecurityOptions = {
   publicOrigin?: string | undefined;
 };
 
-function readToken(req: FastifyRequest): string | undefined {
+/**
+ * The credential on a request, from any of the three places it can ride:
+ * the `x-sean-token` header, a Bearer authorization, or the session cookie.
+ *
+ * Exported so /api/session answers the same question this hook does. It used
+ * to hand-roll a header-only copy of this, which meant the endpoint that
+ * issues the cookie would not accept it back — one reload and the dashboard
+ * locked itself out. One reader, one answer.
+ */
+export function readToken(req: FastifyRequest): string | undefined {
   const header = req.headers[TOKEN_HEADER];
   if (typeof header === "string" && header.length > 0) return header;
   const auth = req.headers.authorization;

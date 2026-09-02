@@ -64,9 +64,7 @@ export function Nav(props: {
           {group.items.map((item) => {
             const count = badgeCount(item);
             const active =
-              item.path === "/"
-                ? props.path === "/"
-                : props.path.startsWith(item.path);
+              item.path === "/" ? props.path === "/" : props.path.startsWith(item.path);
             return (
               <a
                 key={item.path}
