@@ -9,6 +9,7 @@ import {
   hostedStatus,
   isPlanId,
   signupTenant,
+  hasBillingVerifier,
   verifyBillingSignature,
   type PlanId,
   type StripeEvent,
@@ -101,6 +102,17 @@ export function registerHostedRoutes(
         ? req.headers["stripe-signature"]
         : "";
     if (secret && !(await verifyBillingSignature(raw, sig, secret))) {
+      // Distinguish "your signature is wrong" from "this build cannot check
+      // signatures at all". Both reject, but only one is the sender's fault,
+      // and an operator told "bad_signature" forever will go looking for a
+      // mismatch that does not exist.
+      if (!(await hasBillingVerifier())) {
+        return reply.code(501).send({
+          error: "no_signature_verifier",
+          detail:
+            "This build has no billing signature verifier, so a configured webhook secret can never be satisfied. Unset the secret to accept unverified events, or run a build that includes one.",
+        });
+      }
       return reply.code(400).send({ error: "bad_signature" });
     }
     const event = (

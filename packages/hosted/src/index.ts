@@ -1,6 +1,7 @@
 export {
   loadEe,
   setEeForTesting,
+  hasBillingVerifier,
   verifyBillingSignature,
   type EeModule,
 } from "./ee.js";

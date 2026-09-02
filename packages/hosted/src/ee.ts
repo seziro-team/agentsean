@@ -43,11 +43,25 @@ export function setEeForTesting(mod: EeModule | null | undefined): void {
 }
 
 /**
+ * Whether a signature verifier exists at all.
+ *
+ * Rejecting is right when nothing can verify, but "signature was wrong" and
+ * "nothing here can check a signature" are different facts, and reporting them
+ * identically sends an operator hunting a mismatch that does not exist. On an
+ * open-source build with a webhook secret set, every delivery is rejected
+ * forever; the operator deserves to be told why.
+ */
+export async function hasBillingVerifier(): Promise<boolean> {
+  return (await loadEe()) !== null;
+}
+
+/**
  * Verify a billing webhook signature.
  *
  * Fail-closed: when a secret is configured but no verifier is available, the
  * webhook is rejected. Accepting an unverified billing event would let anyone
- * who can reach the endpoint grant themselves a paid plan.
+ * who can reach the endpoint grant themselves a paid plan. Pair with
+ * hasBillingVerifier() to report which of the two happened.
  */
 export async function verifyBillingSignature(
   payload: string,
