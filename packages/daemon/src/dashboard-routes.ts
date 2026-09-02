@@ -145,6 +145,21 @@ function parseScore(raw: string | null): {
   }
 }
 
+/**
+ * A read with no connected site is "nothing yet", not a bad request.
+ *
+ * These endpoints answered 400 `unknown_site` when the install had no site,
+ * so a freshly-installed dashboard rendered errors across half its views
+ * instead of empty states — the product looked broken at the exact moment a
+ * new user forms their opinion of it. Reads now return 200 with `site: null`
+ * and empty collections so the UI can honestly say "connect a site first".
+ *
+ * Mutations keep the 400: you cannot act on a site that is not there.
+ */
+function noSite<T extends Record<string, unknown>>(empty: T): T & { site: null } {
+  return { ...empty, site: null };
+}
+
 export function registerDashboardRoutes(
   app: FastifyInstance,
   opts: DashboardRouteOptions,
@@ -577,12 +592,12 @@ export function registerDashboardRoutes(
     };
   });
 
-  app.get("/api/search", (req, reply) => {
+  app.get("/api/search", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site) return noSite({ pages: [], queries: [], days: [], totals: null });
     const pagesDaily = opts.db
       .select()
       .from(gscPageDaily)
@@ -622,12 +637,19 @@ export function registerDashboardRoutes(
     });
   });
 
-  app.get("/api/keywords", (req, reply) => {
+  app.get("/api/keywords", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({
+        origin: null,
+        keywords: [],
+        clusters: [],
+        ranks: [],
+        strikingDistance: [],
+      });
     return {
       origin: site.origin,
       keywords: listKeywords(opts.db, site.id),
@@ -758,12 +780,18 @@ export function registerDashboardRoutes(
     return { ok: true, ...result, refusals: AEO_REFUSALS };
   });
 
-  app.get("/api/local", (req, reply) => {
+  app.get("/api/local", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({
+        editsPerMin: GBP_EDITS_PER_MIN,
+        qpm: GBP_QPM,
+        reviewGeneration: null,
+        cityServicePages: null,
+      });
     const locations = listGbpLocations(opts.db, site.id);
     const gap = localCitationGap({
       gbpListed: locations.length > 0,
@@ -814,12 +842,18 @@ export function registerDashboardRoutes(
     }
   });
 
-  app.get("/api/mentions", (req, reply) => {
+  app.get("/api/mentions", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({
+        mentions: [],
+        inbound404s: [],
+        outreach: [],
+        sendRequiresApproval: true,
+      });
     return {
       mentions: listMentions(opts.db, site.id),
       inbound404s: listInbound404s(opts.db, site.id),
@@ -840,12 +874,16 @@ export function registerDashboardRoutes(
     return { ok: true, draftId, sendRequiresApproval: true };
   });
 
-  app.get("/api/vertical", (req, reply) => {
+  app.get("/api/vertical", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({
+        questions: ONBOARDING_QUESTIONS,
+        rules: null,
+      });
     const stored = opts.db
       .select()
       .from(verticalProfiles)
@@ -894,12 +932,18 @@ export function registerDashboardRoutes(
     };
   });
 
-  app.get("/api/claims", (req, reply) => {
+  app.get("/api/claims", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({
+        origin: null,
+        claims: null,
+        headline: null,
+        meaning: EVIDENCE_MEANING,
+      });
     const rows = listClaims(opts.db, site.id);
     return {
       origin: site.origin,
@@ -909,12 +953,12 @@ export function registerDashboardRoutes(
     };
   });
 
-  app.get("/api/experiments", (req, reply) => {
+  app.get("/api/experiments", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site) return noSite({ experiments: [] });
     return { experiments: listExperiments(opts.db, site.id) };
   });
 
@@ -995,12 +1039,13 @@ export function registerDashboardRoutes(
     return result;
   });
 
-  app.get("/api/measure/power", (req, reply) => {
+  app.get("/api/measure/power", (req, _reply) => {
     const q = req.query as { siteId?: string };
     const site = q.siteId
       ? opts.db.select().from(sites).where(eq(sites.id, q.siteId)).get()
       : opts.db.select().from(sites).all()[0];
-    if (!site) return reply.code(400).send({ error: "unknown_site" });
+    if (!site)
+      return noSite({ monthlyClicks: 0, pageCount: 0, windowDays: 0, brief: null });
     const pageCount = opts.db
       .select()
       .from(pages)

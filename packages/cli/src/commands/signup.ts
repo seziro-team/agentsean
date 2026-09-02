@@ -37,7 +37,7 @@ export async function signupCommand(opts: {
     emit(
       opts.json,
       { command: "signup", ok: true, ...result },
-      `Checkout: ${result.checkoutUrl}\nTenant ${result.tenantId}. BYOK is required. Complete the Stripe webhook, then sean tenant ${result.tenantId}.`,
+      `Checkout: ${result.checkoutUrl}\nTenant ${result.tenantId}. BYOK is required. Complete checkout, then run \`sean tenant ${result.tenantId}\`.`,
     );
     return 0;
   } finally {
