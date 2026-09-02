@@ -1,6 +1,6 @@
 {
   "name": "agentsean",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "AGPL-3.0-only",
   "description": "Agent Sean — the self-hosted autonomous SEO engineer",
   "type": "module",
