@@ -1,6 +1,6 @@
 {
   "name": "@agentsean/adapter-cloudflare",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "AGPL-3.0-only",
   "type": "module",
   "exports": {
