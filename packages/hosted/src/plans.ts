@@ -7,9 +7,12 @@
  * argue about a missing feature. It collapses to: run it yourself, run one
  * site, run a team, or call us.
  *
- * Team is priced **per seat**, not per site. Per-site pricing punishes the
- * agency that adds a small client; per-seat scales with the value the customer
- * actually gets — more people looking at the same estate.
+ * Team is a flat monthly price covering up to 25 sites. It was briefly written
+ * as per-seat, but nothing implemented seats: checkout sold a single unit and
+ * no webhook ever read a quantity, so a ten-person team would have paid for one
+ * while the site advertised otherwise. Flat is what the code actually does, and
+ * this project's own distribution research argues against seat pricing for a
+ * tool one person installs (research/12-oss-distribution.md).
  */
 
 export const PLAN_IDS = ["self_host", "cloud_starter", "team", "enterprise"] as const;
@@ -18,13 +21,13 @@ export type PlanId = (typeof PLAN_IDS)[number];
 
 export type RankCadence = "weekly" | "daily";
 
-/** Fixed monthly price, or per-seat billing where `seats` is the multiplier. */
-export type Billing = "free" | "flat" | "per_seat" | "quote";
+/** How a plan is charged. No tier bills per seat; see the note above. */
+export type Billing = "free" | "flat" | "quote";
 
 export type Plan = {
   id: PlanId;
   name: string;
-  /** Flat monthly price, or the per-seat price when `billing` is per_seat. */
+  /** Flat monthly price. Zero for free and quoted tiers. */
   priceUsdMonth: number;
   billing: Billing;
   sites: number;
@@ -94,12 +97,12 @@ export const PLANS: Record<PlanId, Plan> = {
     id: "team",
     name: "Team",
     priceUsdMonth: 14.99,
-    billing: "per_seat",
+    billing: "flat",
     sites: 25,
     ranks: "daily",
     aiVisibility: true,
     articlesMetered: true,
-    seats: 1, // billed per additional seat
+    seats: 1,
     whiteLabel: true,
     apiAccess: true,
     hostedOauth: true,
@@ -147,13 +150,15 @@ export function planOf(id: string): Plan {
   return PLANS[id];
 }
 
-/** Monthly charge for a plan at a given seat count. */
-export function monthlyPriceUsd(id: PlanId, seats = 1): number {
-  const plan = PLANS[id];
-  if (plan.billing === "per_seat") {
-    return Math.round(plan.priceUsdMonth * Math.max(1, seats) * 100) / 100;
-  }
-  return plan.priceUsdMonth;
+/**
+ * Monthly charge for a plan.
+ *
+ * Took a `seats` multiplier while Team was nominally per-seat. Nothing ever
+ * passed it — not checkout, not the webhook — so the multiplier was decoration
+ * on a price the product never charged. Every tier is flat or quoted now.
+ */
+export function monthlyPriceUsd(id: PlanId): number {
+  return PLANS[id].priceUsdMonth;
 }
 
 export function grossMargin(priceUsd: number): number {

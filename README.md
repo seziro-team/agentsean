@@ -303,7 +303,7 @@ are published deliberately.
 | Audit export, SLA, DPA | — | DPA | DPA | Yes |
 | Support | Community | Email | Email | Named contact + SLA |
 
-Team is billed **per seat, not per site** — charging more for adding a small
+Team is a **flat monthly price for up to 25 sites** — charging more for adding a small
 client is a bad reason not to add it.
 
 Self-hosting is not a crippled tier. It is the whole product, and it is free

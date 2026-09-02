@@ -82,9 +82,16 @@ seat/month** (25 sites, everything switched on), **Enterprise** (quoted).
 
 This replaced a $9 / $29 / $79 / $249 ladder. Four priced rungs made a buyer
 read four feature matrices to work out which box they were in, and made each
-box somewhere to argue about a missing feature. Team is priced per seat rather
-than per site because per-site pricing penalises an agency for adding a small
-client — the exact behaviour you want to encourage.
+box somewhere to argue about a missing feature. Team is a flat monthly price covering up to 25 sites, so an agency is not
+penalised for adding a small client.
+
+It was briefly written as per-seat, and that was withdrawn rather than built:
+checkout sold a single unit and no webhook ever read a quantity, so a
+ten-person team would have paid for one while the pricing page said otherwise.
+Advertising a price the code cannot charge is worse than charging a simpler
+one. This project's own distribution research reaches the same conclusion —
+"never bill per seat for a tool one person installs"
+(research/12-oss-distribution.md).
 
 Enterprise carries no listed price by design. `PLANS.enterprise.priceUsdMonth`
 is 0 and a test asserts it, so a number cannot leak onto the pricing page.

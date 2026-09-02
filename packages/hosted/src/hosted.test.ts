@@ -46,18 +46,24 @@ describe("Phase 10 hosted tier", () => {
     expect(PLANS.cloud_starter.priceUsdMonth).toBe(9);
     expect(PLANS.cloud_starter.sites).toBe(1);
     expect(PLANS.team.priceUsdMonth).toBe(14.99);
-    expect(PLANS.team.billing).toBe("per_seat");
+    // Flat, not per seat. Seats were advertised but never implemented: checkout
+    // sold one unit and no webhook read a quantity, so a ten-person team would
+    // have paid for one.
+    expect(PLANS.team.billing).toBe("flat");
     expect(PLANS.enterprise.billing).toBe("quote");
 
     // Enterprise is quoted, never listed. A price here would leak into the
     // pricing page, which must only ever say "talk to us".
     expect(PLANS.enterprise.priceUsdMonth).toBe(0);
 
-    // Per-seat multiplies; flat does not.
-    expect(monthlyPriceUsd("team", 1)).toBe(14.99);
-    expect(monthlyPriceUsd("team", 5)).toBe(74.95);
-    expect(monthlyPriceUsd("team", 0)).toBe(14.99); // never bills zero seats
-    expect(monthlyPriceUsd("cloud_starter", 5)).toBe(9);
+    // Every tier is flat or quoted, so price does not vary with team size. This
+    // used to assert 5 seats × $14.99 = $74.95 — an amount no code path could
+    // ever have charged, since checkout sold one unit and no webhook read a
+    // quantity.
+    expect(monthlyPriceUsd("team")).toBe(14.99);
+    expect(monthlyPriceUsd("cloud_starter")).toBe(9);
+    expect(monthlyPriceUsd("self_host")).toBe(0);
+    expect(monthlyPriceUsd("enterprise")).toBe(0);
 
     expect(BYOK_REQUIRED).toBe(true);
     expect(NON_LLM_COGS_USD).toBe(2.29);

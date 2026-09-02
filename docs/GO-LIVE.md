@@ -29,7 +29,7 @@ Polar organization `agentsean` (Prajura Consultancy Services), id
 | Plan | Product id | Price |
 | --- | --- | --- |
 | `cloud_starter` | `c1e5161e-82c8-4846-b9fb-4fe2c87d2be1` | $9/mo (+ ₹799/mo) |
-| `team` | `d97329d1-308f-492e-b141-7ece9d43044a` | $14.99 per seat/mo |
+| `team` | `d97329d1-308f-492e-b141-7ece9d43044a` | $14.99/mo, up to 25 sites |
 | `enterprise` | — | quoted, never listed |
 
 Cloud Pro, Business and Agency are **archived** in Polar — the four-rung ladder

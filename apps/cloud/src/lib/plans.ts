@@ -15,13 +15,13 @@ export type PlanId = (typeof PLAN_IDS)[number];
 
 export type RankCadence = "weekly" | "daily";
 
-/** Fixed monthly price, or per-seat billing where `seats` is the multiplier. */
-export type Billing = "free" | "flat" | "per_seat" | "quote";
+/** How a plan is charged. No tier bills per seat; see the note above. */
+export type Billing = "free" | "flat" | "quote";
 
 export type Plan = {
   id: PlanId;
   name: string;
-  /** Flat monthly price, or the per-seat price when `billing` is per_seat. */
+  /** Flat monthly price. Zero for free and quoted tiers. */
   priceUsdMonth: number;
   billing: Billing;
   sites: number;
@@ -91,12 +91,12 @@ export const PLANS: Record<PlanId, Plan> = {
     id: "team",
     name: "Team",
     priceUsdMonth: 14.99,
-    billing: "per_seat",
+    billing: "flat",
     sites: 25,
     ranks: "daily",
     aiVisibility: true,
     articlesMetered: true,
-    seats: 1, // billed per additional seat
+    seats: 1,
     whiteLabel: true,
     apiAccess: true,
     hostedOauth: true,
@@ -143,13 +143,15 @@ export function planOf(id: string): Plan {
   return PLANS[id];
 }
 
-/** Monthly charge for a plan at a given seat count. */
-export function monthlyPriceUsd(id: PlanId, seats = 1): number {
-  const plan = PLANS[id];
-  if (plan.billing === "per_seat") {
-    return Math.round(plan.priceUsdMonth * Math.max(1, seats) * 100) / 100;
-  }
-  return plan.priceUsdMonth;
+/**
+ * Monthly charge for a plan.
+ *
+ * Took a `seats` multiplier while Team was nominally per-seat. Nothing ever
+ * passed it — not checkout, not the webhook — so the multiplier was decoration
+ * on a price the product never charged. Every tier is flat or quoted now.
+ */
+export function monthlyPriceUsd(id: PlanId): number {
+  return PLANS[id].priceUsdMonth;
 }
 
 /** Render a quota, where an infinite cap reads as "Unlimited" rather than "∞". */
@@ -157,12 +159,11 @@ export function quotaLabel(n: number): string {
   return Number.isFinite(n) ? String(n) : "Unlimited";
 }
 
-/** Price as shown in the UI. Per-seat plans say so; Enterprise is never priced. */
+/** Price as shown in the UI. Enterprise is never priced. */
 export function priceLabel(id: PlanId): string {
   const plan = PLANS[id];
   if (plan.billing === "free") return "$0";
   if (plan.billing === "quote") return "Talk to us";
-  if (plan.billing === "per_seat") return `$${plan.priceUsdMonth.toFixed(2)}`;
   return `$${plan.priceUsdMonth}`;
 }
 
@@ -171,6 +172,5 @@ export function priceSuffix(id: PlanId): string {
   const plan = PLANS[id];
   if (plan.billing === "free") return "forever · AGPL-3.0";
   if (plan.billing === "quote") return "annual · invoice billing";
-  if (plan.billing === "per_seat") return "per seat / month";
   return "per month";
 }
