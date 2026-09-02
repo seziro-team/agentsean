@@ -2,7 +2,7 @@
 # docker-compose publishes 127.0.0.1:7777:7777. The entrypoint refuses to
 # start without SEAN_AUTH_TOKEN (>= 32 chars). Playwright/Chromium is not
 # baked in — first JS render fetches it, matching the no-postinstall rule.
-FROM node:22.19-bookworm-slim
+FROM node:22.19-bookworm-slim@sha256:4a4884e8a44826194dff92ba316264f392056cbe243dcc9fd3551e71cea02b90
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates git \
