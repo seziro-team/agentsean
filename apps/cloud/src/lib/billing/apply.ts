@@ -45,10 +45,25 @@ async function must<T>(
  * recorded that anything had gone wrong. A throw is the only way the caller can
  * tell the provider to retry.
  */
+export type ApplyOutcome = {
+  applied: boolean;
+  note: string;
+  /**
+   * True when the event carried money or a state change we could NOT attach to
+   * a tenant — as opposed to an event that simply required no action.
+   *
+   * The two look identical as `applied: false`, and conflating them hides the
+   * worst case: a subscription whose checkout metadata did not come back, so
+   * the customer paid and stayed on free. The caller leaves applied_at null for
+   * these so they surface in the unapplied query instead of looking finished.
+   */
+  unresolved?: boolean;
+};
+
 export async function applyBillingEvent(
   db: SupabaseClient<Database>,
   event: NormalizedEvent,
-): Promise<{ applied: boolean; note: string }> {
+): Promise<ApplyOutcome> {
   const now = new Date().toISOString();
 
   // Resolve the tenant: prefer explicit metadata, else fall back to matching a
@@ -71,6 +86,15 @@ export async function applyBillingEvent(
       if (tenantId) {
         await upsertActiveSubscription(db, tenantId, event, "active", now);
       }
+      if (!invitePaid && !tenantId) {
+        // Money arrived and matched nothing: no invite, no tenant. Recording it
+        // as applied would bury a payment nobody was credited for.
+        return {
+          applied: false,
+          unresolved: true,
+          note: "order.paid matched no invite or tenant",
+        };
+      }
       return {
         applied: true,
         note: invitePaid ? "order.paid → invite marked paid" : "order.paid recorded",
@@ -79,7 +103,11 @@ export async function applyBillingEvent(
     case "subscription.created":
     case "subscription.active":
     case "subscription.updated": {
-      if (!tenantId) return { applied: false, note: "no tenant resolved" };
+      // A paid subscription we cannot attach to anyone. Retrying the same
+      // payload will not help — the metadata is either there or it is not — so
+      // this is flagged for reconciliation rather than retried forever.
+      if (!tenantId)
+        return { applied: false, unresolved: true, note: "no tenant resolved" };
       const status: SubscriptionStatus =
         event.status === "past_due" ? "past_due" : "active";
       await upsertActiveSubscription(db, tenantId, event, status, now);
@@ -87,7 +115,8 @@ export async function applyBillingEvent(
     }
     case "subscription.canceled":
     case "subscription.revoked": {
-      if (!tenantId) return { applied: false, note: "no tenant resolved" };
+      if (!tenantId)
+        return { applied: false, unresolved: true, note: "no tenant resolved" };
       await must(
         "tenants.cancel",
         db

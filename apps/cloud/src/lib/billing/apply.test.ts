@@ -148,3 +148,47 @@ describe("applyBillingEvent", () => {
     expect(writes).toEqual([]);
   });
 });
+
+/**
+ * "Nothing to do" and "could not act on a payment" both surfaced as
+ * `applied: false`, and the webhook stamped applied_at on both. That buried the
+ * worst case — a subscription whose checkout metadata never came back, so the
+ * customer paid, stayed on free, and the row looked finished — inside the same
+ * shape as a harmless customer.created. Only the second kind is unresolved.
+ */
+describe("unresolved vs. nothing-to-do", () => {
+  it("flags a paid subscription that matches no tenant", async () => {
+    const { db } = fakeDb({});
+    const out = await applyBillingEvent(db, {
+      ...subscriptionEvent,
+      tenantId: null,
+      customerId: null,
+    });
+    expect(out.applied).toBe(false);
+    expect(out.unresolved, "someone paid and was credited to nobody").toBe(true);
+  });
+
+  it("flags an order that matches neither invite nor tenant", async () => {
+    const { db } = fakeDb({});
+    const out = await applyBillingEvent(db, {
+      ...subscriptionEvent,
+      type: "order.paid",
+      rawType: "order.paid",
+      tenantId: null,
+      customerId: null,
+      inviteId: null,
+    });
+    expect(out.unresolved).toBe(true);
+  });
+
+  it("does NOT flag an event that simply needs no action", async () => {
+    const { db } = fakeDb({});
+    const out = await applyBillingEvent(db, {
+      ...subscriptionEvent,
+      type: "customer.created",
+      rawType: "customer.created",
+    });
+    expect(out.applied).toBe(false);
+    expect(out.unresolved, "no money involved; nothing was lost").toBeFalsy();
+  });
+});

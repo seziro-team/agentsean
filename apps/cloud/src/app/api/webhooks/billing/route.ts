@@ -95,6 +95,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // 200 that stops the provider from trying again.
   try {
     const applied = await applyBillingEvent(db, event);
+
+    // `unresolved` means the event carried money we could not attach to a
+    // tenant — most likely a subscription whose checkout metadata did not come
+    // back, so someone has paid and is still on free. Retrying the identical
+    // payload cannot fix that, so answer 200 rather than loop the provider; but
+    // leave applied_at null so the row shows up in the unapplied query instead
+    // of looking finished. This is the one case a human has to look at.
+    if (applied.unresolved) {
+      console.error(
+        `[webhook] UNRESOLVED ${event.rawType} (${event.id}): ${applied.note} — payment not credited to any tenant`,
+      );
+      return NextResponse.json({ ok: true, ...applied });
+    }
+
     const { error: markError } = await db
       .from("billing_events")
       .update({ applied_at: new Date().toISOString() })
