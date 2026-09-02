@@ -91,6 +91,14 @@ create trigger profiles_protect_privileges
 -- does the check and the burn in one UPDATE, so exactly one caller can win.
 -- Returns the pairing row on success, zero rows otherwise.
 
+-- The session id lives on terminal_sessions, not here. createPairing() inserts
+-- a daemon_pairings row and a terminal_sessions row pointing back at it via
+-- pairing_id, so the id the caller needs is one join away. An earlier draft of
+-- this function selected `d.session_id` — a column daemon_pairings has never
+-- had — which meant the whole migration failed to apply and took 0004 with it.
+--
+-- The burn stays atomic: the UPDATE and its predicates are unchanged and still
+-- decide the single winner. The join only decorates the row that won.
 create or replace function public.redeem_daemon_pairing(
   p_code_hash text,
   p_session_token_hash text
@@ -101,14 +109,23 @@ volatile
 security definer
 set search_path = public
 as $$
-  update public.daemon_pairings d
-     set status             = 'redeemed',
-         redeemed_at        = now(),
-         session_token_hash = p_session_token_hash
-   where d.code_hash = p_code_hash
-     and d.status    = 'pending'      -- single-use: only a pending row wins
-     and d.expires_at > now()         -- and only before it expires
-  returning d.id, d.tenant_id, d.session_id;
+  with burned as (
+    update public.daemon_pairings d
+       set status             = 'redeemed',
+           redeemed_at        = now(),
+           session_token_hash = p_session_token_hash
+     where d.code_hash = p_code_hash
+       and d.status    = 'pending'      -- single-use: only a pending row wins
+       and d.expires_at > now()         -- and only before it expires
+    returning d.id, d.tenant_id
+  )
+  select b.id, b.tenant_id, s.id as session_id
+    from burned b
+    -- LEFT, not INNER: if the session insert failed after the pairing insert,
+    -- the pairing still exists. Returning it with a null session tells the
+    -- caller the truth; an inner join would report "code not found" for a code
+    -- that was in fact just consumed.
+    left join public.terminal_sessions s on s.pairing_id = b.id;
 $$;
 
 comment on function public.redeem_daemon_pairing(text, text) is

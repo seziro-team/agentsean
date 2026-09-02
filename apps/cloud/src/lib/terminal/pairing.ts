@@ -158,5 +158,13 @@ export async function redeemPairing(
   }
   const row = Array.isArray(data) ? data[0] : null;
   if (!row) return null;
+  if (!row.session_id) {
+    // The code was valid and is now burned, but no terminal session is bound to
+    // it — createPairing inserts the pairing first, so this is what a failed
+    // session insert leaves behind. There is nothing to attach to, and the code
+    // is spent, so fail rather than hand back a half-built session.
+    console.error("[terminal] pairing redeemed but has no session row");
+    return null;
+  }
   return { id: row.id, tenantId: row.tenant_id, sessionId: row.session_id };
 }

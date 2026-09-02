@@ -35,6 +35,27 @@ Polar organization `agentsean` (Prajura Consultancy Services), id
 Cloud Pro, Business and Agency are **archived** in Polar — the four-rung ladder
 collapsed to one Team tier.
 
+Those two product ids are live, not placeholders. Checked against the Polar API
+on 2026-09-02: `c1e5161e…` is "Agent Sean" with prices 900 and 79900, and
+`d97329d1…` is "Agent Sean — Team" at 1499, which is the flat $14.99 the
+pricing page shows. They are also what `POLAR_PRODUCTS_JSON` ships with in
+`apps/cloud/.env.example`, so a deploy that reads that file is already mapped.
+Worth stating because they look like sample UUIDs and had been assumed to be.
+
+**Checkout metadata does reach the webhook.** Plan activation depends entirely
+on it — `createCheckout` writes `{tenantId, planId}` into the checkout and
+`normalizeEvent` reads them back off the subscription event — so if it did not
+propagate, a customer would pay and stay on free. Polar's own documentation
+states: "Metadata set on the link is copied to the generated Checkout Session,
+and propagates to the resulting Order and/or Subscription on success." A live
+checkout created against the production org on 2026-09-02 confirmed the session
+stores and echoes the metadata verbatim.
+
+The one thing still unproven is the last hop, session → subscription, on a
+*completed* payment; nobody has paid yet. The first real subscription is worth
+watching: if `tenants.plan` does not move, look for a `billing_events` row with
+`applied_at` null and note "no tenant resolved".
+
 Webhook: `https://app.agentsean.dev/api/webhooks/billing`, format **raw**, all
 events subscribed. The handler acts on eight of them and records the rest.
 
