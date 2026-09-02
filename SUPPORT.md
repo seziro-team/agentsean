@@ -73,7 +73,7 @@ not depend on the platform having a restore API.
 
 Do not open a public issue for a vulnerability. Use a
 [private GitHub security advisory](https://github.com/seziro-team/agentsean/security/advisories/new).
-A secondary channel, `security@agentsean.com`, is being provisioned. Full policy
+A secondary channel, `security@agentsean.dev`, is being provisioned. Full policy
 and the classes of bug we care about most are in
 [`SECURITY.md`](SECURITY.md).
 

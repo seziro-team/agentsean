@@ -1,123 +1,131 @@
 # Go live
 
-What is already live, and the short list that still needs a human with a browser
-and a credit card.
+State as of 2026-09-02.
 
-Last updated 2026-09-02.
-
-## Done
+## Live
 
 | | Where | State |
 | --- | --- | --- |
-| Public repo | [`seziro-team/agentsean`](https://github.com/seziro-team/agentsean) | AGPL-3.0, 20 topics, Discussions on |
+| Public repo | [`seziro-team/agentsean`](https://github.com/seziro-team/agentsean) | AGPL-3.0, 20 topics, Discussions |
 | npm | [`agentsean`](https://www.npmjs.com/package/agentsean) + 25 `@agentsean/*` | `1.0.4`, verified by a clean-room `npx` install |
-| Release | [`v1.0.4`](https://github.com/seziro-team/agentsean/releases/tag/v1.0.4) | notes, install matrix, known issues |
-| Site | `seziro-team.github.io/agentsean` | GitHub Pages, deploy gated on a link check |
+| Release | [`v1.0.4`](https://github.com/seziro-team/agentsean/releases/tag/v1.0.4) | notes, install matrix |
+| Site | `agentsean.dev` (GitHub Pages) | deploy gated on an internal-link check |
 | CI | Node 22/24 × Linux/macOS/Windows | green |
-| Security | CodeQL, OSSF Scorecard, dependency review, Dependabot | 0 open Dependabot alerts |
-| Supply chain | Actions pinned by SHA, workflow token read-only | branch protection on `main` |
-| Cloud control plane | `apps/cloud` | builds with an empty environment; not deployed |
+| Security | CodeQL · Scorecard · dependency review · Dependabot | 0 open Dependabot alerts |
+| Supply chain | Actions + base image pinned by digest, workflow token read-only | branch protection on `main` |
+| **Billing** | Polar org `agentsean` | **active**, webhook live, 4 products |
+| Cloud control plane | `apps/cloud` | builds with an empty env; **not yet deployed** |
 
 `npx agentsean audit https://example.com` works from a cold cache with no
 account and no credentials. That is the check that gates a release — see
-`packages/launch/src/packaging.test.ts` for the guards that keep it working.
+`packages/launch/src/packaging.test.ts`.
+
+## Billing — configured
+
+Polar organization `agentsean` (Prajura Consultancy Services), id
+`344b820a-c9ac-4eb7-9558-09d59a5a5f1b`, status **active**.
+
+| Plan | Product id | Price |
+| --- | --- | --- |
+| `cloud_starter` | `c1e5161e-82c8-4846-b9fb-4fe2c87d2be1` | $9/mo (+ ₹799/mo) |
+| `cloud_pro` | `bab6b78c-cf14-430f-ab9d-4a13d6032ebc` | $29/mo |
+| `business` | `346d58e1-ecfb-4791-9d3e-083599f88989` | $79/mo |
+| `agency` | `b7fba45b-14dc-4631-80a1-d16463d9a1b5` | $249/mo |
+
+Webhook: `https://app.agentsean.dev/api/webhooks/billing`, format **raw**, all
+events subscribed. The handler acts on eight of them and records the rest.
 
 ## Still needs you
 
-### 1. Rotate the credentials — do this first
+### 1. Rotate the credentials that went through chat
 
-The GitHub PAT and the npm token used to publish were both pasted into a chat
-transcript. Treat them as compromised.
+Four secrets were pasted into a transcript. Treat all four as compromised:
 
-- GitHub → Settings → Developer settings → Tokens → revoke, reissue
-- npm → Access Tokens → revoke, reissue → update the `NPM_TOKEN` repo secret
+| Credential | Where to rotate |
+| --- | --- |
+| GitHub PAT | Settings → Developer settings → Tokens |
+| npm token | npmjs.com → Access Tokens → then update the `NPM_TOKEN` repo secret |
+| Google **web** client secret | Cloud Console → Credentials → reset secret |
+| Google **desktop** client secret | Cloud Console → Credentials → reset secret |
 
-The npm token is stored as an encrypted GitHub Actions secret so releases can
-publish with Sigstore provenance. Replacing it there is enough; nothing else
-reads it.
+Client **IDs** are public and safe. The Polar token is a live all-access org
+token — rotate it too once the app is deployed and reading it from env.
 
-### 2. Buy the domain
+### 2. DNS for `agentsean.dev`
 
-`agentsean.com`, `.dev`, `.io`, and `.ai` were all available as of 2026-09-02.
-`agentsean.com` is the one the OAuth consent screen needs.
+GitHub Pages needs an apex `A`/`AAAA` set plus a `www` CNAME. At your registrar:
 
-After registering:
-
-1. `CNAME` → `seziro-team.github.io`
-2. Repo → Settings → Pages → Custom domain → enforce HTTPS
-3. Update `web/index.html`'s canonical link and the `homepage` field on the repo
-
-### 3. Provision mail
-
-`security@`, `privacy@`, `conduct@`, `sales@`, `support@`. These are referenced
-by `SECURITY.md`, `CODE_OF_CONDUCT.md`, the privacy policy, and the pricing
-page. Until they resolve, GitHub Security Advisories is the working channel for
-vulnerabilities and Discussions for everything else.
-
-### 4. Billing — Polar
-
-Reasoning and the rejected alternatives are in [`billing.md`](billing.md). The
-short version: Stripe Payments has been invite-only for new India-domiciled
-merchants since May 2024, Polar settles INR to an Indian bank, and Polar's
-Stripe Connect Express dependency is a different product that *is* available in
-India.
-
-1. Create a Polar organization and complete KYC. **Budget up to 14 days** before
-   the first payout clears — start this early.
-2. Create one product per plan; record the price ids.
-3. Fill the `POLAR_*` variables in `apps/cloud/.env.example`.
-4. Paste the webhook URL (`/api/webhooks/billing`) into the Polar dashboard and
-   store the signing secret.
-
-Paddle is implemented as a drop-in fallback behind the same interface if Polar
-declines the account: set `BILLING_PROVIDER=paddle`.
-
-### 5. Deploy the cloud app
-
-Needs a Supabase project and a host (Vercel is the obvious one).
-
-```bash
-supabase db push          # applies supabase/migrations/0001..0003
-vercel deploy             # from apps/cloud
+```
+Type   Name   Value
+────   ────   ─────────────────────────
+A      @      185.199.108.153
+A      @      185.199.109.153
+A      @      185.199.110.153
+A      @      185.199.111.153
+AAAA   @      2606:50c0:8000::153
+AAAA   @      2606:50c0:8001::153
+AAAA   @      2606:50c0:8002::153
+AAAA   @      2606:50c0:8003::153
+CNAME  www    seziro-team.github.io.
 ```
 
-Set `SUPERADMIN_EMAILS` to your address before first login — that is what
-bootstraps the super-admin. Everything else degrades to a visible
-"not configured" banner, so you can deploy with a partial environment and fill
-it in as you go.
+For the app (once deployed to Vercel), add `CNAME app → cname.vercel-dns.com.`
+and `CNAME oauth → cname.vercel-dns.com.` for the OAuth broker.
 
-### 6. Google OAuth verification
+Then: repo → **Settings → Pages → Custom domain** → `agentsean.dev` → wait for
+the DNS check → tick **Enforce HTTPS**. `web/CNAME` is already committed.
 
-Blocked on step 2 — the consent screen needs a verified domain, a homepage, and
-a hosted privacy policy. Checklist in
-[`oauth-verification.md`](oauth-verification.md). Observed verification times
-run 33–86 days, so submit as soon as the domain resolves.
+### 3. Mail on the domain
 
-Until then, self-hosters use their own Cloud project:
+`support@agentsean.dev` and `noreply@agentsean.dev` are referenced by the site,
+`SECURITY.md`, `CODE_OF_CONDUCT.md`, `SUPPORT.md` and the privacy policy. Add
+SPF, DKIM and DMARC — a transactional sender that fails DMARC lands OTP mail in
+spam, which reads as a broken product.
+
+### 4. Google OAuth
+
+Both clients exist. Two things remain:
+
+- **The consent screen is in Testing.** Only listed test users can authenticate.
+  Publish it, then submit for verification — three sensitive scopes
+  (`webmasters`, `analytics.readonly`, `siteverification`) mean review is
+  mandatory. Observed times run 33–86 days.
+- **Redirect URIs** on the web client must be exactly:
+  `https://oauth.agentsean.dev/google/callback` and
+  `https://app.agentsean.dev/auth/callback`.
+
+The desktop client needs no secret in the app — it uses PKCE (S256), which is
+why `packages/google/src/oauth-desktop.ts` implements the challenge itself.
+Until verification lands, self-hosters use their own project:
 
 ```bash
 sean connect google --byo --credentials ./client_secret.json
 ```
 
-### 7. Tighten branch protection once the launch settles
+### 5. Deploy the cloud app
 
-`main` currently blocks force pushes and deletion. Required status checks and
-mandatory review are deliberately off, because required checks block direct
-pushes until the checks pass for that exact commit. Turn both on when you stop
-pushing straight to `main`:
+```bash
+supabase db push                    # migrations 0001..0003
+cd apps/cloud && vercel deploy      # then add the domain app.agentsean.dev
+```
 
-Settings → Branches → `main` → require a pull request, require the `CI` status
-check.
+Set `SUPERADMIN_EMAILS` to your address **before** first login — that is what
+bootstraps the super-admin. Everything else degrades to a visible
+"not configured" banner, so a partial environment is fine.
 
-### 8. Optional
+### 6. Tighten branch protection
 
-- **Social preview image.** `web/assets/social.png` is generated and correct;
-  GitHub's social-preview upload has no API, so set it at
-  Settings → General → Social preview.
-- **A dedicated org.** Transferring `seziro-team/agentsean` to an `agentsean`
-  org preserves stars, issues, and forks, and GitHub serves permanent
-  redirects — so clones and the `curl | sh` installer keep working. Update the
-  README badges, `package.json` `repository` fields, the CLA bot's
-  `path-to-document`, `packages/crawler/src/ua.ts`, and `Formula/agentsean.rb`.
-- **Launch posts.** Drafts are in [`launch/`](launch/): Show HN, Reddit, social,
-  and the WordPress.org directory submission.
+`main` blocks force pushes and deletion. Required status checks and mandatory
+review are off, because required checks block direct pushes until the checks
+pass for that exact commit. Turn both on once you stop pushing to `main`
+directly: Settings → Branches → `main`.
+
+### 7. Optional
+
+- **Social preview image** — `web/assets/social.png` is correct; GitHub has no
+  API for it, so set it at Settings → General → Social preview.
+- **A dedicated org** — transferring the repo preserves stars, issues and forks,
+  and GitHub serves permanent redirects, so clones and the installer keep
+  working.
+- **Launch posts** — drafts in [`launch/`](launch/): Show HN, Reddit, social,
+  WordPress.org directory.

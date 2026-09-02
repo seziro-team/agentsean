@@ -26,7 +26,7 @@ alert.
 
 Shipping `client_id` / `client_secret` in this repository is forbidden:
 Google APIs ToS §4(b), verbatim. The **first-party stateless OAuth broker**
-on `oauth.agentsean.com` holds the secret. After Google consent it encrypts
+on `oauth.agentsean.dev` holds the secret. After Google consent it encrypts
 the refresh token with a one-time wrap key the local daemon generated and
 **302s to** `http://127.0.0.1:<port>/oauth/callback` (RFC 8252 IP literal,
 not `localhost`). PKCE S256 is used on both the broker's Google client and

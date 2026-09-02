@@ -86,7 +86,7 @@ async function showStart(status) {
   const n = el("<div class='card'>"
     + "<p>Sean will request Search Console (including sitemap submit), Analytics read-only, and Site Verification. Business Profile waits until you need local SEO.</p>"
     + "<label>Site origin</label><input id='origin' placeholder='https://example.com' value='" + (status.origin || "") + "'/>"
-    + "<p class='muted'>Default path uses the first-party broker on agentsean.com (no client secret in this repo). Advanced users can paste a Desktop-app client instead — Publish the Cloud project to Production or refresh tokens die in 7 days.</p>"
+    + "<p class='muted'>Default path uses the first-party broker on agentsean.dev (no client secret in this repo). Advanced users can paste a Desktop-app client instead — Publish the Cloud project to Production or refresh tokens die in 7 days.</p>"
     + "<div class='row'><button id='go'>Connect Google</button><button class='secondary' id='byo'>I have my own Cloud project</button></div>"
     + "<div id='byobox' hidden><label>client_secret.json</label><textarea id='creds' rows='6' style='width:100%'></textarea><button id='gobyo'>Connect with my client</button></div>"
     + "</div>");

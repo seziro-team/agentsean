@@ -23,7 +23,7 @@ export default function SuspendedPage() {
         </p>
         <p className="mt-3 text-sm text-[var(--color-muted)]">
           If you think this is a mistake, reply to your most recent billing email or
-          contact <span className="font-mono">support@agentsean.com</span>.
+          contact <span className="font-mono">support@agentsean.dev</span>.
         </p>
         <div className="mt-6">
           <SignOutButton />

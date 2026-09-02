@@ -17,7 +17,7 @@ See [`docs/security.md`](docs/security.md).
 
 Please **do not** open a public GitHub issue for security reports.
 
-Email **security@agentsean.com** (mailbox will be live with the domain claim)
+Email **security@agentsean.dev** (mailbox will be live with the domain claim)
 or open a private [GitHub security advisory](https://github.com/seziro-team/agentsean/security/advisories/new)
 on this repository.
 

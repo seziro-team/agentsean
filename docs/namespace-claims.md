@@ -8,9 +8,11 @@ actual Seans. `agentsean` is the consistent handle to claim everywhere.
 | GitHub repo | [`seziro-team/agentsean`](https://github.com/seziro-team/agentsean) | **Live.** Canonical source. |
 | npm package | `agentsean` | **Claimed.** Published from CI with Sigstore provenance. |
 | npm scope | `@agentsean/*` | **Claimed.** Workspace packages publish under it. |
-| Domain | `agentsean.com` | **Available.** Primary. Needed for the Google OAuth consent screen. |
-| Domain | `agentsean.dev` / `.ai` / `.io` | **Available.** Defensive registrations. |
-| Website | `seziro-team.github.io/agentsean` | **Live** on GitHub Pages until the domain resolves. |
+| Domain | `agentsean.dev` | **Registered.** Primary. Used by the OAuth consent screen. |
+| Subdomain | `app.agentsean.dev` | Cloud control plane. Polar webhook target. |
+| Subdomain | `oauth.agentsean.dev` | First-party Google OAuth broker. |
+| Website | `agentsean.dev` | **Live** on GitHub Pages via `web/CNAME`. |
+| Billing | Polar org `agentsean` | **Active.** Four products, webhook live. |
 | Discord | `agentsean` | Not claimed. |
 | X | `@agentsean` | Not claimed. Fallbacks: `@agentseanapp`, `@seziro`. |
 | WordPress.org plugin slug | `agent-sean-bridge` | Not submitted. See [`docs/launch/wordpress-directory.md`](launch/wordpress-directory.md). |
@@ -19,13 +21,12 @@ actual Seans. `agentsean` is the consistent handle to claim everywhere.
 
 These need a browser session and cannot be done from CI.
 
-1. **Register `agentsean.com`.** Point `CNAME` at `seziro-team.github.io` (or
-   the app host). Add the domain in **Settings → Pages → Custom domain** and
-   enable *Enforce HTTPS*. The `web/CNAME` file is already staged for this.
-2. **Provision mail** on the domain: `security@`, `privacy@`, `conduct@`,
-   `sales@`, `support@`. `SECURITY.md`, `CODE_OF_CONDUCT.md`, and the privacy
-   policy reference these; GitHub Security Advisories is the working channel
-   until they resolve.
+1. **Point DNS at GitHub Pages.** Apex `A`/`AAAA` records plus a `www` CNAME —
+   the exact values are in [`GO-LIVE.md`](GO-LIVE.md). Then Settings → Pages →
+   Custom domain → *Enforce HTTPS*. `web/CNAME` is committed.
+2. **Provision mail**: `support@agentsean.dev` and `noreply@agentsean.dev`, with
+   SPF, DKIM and DMARC. GitHub Security Advisories remains the vulnerability
+   channel regardless.
 3. **Google Cloud OAuth** — see [`docs/oauth-verification.md`](oauth-verification.md).
    The consent screen requires a verified domain, a homepage, and a hosted
    privacy policy, all of which depend on step 1.

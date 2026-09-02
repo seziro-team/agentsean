@@ -98,7 +98,7 @@ required by [`GOVERNANCE.md`](GOVERNANCE.md).
 ## Security-response duty
 
 Vulnerability reports arrive as private GitHub security advisories (primary) and,
-once provisioned, at `security@agentsean.com` (secondary). See
+once provisioned, at `security@agentsean.dev` (secondary). See
 [`SECURITY.md`](SECURITY.md).
 
 - While the team is small, `@seziro-team` holds the security-response duty

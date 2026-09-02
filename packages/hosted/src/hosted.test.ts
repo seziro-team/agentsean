@@ -179,9 +179,9 @@ describe("Phase 10 hosted tier", () => {
   it("keeps self-host OAuth on loopback and hosted OAuth on the public origin", () => {
     expect(() => assertOauthRedirect("https://evil.test/cb", {})).toThrow(/loopback/);
     expect(() =>
-      assertOauthRedirect("https://app.agentsean.com/oauth/callback", {
+      assertOauthRedirect("https://app.agentsean.dev/oauth/callback", {
         SEAN_HOSTED: "1",
-        SEAN_PUBLIC_ORIGIN: "https://app.agentsean.com",
+        SEAN_PUBLIC_ORIGIN: "https://app.agentsean.dev",
       }),
     ).not.toThrow();
   });

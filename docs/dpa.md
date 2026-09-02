@@ -9,4 +9,4 @@ OAuth refresh tokens on behalf of the customer.
 - **Security.** Envelope encryption for secrets (`SEAN_KMS_KEY`). Loopback-only self-host remains available so customers can keep data on their own machines.
 - **Erasure.** `DELETE` of a tenant removes sites (cascade), credentials, usage, and envelope keys. Google tokens are deleted with the credential store. Retention of Stripe invoices follows Stripe's own retention.
 - **Transfers.** Google tokens stay in Google's US regions; compute is Hetzner (EU) by default.
-- **Contact.** `privacy@agentsean.com` (placeholder until launch).
+- **Contact.** `privacy@agentsean.dev` (placeholder until launch).

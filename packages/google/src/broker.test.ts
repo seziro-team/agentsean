@@ -29,7 +29,7 @@ describe("stateless OAuth broker", () => {
     const prevH = process.env["SEAN_HOSTED"];
     const prevO = process.env["SEAN_PUBLIC_ORIGIN"];
     process.env["SEAN_HOSTED"] = "1";
-    process.env["SEAN_PUBLIC_ORIGIN"] = "https://app.agentsean.com";
+    process.env["SEAN_PUBLIC_ORIGIN"] = "https://app.agentsean.dev";
     try {
       const url = brokerStartUrl({
         secrets: {
@@ -37,7 +37,7 @@ describe("stateless OAuth broker", () => {
           clientSecret: "sec",
           stateKey: randomBytes(32),
         },
-        redirectUri: "https://app.agentsean.com/oauth/callback",
+        redirectUri: "https://app.agentsean.dev/oauth/callback",
         wrapKeyB64: "x",
         localState: "s",
       });
@@ -51,14 +51,14 @@ describe("stateless OAuth broker", () => {
   });
 
   it("hands a sealed refresh token to loopback, never as plaintext", async () => {
-    setBrokerRegisteredCallback("https://oauth.agentsean.com/google/callback");
+    setBrokerRegisteredCallback("https://oauth.agentsean.dev/google/callback");
     const pending = createPendingStore();
     const started = startBrokerAuthorization({
-      brokerUrl: "https://oauth.agentsean.com",
+      brokerUrl: "https://oauth.agentsean.dev",
       redirectUri: loopbackRedirectUri(7777),
       pending,
     });
-    expect(started.authorizationUrl).toContain("oauth.agentsean.com/google/start");
+    expect(started.authorizationUrl).toContain("oauth.agentsean.dev/google/start");
     expect(started.authorizationUrl).toContain("127.0.0.1");
 
     const secrets = {

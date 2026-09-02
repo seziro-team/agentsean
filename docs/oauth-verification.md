@@ -20,7 +20,7 @@ App type for the OSS daemon: **Desktop app** + **Web application**.
 - Desktop: RFC 8252 loopback redirect
   `http://127.0.0.1:<ephemeral>/oauth/callback` — the IP literal, **not**
   `localhost`. PKCE S256. OS-assigned ephemeral port.
-- Web: the hosted broker on `agentsean.com` (Phase 2). **Never ship
+- Web: the hosted broker on `agentsean.dev` (Phase 2). **Never ship
   `client_id` / `client_secret` in this repository.** Google APIs ToS §4(b)
   forbids it verbatim.
 
@@ -51,7 +51,7 @@ contractually JobPosting/BroadcastEvent only).
 
 - [ ] Cloud project created
 - [ ] OAuth consent screen: External, app name **Agent Sean**, support email,
-      logo, privacy policy URL, TOS URL, authorized domains `agentsean.com`
+      logo, privacy policy URL, TOS URL, authorized domains `agentsean.dev`
 - [ ] Brand verification (domain + homepage)
 - [ ] All five scopes listed above added **in the same submission**
 - [ ] Scope justification written per scope (what data, why, how displayed)
@@ -61,7 +61,7 @@ contractually JobPosting/BroadcastEvent only).
 - [ ] Submit for verification
 - [ ] Record the submission date and case ID in this file
 
-**Submitted:** _not yet — blocked on `agentsean.com` and the Cloud project._
+**Submitted:** _not yet — blocked on `agentsean.dev` and the Cloud project._
 **Case ID:** —
 **Submitted by:** —
 **Date:** —

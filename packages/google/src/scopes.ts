@@ -26,7 +26,7 @@ export const CONNECT_SCOPES: readonly string[] = [
   SCOPE.siteVerification,
 ];
 
-export const DEFAULT_BROKER_URL = "https://oauth.agentsean.com";
+export const DEFAULT_BROKER_URL = "https://oauth.agentsean.dev";
 
 export const GOOGLE_OAUTH_ACCOUNT = "google-oauth";
 export const GOOGLE_API_KEY_ACCOUNT = "google-api-key";

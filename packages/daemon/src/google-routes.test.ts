@@ -82,7 +82,7 @@ describe("google connect routes", () => {
     expect(res.statusCode).toBe(200);
     const json = res.json() as { authorizationUrl: string; mode: string };
     expect(json.mode).toBe("broker");
-    expect(json.authorizationUrl).toContain("oauth.agentsean.com");
+    expect(json.authorizationUrl).toContain("oauth.agentsean.dev");
     expect(json.authorizationUrl).toContain("127.0.0.1");
     expect(json.authorizationUrl).not.toMatch(/client_secret=/);
     await server.close();

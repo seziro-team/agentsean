@@ -60,7 +60,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-**conduct@agentsean.com**.
+**support@agentsean.dev**.
 
 That mailbox is being provisioned alongside the domain. Until it is live, the
 interim reporting channel is moderation on

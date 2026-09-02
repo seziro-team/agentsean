@@ -2,7 +2,7 @@
  * First-party stateless OAuth broker (D9).
  *
  * Holds GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET in process env on
- * agentsean.com — never in this repository (Google APIs ToS §4(b)).
+ * agentsean.dev — never in this repository (Google APIs ToS §4(b)).
  *
  * Flow: local connect page POSTs wrap_key + loopback redirect_uri here.
  * Broker runs Google OAuth as a confidential Web client, encrypts tokens
@@ -98,8 +98,8 @@ export function brokerStartUrl(opts: {
   return `${GOOGLE_AUTH_URL}?${params.toString()}`;
 }
 
-/** Web client redirect registered in Cloud Console, e.g. https://oauth.agentsean.com/google/callback */
-let registeredCallback = "https://oauth.agentsean.com/google/callback";
+/** Web client redirect registered in Cloud Console, e.g. https://oauth.agentsean.dev/google/callback */
+let registeredCallback = "https://oauth.agentsean.dev/google/callback";
 
 export function setBrokerRegisteredCallback(url: string): void {
   registeredCallback = url;
