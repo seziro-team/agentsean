@@ -1,7 +1,3 @@
-// Anchored on `<head` with a word boundary so the engine does not retry the
-// attribute run from every position in a document full of `<head`-alikes
-// (js/polynomial-redos).
-
 import type { StyleProfile } from "./types.js";
 import { findOpenTag } from "@agentsean/actions";
 
