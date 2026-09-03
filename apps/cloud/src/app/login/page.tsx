@@ -51,7 +51,7 @@ export default async function LoginPage({
                   </Banner>
                 </div>
               ) : null}
-              <LoginForm next={next} githubConfigured={env.isConfigured} />
+              <LoginForm next={next} oauthConfigured={env.isConfigured} />
             </>
           )}
         </Card>

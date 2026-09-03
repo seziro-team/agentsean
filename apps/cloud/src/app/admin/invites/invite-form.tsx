@@ -86,7 +86,7 @@ export function InviteForm({ emailConfigured }: { emailConfigured: boolean }) {
           Email the link to the customer
           {!emailConfigured ? (
             <span className="text-xs text-[var(--color-faint)]">
-              (RESEND_API_KEY not set — link will be shown to copy instead)
+              (no mail transport configured — link will be shown to copy instead)
             </span>
           ) : null}
         </label>

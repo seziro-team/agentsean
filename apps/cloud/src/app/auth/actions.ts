@@ -91,8 +91,21 @@ export async function sendMagicLink(
   };
 }
 
-/** Begin GitHub OAuth; redirects the browser to GitHub. */
-export async function signInWithGitHub(formData: FormData): Promise<void> {
+/** Providers offered on the login screen. */
+export type OAuthProvider = "google" | "github";
+
+/**
+ * Begin an OAuth sign-in; redirects the browser to the provider.
+ *
+ * The redirect target is built from `originForRedirect()` for the same reason
+ * the magic link is: the callback carries a session, so a client-supplied Host
+ * must never decide where it lands.
+ *
+ * Which providers actually work is decided in the Supabase project's Auth
+ * settings, not here — the client id and secret live there, which is why the
+ * app reads no GOOGLE_* variables of its own.
+ */
+async function startOAuth(provider: OAuthProvider, formData: FormData): Promise<void> {
   if (!supabaseEnv().isConfigured) {
     redirect("/login?error=not_configured");
   }
@@ -100,7 +113,7 @@ export async function signInWithGitHub(formData: FormData): Promise<void> {
   const origin = await originForRedirect();
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "github",
+    provider,
     options: {
       redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
@@ -109,6 +122,16 @@ export async function signInWithGitHub(formData: FormData): Promise<void> {
     redirect(`/login?error=${encodeURIComponent(error?.message ?? "oauth_failed")}`);
   }
   redirect(data.url);
+}
+
+/** Begin Google OAuth; redirects the browser to Google. */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  return startOAuth("google", formData);
+}
+
+/** Begin GitHub OAuth; redirects the browser to GitHub. */
+export async function signInWithGitHub(formData: FormData): Promise<void> {
+  return startOAuth("github", formData);
 }
 
 function sanitizeNext(next: string): string {

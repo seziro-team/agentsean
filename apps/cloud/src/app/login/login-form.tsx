@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import {
   sendMagicLink,
   signInWithGitHub,
+  signInWithGoogle,
   type AuthActionState,
 } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -13,10 +14,10 @@ const initial: AuthActionState = { status: "idle" };
 
 export function LoginForm({
   next,
-  githubConfigured,
+  oauthConfigured,
 }: {
   next: string;
-  githubConfigured: boolean;
+  oauthConfigured: boolean;
 }) {
   const [state, formAction, pending] = useActionState(sendMagicLink, initial);
 
@@ -57,15 +58,38 @@ export function LoginForm({
         <div className="h-px flex-1 bg-[var(--color-line)]" />
       </div>
 
+      {/* Google first: it is the account almost everyone already has, and the
+          one Search Console is behind. GitHub stays because the audience is
+          developers and the repo is the product. */}
+      <form action={signInWithGoogle}>
+        <input type="hidden" name="next" value={next} />
+        <Button
+          type="submit"
+          variant="secondary"
+          className="w-full"
+          disabled={!oauthConfigured}
+          title={
+            oauthConfigured
+              ? undefined
+              : "Enable the Google provider in your Supabase project to use this."
+          }
+        >
+          <span aria-hidden className="font-mono">
+            {"G"}
+          </span>
+          Continue with Google
+        </Button>
+      </form>
+
       <form action={signInWithGitHub}>
         <input type="hidden" name="next" value={next} />
         <Button
           type="submit"
           variant="secondary"
           className="w-full"
-          disabled={!githubConfigured}
+          disabled={!oauthConfigured}
           title={
-            githubConfigured
+            oauthConfigured
               ? undefined
               : "Enable the GitHub provider in your Supabase project to use this."
           }
@@ -76,9 +100,10 @@ export function LoginForm({
           Continue with GitHub
         </Button>
       </form>
-      {!githubConfigured ? (
+      {!oauthConfigured ? (
         <p className="text-center text-xs text-[var(--color-faint)]">
-          GitHub sign-in requires the GitHub provider enabled in Supabase Auth.
+          Social sign-in needs the provider enabled in Supabase Auth. The client id and
+          secret live there, not in this app&apos;s environment.
         </p>
       ) : null}
     </div>

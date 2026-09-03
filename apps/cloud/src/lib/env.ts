@@ -92,16 +92,41 @@ export function paddleEnv(): PaddleEnv {
 
 export type EmailEnv = {
   resendApiKey: string | undefined;
+  /**
+   * Direct SMTP, used in preference to Resend when set. Lets the app send from
+   * a mailbox on a domain that is already owned — noreply@agentsean.dev on
+   * Hostinger — instead of signing up for another provider to send one kind of
+   * message.
+   */
+  smtp:
+    | { host: string; port: number; user: string; pass: string; secure: boolean }
+    | undefined;
   from: string | undefined;
   isConfigured: boolean;
 };
 
 export function emailEnv(): EmailEnv {
   const resendApiKey = str("RESEND_API_KEY");
+  const smtpHost = str("SMTP_HOST");
+  const smtpUser = str("SMTP_USER");
+  const smtpPass = str("SMTP_PASS");
+  const smtp =
+    smtpHost && smtpUser && smtpPass
+      ? {
+          host: smtpHost,
+          // 465 is implicit TLS; 587 upgrades with STARTTLS. Default to 465
+          // because that is what Hostinger documents for its mailboxes.
+          port: Number(str("SMTP_PORT") ?? "465"),
+          user: smtpUser,
+          pass: smtpPass,
+          secure: bool("SMTP_SECURE", Number(str("SMTP_PORT") ?? "465") === 465),
+        }
+      : undefined;
   return {
     resendApiKey,
+    smtp,
     from: str("EMAIL_FROM") ?? "Agent Sean <onboarding@resend.dev>",
-    isConfigured: Boolean(resendApiKey),
+    isConfigured: Boolean(resendApiKey) || Boolean(smtp),
   };
 }
 
