@@ -1,16 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Install — Agent Sean</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="assets/style.css"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Install Agent Sean — the full guide</title>
+<meta name="description" content="Install Agent Sean three ways — npx, the curl installer, or docker compose — and exactly what each writes, where, and how to undo it. First-run walkthrough, running it as a service, upgrading, uninstalling, and the four things that actually bite."/>
+<link rel="canonical" href="https://agentsean.dev/install.html"/>
+<meta name="theme-color" content="#06080c"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://agentsean.dev/install.html"/>
+<meta property="og:title" content="Install Agent Sean — the full guide"/>
+<meta property="og:description" content="npx, curl, or docker compose — what each writes, where, and how to undo it. First run, service, upgrade, uninstall, and the four things that actually bite."/>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<noscript>
+  <style>
+    /* Scroll reveals are JS-driven; with JS off they must not hide the guide. */
+    .rv { opacity: 1 !important; transform: none !important; }
+    /* The copy buttons do nothing without JS — the command text is right there
+       to select, so drop the button rather than leave a dead control. */
+    .cmd button { display: none; }
+    /* No tab logic without JS: show every platform panel with a divider, and
+       hide the (inert) tab bar. The macOS panel is visible by default; the
+       other two carry `hidden`, so un-hide them here. */
+    .tabs .tab-bar { display: none; }
+    .tabs .tab-panel[hidden] { display: block; }
+    .tabs .tab-panel + .tab-panel { border-top: 1px solid var(--line); }
+  </style>
+</noscript>
 </head>
 <body>
-  <header class="nav">
+
+<a class="skip" href="#start">Skip to content</a>
+
+<header class="nav" id="nav">
   <div class="nav-in">
-    <a class="brand" href="index.html"><svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#10141c" stroke="#2a3342" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#ff6a63"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#ff6a63" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#45d268"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#45d268" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#62a4ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#62a4ff" fill-opacity=".85"/></svg>Agent Sean</a>
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#10141c" stroke="#2a3342" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#ff6a63"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#ff6a63" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#45d268"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#45d268" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#62a4ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#62a4ff" fill-opacity=".85"/></svg>
+      Agent Sean
+    </a>
     <nav class="nav-links">
       <a href="index.html#how">How it works</a>
       <a href="index.html#security">Security</a>
@@ -19,19 +47,248 @@
       <a href="recipes/index.html">Recipes</a>
     </nav>
     <div class="nav-right">
-      <a class="ghstar" href="https://github.com/seziro-team/agentsean" rel="noopener"><span class="gh-l">Star</span><span class="gh-n" data-gh-stars>&#8212;</span></a>
+      <a class="ghstar" href="https://github.com/seziro-team/agentsean" rel="noopener">
+        <span class="gh-l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>Star</span>
+        <span class="gh-n" data-gh-stars>—</span>
+      </a>
     </div>
   </div>
 </header>
-  <main class="doc">
-    <h1>Install</h1>
-    <p class="lead">Provisions on first run, not on npm install. npm 12 disables postinstall scripts.</p>
-    <pre class="install">npx agentsean</pre>
-    <pre class="install">curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh</pre>
-    <pre class="install">SEAN_AUTH_TOKEN="$(openssl rand -base64 32)" docker compose up</pre>
-    <p>Then: <code>sean doctor</code>. To survive reboot: <code>sean service install</code> — it prints the files it will write. That command is never a side effect of npm.</p>
-    <p>Node ≥ 22.19. Chromium is downloaded lazily on first JS render.</p>
+
+<div class="doc-shell">
+  <aside class="toc" aria-label="On this page">
+    <span class="toc-h">On this page</span>
+    <nav>
+      <a href="#start">Pick an install path</a>
+      <a href="#npx">npx — run once</a>
+      <a href="#global">Global — the <code>sean</code> command</a>
+      <a href="#installer">curl installer</a>
+      <a href="#docker">Docker Compose</a>
+      <a href="#first-run">First run</a>
+      <a href="#files">What lives where</a>
+      <a href="#service">Run it as a service</a>
+      <a href="#upgrade">Upgrading</a>
+      <a href="#uninstall">Uninstalling</a>
+      <a href="#trouble">Troubleshooting</a>
+    </nav>
+  </aside>
+
+  <main class="doc doc-wide" id="start">
+    <p class="kicker">Install</p>
+    <h1>Install Agent Sean</h1>
+    <p class="lead">
+      Three ways in. All of them provision on <em>first run</em>, never on
+      <code>npm install</code> — there is no postinstall script, because npm 12+
+      disables those by default and a background job that touches your machine
+      at install time is exactly the surprise this product refuses to be.
+      Below: what each path writes, where it puts it, and how to take it all
+      back out.
+    </p>
+
+    <div class="req rv">
+      <div class="req-i">
+        <span class="req-k">Node</span>
+        <span class="req-v">≥ 22.19.0</span>
+        <span class="req-d"><code>sean doctor</code> fails the check below this; older Node can't run the daemon.</span>
+      </div>
+      <div class="req-i">
+        <span class="req-k">Disk</span>
+        <span class="req-v">~200&nbsp;MB</span>
+        <span class="req-d">The package, plus Chromium <em>only if</em> a crawl needs to render JS.</span>
+      </div>
+      <div class="req-i">
+        <span class="req-k">Network</span>
+        <span class="req-v">Outbound only</span>
+        <span class="req-d">The daemon binds <code>127.0.0.1:7777</code>. Nothing listens on a public interface.</span>
+      </div>
+      <div class="req-i">
+        <span class="req-k">Account</span>
+        <span class="req-v">None</span>
+        <span class="req-d"><code>sean audit</code> runs the full 425-check audit with no login and no keys.</span>
+      </div>
+    </div>
+
+    <!-- ========== PATH 1: npx ========== -->
+    <h2 id="npx">Run it once with <code>npx</code></h2>
+    <p>The fastest way to try it. npx fetches the package into a temp directory, runs it, and leaves nothing installed.</p>
+    <p class="cmd" data-copy="npx agentsean"><span class="p">$</span> npx agentsean <button type="button">Copy</button></p>
+    <p>This drops you into the interactive onboard: it asks what site to work on, where it lives (WordPress, Shopify, a Git repo, Cloudflare, or other), and whether to connect Search Console. It provisions <a href="#files">the files below</a> and starts the daemon.</p>
+    <div class="callout warn rv">
+      <div class="callout-i" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+      </div>
+      <div>
+        <strong><code>npx agentsean</code> does not put a <code>sean</code> command on your PATH.</strong>
+        npx resolves the package into a one-off temp folder and runs it there,
+        so the next terminal that types <code>sean doctor</code> gets
+        <span class="mono">command not found</span>. That's expected — it's how
+        npx works, not a broken install. Sean detects it was launched through
+        npx and prints commands as <code>npx agentsean …</code> back to you. For
+        a permanent <code>sean</code>, install it globally.
+      </div>
+    </div>
+
+    <!-- ========== PATH 2: global ========== -->
+    <h2 id="global">Install the <code>sean</code> command globally</h2>
+    <p>A global install gives you the short <code>sean</code> binary everywhere and is the right choice once you've decided to keep it.</p>
+    <p class="cmd" data-copy="npm i -g agentsean"><span class="p">$</span> npm i -g agentsean <button type="button">Copy</button></p>
+    <p>Then the whole surface is available as <code>sean &lt;command&gt;</code>:</p>
+    <p class="cmd" data-copy="sean onboard"><span class="p">$</span> sean onboard <button type="button">Copy</button></p>
+    <p class="fineprint">Still no postinstall. The package ships two bin names — <code>sean</code> and <code>agentsean</code> — and both provision on first run, never during <code>npm i</code>.</p>
+
+    <!-- ========== PATH 3: installer ========== -->
+    <h2 id="installer">The curl installer</h2>
+    <p>For a box where you'd rather not reach for npm. The script checks your Node version, installs the package, and runs onboard.</p>
+    <p class="cmd" data-copy="curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh"><span class="p">$</span> curl -fsSL https://raw.githubusercontent.com/seziro-team/agentsean/main/install/install.sh | sh <button type="button">Copy</button></p>
+    <p class="fineprint">Piping a script to <code>sh</code> deserves a read first — the source is <a href="https://github.com/seziro-team/agentsean/blob/main/install/install.sh" rel="noopener"><code>install/install.sh</code></a> in the repo. It installs the same npm package the two commands above do; there is no separate binary.</p>
+
+    <!-- ========== PATH 4: docker ========== -->
+    <h2 id="docker">Docker Compose</h2>
+    <p>Runs the daemon in a container with its state on a named volume. The one thing you must supply is the auth token — the container <strong>exits</strong> rather than start without it, because an unauthenticated daemon that holds your CMS keys is the incident this whole product is built to avoid.</p>
+    <p class="cmd" data-copy='SEAN_AUTH_TOKEN="$(openssl rand -base64 32)" docker compose up'><span class="p">$</span> SEAN_AUTH_TOKEN="$(openssl rand -base64 32)" docker compose up <button type="button">Copy</button></p>
+    <ul class="ticks">
+      <li>Compose publishes the port on <b>loopback only</b> — <code>127.0.0.1:7777</code>, never <code>0.0.0.0</code>.</li>
+      <li>The token must be <b>≥ 32 characters and ≥ 8 distinct characters</b>; <code>openssl rand -base64 32</code> clears both. A weak token is refused at startup.</li>
+      <li>State (the database, logs) lives on the volume, so <code>docker compose down</code> and back up keeps your history. <b>To undo:</b> <code>docker compose down -v</code> also removes the volume and its data.</li>
+    </ul>
+
+    <!-- ========== FIRST RUN ========== -->
+    <h2 id="first-run">Your first run</h2>
+    <p>However you installed, the first minutes look the same. Onboard runs automatically the first time; here is what it does, and how to drive it by hand.</p>
+
+    <ol class="steps">
+      <li class="rv">
+        <div class="step-h"><span class="step-n">1</span> Check the machine is ready</div>
+        <p class="cmd" data-copy="sean doctor"><span class="p">$</span> sean doctor <button type="button">Copy</button></p>
+        <p><code>doctor</code> is read-only and prints a check per line: your Node version, whether <code>~/.sean</code> is writable and locked to mode <code>700</code>, whether port <code>7777</code> is free, whether an auth token exists yet, whether the database and a Google grant are present, and whether Playwright is installed. Anything marked <span class="mono">FAIL</span> blocks a clean start; <span class="mono">!</span> is a warning you can proceed past.</p>
+      </li>
+      <li class="rv">
+        <div class="step-h"><span class="step-n">2</span> Connect a site</div>
+        <p>Onboard asks for the URL and the platform. To connect Search Console — optional, but it's what turns crawl findings into ranked opportunities — Sean opens the local dashboard and walks you through Google's consent screen. The hosted OAuth broker never talks to your machine; the grant is stored locally.</p>
+        <p class="cmd" data-copy="sean connect google"><span class="p">$</span> sean connect google <button type="button">Copy</button></p>
+        <p class="fineprint">No Google account? Skip it. <code>sean audit https://your-site.com</code> crawls and runs all 425 checks with zero credentials.</p>
+      </li>
+      <li class="rv">
+        <div class="step-h"><span class="step-n">3</span> Let the first crawl run</div>
+        <p>Sean crawls the site, runs the checks, and scores it. A small site (dozens of pages) finishes in seconds; the demo run on the home page shows <span class="mono">80 pages · 6s</span>. Pages that need JavaScript to render trigger a one-time Chromium download the <a href="#trouble">first time</a> — after that it's cached.</p>
+      </li>
+      <li class="rv">
+        <div class="step-h"><span class="step-n">4</span> The observe window</div>
+        <p>New sites start in a <b>7-day observe-only</b> period. Sean watches and proposes but writes nothing until it ends — the action validator vetoes every write with <code>OBSERVE_PERIOD</code> in the meantime. When you're ready to stop everything regardless, <code>sean freeze</code> halts all writes across every site and survives a restart.</p>
+      </li>
+    </ol>
+
+    <!-- ========== FILES ========== -->
+    <h2 id="files">What Agent Sean writes, and where</h2>
+    <p>Everything the daemon owns lives under one directory: <code>~/.sean</code> on macOS and Linux, or wherever <code>SEAN_HOME</code> points. It is created with permissions <code>700</code> (owner-only) and nothing is written outside it unless you explicitly install a service.</p>
+
+    <div class="tw rv">
+      <table class="matrix">
+        <thead><tr><th>Path</th><th>What it is</th><th>When it appears</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">~/.sean/</td><td>The home directory. Mode <code>700</code>.</td><td>First run of any command</td></tr>
+          <tr><td class="mono">~/.sean/sean.db</td><td>SQLite: crawl results, findings, the change ledger with before-snapshots.</td><td>First crawl</td></tr>
+          <tr><td class="mono">~/.sean/daemon.pid</td><td>The running daemon's PID and port.</td><td>On <code>start</code></td></tr>
+          <tr><td class="mono">~/.sean/daemon.log</td><td>Daemon stdout and stderr.</td><td>On <code>start</code></td></tr>
+          <tr><td class="mono">~/.sean/HALT</td><td>The freeze flag. Present means all writes are stopped.</td><td>On <code>sean freeze</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fineprint">The auth token is <b>not</b> in this directory as plaintext. It's stored through the OS credential store — Keychain on macOS, the Secret Service on Linux — with an encrypted-file fallback. <code>doctor</code> reports its length, never its value.</p>
+
+    <!-- ========== SERVICE ========== -->
+    <h2 id="service">Run it as a service</h2>
+    <p>To survive a reboot, install Sean as a user service. This is the one action that writes a file outside <code>~/.sean</code>, so it is <strong>never</strong> a side effect of onboard or npm — it prints exactly what it will write and refuses to proceed without your confirmation (<code>--yes</code>, or typing <span class="mono">yes</span> at the prompt).</p>
+    <p class="cmd" data-copy="sean service install"><span class="p">$</span> sean service install <button type="button">Copy</button></p>
+    <p>Prefer to see the plan first without writing anything:</p>
+    <p class="cmd" data-copy="sean service status"><span class="p">$</span> sean service status <button type="button">Copy</button></p>
+
+    <p>What it writes depends on your OS. In every case the unit binds <code>127.0.0.1</code> only — the installer <em>refuses</em> to write a service that binds any other host.</p>
+
+    <div class="tabs rv" data-tabs>
+      <div class="tab-bar" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="mac">macOS</button>
+        <button role="tab" aria-selected="false" data-tab="linux">Linux</button>
+        <button role="tab" aria-selected="false" data-tab="win">Windows</button>
+      </div>
+      <div class="tab-panel" data-panel="mac">
+        <p>A <b>LaunchAgent</b>, loaded with <code>launchctl</code>:</p>
+        <pre>~/Library/LaunchAgents/dev.agentsean.plist</pre>
+        <p>Runs at login, keeps the daemon alive, and logs to <code>~/.sean/daemon.log</code>. Remove it with <code>sean service uninstall</code>, which runs <code>launchctl unload</code> and deletes the plist.</p>
+      </div>
+      <div class="tab-panel" hidden data-panel="linux">
+        <p>A <b>systemd user unit</b>, enabled with <code>systemctl --user</code>:</p>
+        <pre>~/.config/systemd/user/agentsean.service</pre>
+        <p>It's a user unit, not system-wide — no <code>sudo</code>, and it restarts on failure. <code>sean service uninstall</code> disables and removes it.</p>
+      </div>
+      <div class="tab-panel" hidden data-panel="win">
+        <p>A <b>Scheduled Task</b> named <code>AgentSean</code>, triggered at logon. The task XML is written to your Sean home:</p>
+        <pre>%SEAN_HOME%\agentsean.schtasks.xml</pre>
+        <p><code>sean service uninstall</code> deletes the task and the XML.</p>
+      </div>
+    </div>
+
+    <!-- ========== UPGRADE ========== -->
+    <h2 id="upgrade">Upgrading</h2>
+    <p>Check where you stand against a release channel:</p>
+    <p class="cmd" data-copy="sean update"><span class="p">$</span> sean update <button type="button">Copy</button></p>
+    <p>It compares your version against the channel (<code>stable</code> by default; <code>--channel extended-stable</code> or <code>--channel dev</code> for the others) and, if you're behind, prints the exact command to move — a global reinstall pinned to the new version:</p>
+    <p class="cmd" data-copy="npm install -g agentsean@latest"><span class="p">$</span> npm install -g agentsean@latest <button type="button">Copy</button></p>
+    <p class="fineprint">An auto-update never runs while an Action is mid-flight — a fix in the middle of being written and verified is never interrupted by a version swap.</p>
+
+    <!-- ========== UNINSTALL ========== -->
+    <h2 id="uninstall">Uninstalling completely</h2>
+    <p>One command stops the daemon, unwinds the service, and — by default — leaves your data alone:</p>
+    <p class="cmd" data-copy="sean uninstall"><span class="p">$</span> sean uninstall <button type="button">Copy</button></p>
+    <p>That stops Sean, removes the user service (the plist / unit / task from above), and tells you your history is still in <code>~/.sean</code>. To erase everything it ever wrote, add <code>--purge</code>:</p>
+    <p class="cmd" data-copy="sean uninstall --purge"><span class="p">$</span> sean uninstall --purge <button type="button">Copy</button></p>
+    <p>Then remove the package itself:</p>
+    <p class="cmd" data-copy="npm rm -g agentsean"><span class="p">$</span> npm rm -g agentsean <button type="button">Copy</button></p>
+    <p class="fineprint">Any diffs Sean wrote to your <em>site</em> are unaffected by uninstalling — they live in your CMS or Git history and remain reversible there. Uninstalling removes the engine, not its past work.</p>
+
+    <!-- ========== TROUBLESHOOTING ========== -->
+    <h2 id="trouble">Troubleshooting the things that actually bite</h2>
+    <div class="tshoot">
+      <details class="rv">
+        <summary><span class="ts-tag">PATH</span> <code>sean: command not found</code> after <code>npx</code></summary>
+        <div class="ts-b">
+          <p>Expected. <code>npx agentsean</code> runs the package from a temp directory and never installs the <code>sean</code> binary. Either keep using <code>npx agentsean &lt;command&gt;</code>, or install once globally to get the short command:</p>
+          <p class="cmd" data-copy="npm i -g agentsean"><span class="p">$</span> npm i -g agentsean <button type="button">Copy</button></p>
+          <p class="fineprint">If <code>sean</code> is still missing after a global install, your npm global bin directory isn't on PATH — <code>npm bin -g</code> prints it; add that to your shell profile.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="ts-tag">Node</span> "Node … is too old"</summary>
+        <div class="ts-b">
+          <p>The daemon needs <b>Node ≥ 22.19.0</b> and <code>doctor</code> fails closed below it. Check and upgrade:</p>
+          <p class="cmd" data-copy="node --version"><span class="p">$</span> node --version <button type="button">Copy</button></p>
+          <p>Install a current Node from <a href="https://nodejs.org" rel="noopener">nodejs.org</a> or via <code>nvm</code>. There is no compatibility shim for older runtimes — the code uses APIs that simply aren't there before 22.19.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="ts-tag">Chromium</span> The first JS-rendered crawl pauses to download</summary>
+        <div class="ts-b">
+          <p>By design, Chromium is <b>not</b> fetched at install time. The first crawl that has to render JavaScript downloads it once (tens of MB), then caches it — <code>doctor</code> will show <span class="mono">Playwright/Chromium not installed</span> as a warning until then. If you never need JS rendering, you never pay for it; pass <code>--no-js</code> to <code>audit</code> to skip rendering entirely.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="ts-tag">Port</span> <code>127.0.0.1:7777</code> is already in use</summary>
+        <div class="ts-b">
+          <p><code>doctor</code> flags this as <span class="mono">in use and no Sean pid file</span> — something else holds the port. Point Sean at a different one:</p>
+          <p class="cmd" data-copy="sean start --port 7788"><span class="p">$</span> sean start --port 7788 <button type="button">Copy</button></p>
+          <p class="fineprint">If it <em>is</em> a stale Sean, <code>sean stop</code> clears it. The port must be 1–65535; anything else is rejected before the socket opens.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="doc-next rv">
+      <a class="btn btn-primary" href="index.html#pricing">See pricing</a>
+      <a class="btn btn-ghost" href="recipes/index.html">Browse recipes</a>
+      <a class="btn btn-ghost" href="security.html">Read the security model</a>
+    </div>
   </main>
+</div>
+
 <footer>
   <div class="wrap">
     <div class="foot-bot" style="border-top:0;padding-top:0">

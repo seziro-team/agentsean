@@ -1701,8 +1701,467 @@ main.doc .matrix {
   border-color: var(--red-line);
 }
 
+/* ======================================================================== */
+/*  Documentation pages — install.html, security.html                       */
+/*  A sticky table of contents beside a wide reading column. Every component */
+/*  here is built from the same tokens and primitives as the landing page;  */
+/*  nothing invents a second visual language.                               */
+/* ======================================================================== */
+.doc-shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 48px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 26px 0;
+}
+.toc {
+  position: sticky;
+  top: 92px;
+  align-self: start;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  font-size: var(--t-sm);
+  padding-bottom: 20px;
+}
+.toc-h {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin-bottom: 14px;
+}
+.toc nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid var(--line);
+}
+.toc nav a {
+  color: var(--fg-2);
+  padding: 6px 0 6px 16px;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.toc nav a:hover {
+  color: var(--fg);
+  border-left-color: var(--line-3);
+}
+.toc nav a.active {
+  color: var(--blue);
+  border-left-color: var(--blue);
+}
+.toc nav a code {
+  font-size: 0.85em;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+/* the reading column: wider than the old single-column .doc, and its own
+   left alignment and rhythm. */
+main.doc.doc-wide {
+  max-width: 760px;
+  margin: 0;
+  padding: 6px 0 100px;
+}
+main.doc.doc-wide h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3rem);
+  line-height: 1.04;
+  margin-bottom: 18px;
+}
+main.doc.doc-wide h2 {
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  margin-top: 62px;
+  margin-bottom: 14px;
+  scroll-margin-top: 90px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+main.doc.doc-wide h3 {
+  margin-bottom: 8px;
+}
+main.doc.doc-wide > p {
+  color: var(--fg-2);
+  margin: 0 0 16px;
+}
+main.doc.doc-wide .lead {
+  color: var(--fg);
+  font-size: var(--t-md);
+  margin-bottom: 8px;
+}
+main.doc.doc-wide ul,
+main.doc.doc-wide ol {
+  margin: 0 0 18px;
+}
+main.doc.doc-wide .kicker {
+  margin-bottom: 14px;
+}
+/* copyable command as a block on doc pages. The command string can be long
+   (the curl one-liner, the docker line) and must wrap rather than shove the
+   Copy button past the viewport edge on a phone. */
+main.doc.doc-wide .cmd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+main.doc.doc-wide .cmd button {
+  margin-left: auto;
+}
+.fineprint {
+  font-size: var(--t-sm);
+  color: var(--fg-3) !important;
+}
+
+/* --- requirements strip (install) ------------------------------------- */
+.req {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 30px 0 10px;
+}
+.req-i {
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  padding: 18px 18px 20px;
+}
+.req-k {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.req-v {
+  display: block;
+  font-size: 1.18rem;
+  font-weight: 640;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin: 5px 0 8px;
+}
+.req-d {
+  display: block;
+  font-size: var(--t-sm);
+  color: var(--fg-2);
+  line-height: 1.5;
+}
+
+/* --- callout ---------------------------------------------------------- */
+.callout {
+  display: flex;
+  gap: 15px;
+  padding: 18px 20px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-2);
+  background: var(--bg-2);
+  margin: 6px 0 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.callout strong {
+  color: var(--fg);
+}
+.callout-i {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: var(--blue);
+  margin-top: 1px;
+}
+.callout.warn {
+  border-color: rgba(240, 184, 73, 0.32);
+  background: linear-gradient(180deg, rgba(240, 184, 73, 0.07), transparent);
+}
+.callout.warn .callout-i {
+  color: var(--amber);
+}
+
+/* --- numbered steps (install first-run) ------------------------------- */
+ol.steps {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 20px;
+  counter-reset: none;
+}
+ol.steps > li {
+  position: relative;
+  padding: 0 0 8px 0;
+  margin-bottom: 20px;
+}
+.step-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--fg);
+  margin-bottom: 12px;
+}
+.step-n {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+ol.steps > li > p {
+  margin: 0 0 12px;
+  color: var(--fg-2);
+}
+
+/* --- platform tabs (install service) ---------------------------------- */
+.tabs {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 4px 0 20px;
+  background: var(--bg-1);
+}
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 8px 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.tab-bar button {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--fg-2);
+  font-family: var(--sans);
+  font-size: var(--t-sm);
+  font-weight: 550;
+  padding: 10px 14px 11px;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.tab-bar button:hover {
+  color: var(--fg);
+}
+.tab-bar button[aria-selected="true"] {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+.tab-panel {
+  padding: 20px 22px 6px;
+}
+.tab-panel p {
+  margin: 0 0 12px;
+  color: var(--fg-2);
+}
+.tab-panel pre {
+  margin: 0 0 12px;
+}
+/* The JS-off fallback (show every panel, hide the bar) is handled by the
+   <noscript> block in install.html, matching the site's other fallbacks. */
+
+/* --- autonomy tiers (security) ---------------------------------------- */
+.tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 20px;
+}
+.tier {
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--r-sm);
+  padding: 16px 20px;
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+}
+.tier-h {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.016em;
+  margin-bottom: 6px;
+}
+.tier p {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+.tier.t0 {
+  border-left-color: var(--line-3);
+}
+.tier.t1 {
+  border-left-color: var(--green);
+}
+.tier.t2 {
+  border-left-color: var(--blue);
+}
+.tier.t3 {
+  border-left-color: var(--amber);
+}
+.tier.t4 {
+  border-left-color: var(--red);
+}
+
+/* --- validator table numerals ----------------------------------------- */
+.matrix.checks td:first-child {
+  color: var(--fg-3);
+  text-align: right;
+  width: 2.4em;
+}
+.matrix.checks td:nth-child(2) {
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+/* --- red-team grid (security) ----------------------------------------- */
+.rt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin: 6px 0 18px;
+}
+.rt {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  font-size: 0.9rem;
+  color: var(--fg-2);
+  line-height: 1.4;
+}
+.rt-n {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid var(--green-line);
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+.rt code {
+  font-size: 0.82em;
+}
+
+/* --- troubleshooting accordion (install) ------------------------------ */
+.tshoot {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 4px 0 24px;
+}
+.tshoot details {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-1);
+}
+.tshoot details:last-child {
+  border-bottom: 0;
+}
+.tshoot summary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 550;
+  color: var(--fg);
+  list-style: none;
+}
+.tshoot summary::-webkit-details-marker {
+  display: none;
+}
+.tshoot summary::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--fg-3);
+  font-family: var(--mono);
+  font-size: 1.1rem;
+}
+.tshoot details[open] summary::after {
+  content: "\2212";
+}
+.ts-tag {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: var(--blue-bg);
+  border: 1px solid rgba(98, 164, 255, 0.28);
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+.ts-b {
+  padding: 2px 20px 20px;
+}
+.ts-b p {
+  margin: 0 0 12px;
+  color: var(--fg-2);
+}
+.ts-b .cmd {
+  margin-bottom: 12px;
+}
+
+/* --- next-steps button row -------------------------------------------- */
+.doc-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 56px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
 /* ------------------------------------------------------------- responsive */
 @media (max-width: 980px) {
+  /* the sticky TOC has nowhere to sit on a narrow screen; drop it and let the
+     reading column run full width. minmax(0,1fr) — not a bare 1fr — so the
+     track can shrink below the min-content width of a long command string
+     instead of blowing the grid wider than the viewport. */
+  .doc-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .toc {
+    display: none;
+  }
+  main.doc.doc-wide {
+    max-width: none;
+    padding-bottom: 80px;
+  }
+  .req {
+    grid-template-columns: 1fr 1fr;
+  }
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -1779,6 +2238,22 @@ main.doc .matrix {
   }
   h1 {
     overflow-wrap: break-word;
+  }
+  /* doc pages: single-column strips and gutters that match the site's */
+  .doc-shell {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .req {
+    grid-template-columns: 1fr;
+  }
+  .rt-grid {
+    grid-template-columns: 1fr;
+  }
+  .callout,
+  .tier {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 

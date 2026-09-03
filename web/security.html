@@ -1,16 +1,35 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Security — Agent Sean</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="assets/style.css"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Agent Sean security model</title>
+<meta name="description" content="How an LLM edits your live site without ever holding a credential: the three-plane architecture, the T0–T4 autonomy tiers, the 15-check action validator, the 30-payload red-team suite, and the freeze/revert escape hatches. Every claim grounded in the code."/>
+<link rel="canonical" href="https://agentsean.dev/security.html"/>
+<meta name="theme-color" content="#06080c"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://agentsean.dev/security.html"/>
+<meta property="og:title" content="The Agent Sean security model"/>
+<meta property="og:description" content="How an LLM edits your live site without ever holding a credential: three planes, T0–T4 tiers, a 15-check validator, and a 30-payload red-team suite. Grounded in the code."/>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<noscript>
+  <style>
+    .rv { opacity: 1 !important; transform: none !important; }
+    .cmd button { display: none; }
+  </style>
+</noscript>
 </head>
 <body>
-  <header class="nav">
+
+<a class="skip" href="#top">Skip to content</a>
+
+<header class="nav" id="nav">
   <div class="nav-in">
-    <a class="brand" href="index.html"><svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#10141c" stroke="#2a3342" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#ff6a63"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#ff6a63" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#45d268"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#45d268" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#62a4ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#62a4ff" fill-opacity=".85"/></svg>Agent Sean</a>
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 132 132" aria-hidden="true"><rect x="2" y="2" width="128" height="128" rx="29" fill="#10141c" stroke="#2a3342" stroke-width="3"/><rect x="30" y="38" width="9" height="9" rx="2" fill="#ff6a63"/><rect x="47" y="39.5" width="34" height="6" rx="3" fill="#ff6a63" fill-opacity=".42"/><rect x="30" y="61.5" width="9" height="9" rx="2" fill="#45d268"/><rect x="47" y="63" width="55" height="6" rx="3" fill="#45d268" fill-opacity=".9"/><path d="M31 84.5 41.5 93.5 31 102.5" stroke="#62a4ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="51" y="86" width="30" height="15" rx="3.5" fill="#62a4ff" fill-opacity=".85"/></svg>
+      Agent Sean
+    </a>
     <nav class="nav-links">
       <a href="index.html#how">How it works</a>
       <a href="index.html#security">Security</a>
@@ -19,24 +38,233 @@
       <a href="recipes/index.html">Recipes</a>
     </nav>
     <div class="nav-right">
-      <a class="ghstar" href="https://github.com/seziro-team/agentsean" rel="noopener"><span class="gh-l">Star</span><span class="gh-n" data-gh-stars>&#8212;</span></a>
+      <a class="ghstar" href="https://github.com/seziro-team/agentsean" rel="noopener">
+        <span class="gh-l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>Star</span>
+        <span class="gh-n" data-gh-stars>—</span>
+      </a>
     </div>
   </div>
 </header>
-  <main class="doc">
-    <h1>Security</h1>
-    <p class="lead">The daemon holds Google and CMS credentials. An exposed dashboard is a defacement event.</p>
-    <ul>
-      <li>Bind <code>127.0.0.1:7777</code> only. Off-loopback without auth refuses to start.</li>
-      <li>Token ≥ 32 characters, ≥ 8 distinct. Short tokens are how OpenClaw instances were brute-forced in 2026.</li>
-      <li>Host allowlist, Origin check, <code>Sec-Fetch-Site</code>, CSRF header. No CORS anywhere.</li>
-      <li>Docker publishes loopback and exits if <code>SEAN_AUTH_TOKEN</code> is missing.</li>
-      <li><code>sean freeze</code> writes HALT and survives restart.</li>
-      <li>The LLM never holds credentials and never calls a write API.</li>
-      <li>Hosted never stores CMS write credentials — pair a customer-side connector.</li>
+
+<div class="doc-shell" id="top">
+  <aside class="toc" aria-label="On this page">
+    <span class="toc-h">On this page</span>
+    <nav>
+      <a href="#threat">The threat model</a>
+      <a href="#planes">The three planes</a>
+      <a href="#credential">Why it holds no credential</a>
+      <a href="#tiers">Autonomy tiers T0–T4</a>
+      <a href="#validator">The 15-check validator</a>
+      <a href="#redteam">The 30-payload red team</a>
+      <a href="#daemon">The daemon's front door</a>
+      <a href="#freeze">Freeze &amp; revert</a>
+      <a href="#report">Reporting a vulnerability</a>
+    </nav>
+  </aside>
+
+  <main class="doc doc-wide">
+    <p class="kicker">Security model</p>
+    <h1>An LLM edits your live site. Here's why that's safe.</h1>
+    <p class="lead">
+      That sentence is the single biggest objection to this product, and it
+      should be. Agent Sean holds write credentials to your website and reads
+      pages authored by people with a financial interest in you ranking worse.
+      Every decision below follows from taking those two facts seriously. None
+      of it is asserted — each claim points at the code that makes it true.
+    </p>
+
+    <!-- ========== THREAT ========== -->
+    <h2 id="threat">The threat model, stated plainly</h2>
+    <p>A crawling SEO agent has an unusual property: <strong>its entire input diet is written by adversaries.</strong> The pages it reads to decide what to do are authored by your competitors, and it holds the keys to change your site. Two well-known 2026 incidents are exactly this shape — a tool that bound a public interface with weak or plaintext auth became a one-click compromise. So the design starts from three assumptions:</p>
+    <ul class="ticks">
+      <li>Any byte the crawler reads may be a prompt-injection or a poisoned link, and <b>will</b> be treated as hostile.</li>
+      <li>The component clever enough to be fooled — the LLM — must never be the component holding a credential or calling a write API.</li>
+      <li>Anything the daemon exposes on the network is a defacement surface, so it exposes as close to nothing as a local web app can.</li>
     </ul>
-    <p>Report vulnerabilities via <a href="https://github.com/seziro-team/agentsean/security">SECURITY.md</a>.</p>
+
+    <!-- ========== PLANES ========== -->
+    <h2 id="planes">Three planes, and none of them is trusted twice</h2>
+    <p>The work is split into three isolated planes. The property that matters is the intersection: <strong>no single plane both reads attacker-controlled bytes and holds a credential.</strong> That separation is structural — a consequence of how the code is wired, not a policy someone has to remember to enforce.</p>
+
+    <div class="planes rv">
+      <div class="plane">
+        <span class="lbl">Plane 01</span>
+        <h4>Analysis</h4>
+        <p class="small muted" style="margin:6px 0 0">Crawls and parses third-party pages. Emits closed-schema structs — typed fields, zero free-form strings for later stages to trust.</p>
+        <div class="flag"><span class="pip yes">&#10003;</span> Reads third-party bytes</div>
+        <div class="flag"><span class="pip no">&#10007;</span> Holds credentials</div>
+      </div>
+      <div class="plane">
+        <span class="lbl">Plane 02</span>
+        <h4>Planning</h4>
+        <p class="small muted" style="margin:6px 0 0">Decides what to do and emits typed actions. The LLM lives here and <em>only</em> here — it sees structured findings, never raw pages.</p>
+        <div class="flag"><span class="pip no">&#10007;</span> Reads third-party bytes</div>
+        <div class="flag"><span class="pip no">&#10007;</span> Holds credentials</div>
+      </div>
+      <div class="plane">
+        <span class="lbl">Plane 03</span>
+        <h4>Execution</h4>
+        <p class="small muted" style="margin:6px 0 0">Applies validated actions: snapshot, write, re-fetch the live page to verify, record a reversible change. Deterministic code — no model in the loop.</p>
+        <div class="flag"><span class="pip no">&#10007;</span> Reads third-party bytes</div>
+        <div class="flag"><span class="pip yes">&#10003;</span> Holds credentials</div>
+      </div>
+    </div>
+    <p class="center small muted" style="margin-top:18px">Read the columns: the plane that sees hostile input holds no key; the plane that holds a key never sees hostile input; the plane in the middle — the LLM — touches neither raw bytes nor credentials.</p>
+
+    <!-- ========== CREDENTIAL ========== -->
+    <h2 id="credential">Why the model structurally never holds a credential</h2>
+    <p>"The LLM never holds credentials" is easy to claim and hard to trust. Here is why it's true by construction rather than by promise:</p>
+    <div class="grid-3" style="margin-top:26px">
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h10"/></svg></div>
+        <h3>It emits data, not commands</h3>
+        <p>The planning plane's only output is a typed <code>Action</code> object drawn from a closed set of about fifty kinds. It cannot express "call this API with this key" — there is no field for it. The kind enum is fixed in <code>packages/actions</code>; the model cannot invent a new one.</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>A deterministic gate sits between</h3>
+        <p>Every action the model proposes passes through a reference monitor with <b>no network and no LLM</b> before anything is applied. If it survives all fifteen checks, the execution plane — not the model — carries out the write with the credential.</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+        <h3>The keys live elsewhere</h3>
+        <p>Site and Google credentials are held by the execution plane and stored through the OS credential store. The prompt sent to the model is built from structured findings; a secret has no path into it. Compromising the model yields a rejected action, not a key.</p>
+      </div>
+    </div>
+
+    <!-- ========== TIERS ========== -->
+    <h2 id="tiers">Autonomy tiers: what each level may do without asking</h2>
+    <p>Every action <em>kind</em> is locked to a tier from <b>T0</b> to <b>T4</b>, and the tier is not a suggestion the model can override — it's a fixed property of the kind. The higher the blast radius, the more it takes to run it. <b>T3 and T4 cannot be unlocked by any setting.</b></p>
+
+    <div class="tiers rv">
+      <div class="tier t0">
+        <div class="tier-h"><span class="badge">T0</span> Observe</div>
+        <p>Snapshot, record a finding, inspect indexation. <b>Writes nothing.</b> A T0 kind that tries to write is vetoed outright.</p>
+      </div>
+      <div class="tier t1">
+        <div class="tier-h"><span class="badge t1">T1</span> Auto</div>
+        <p>Reversible field edits that run on their own once the observe window ends: title, meta description, OG tags, alt text, headings, an <code>h1</code>, sitemap regeneration, viewport and <code>lang</code>, broken internal links.</p>
+      </div>
+      <div class="tier t2">
+        <div class="tier-h"><span class="badge">T2</span> Auto, structural</div>
+        <p>Slightly larger writes, still automatic but rate-capped: JSON-LD, breadcrumbs, internal-link insertion, content refresh, new pages. Content generation is capped at <b>2 refreshes and 2 new pages per day, per site</b> — a limit with no override.</p>
+      </div>
+      <div class="tier t3">
+        <div class="tier-h"><span class="badge t3">T3</span> Two-key human approval</div>
+        <p>The dangerous categories — <code>robots.txt</code>, meta robots, redirects, canonicals, hreflang, page deletion, disavow, outreach email, <code>llms.txt</code>. Each needs <b>two distinct cryptographically-signed approvals</b>. There is no auto setting for these.</p>
+      </div>
+      <div class="tier t4">
+        <div class="tier-h"><span class="badge t4">T4</span> Refused, permanently</div>
+        <p>The things a spam vendor sells and this tool won't do: buying links, PBNs, link exchanges, cloaking, sneaky redirects, hidden text, writing to third-party domains, review gating, scraping the SERP, and generating YMYL or affiliate content. <b>No setting enables them</b> — the validator rejects them with "no setting exists."</p>
+      </div>
+    </div>
+
+    <!-- ========== VALIDATOR ========== -->
+    <h2 id="validator">The 15-check action validator</h2>
+    <p>Between the model's proposal and any write to your site sits one deterministic function — a reference monitor. It runs no network calls and invokes no LLM. It collects <em>every</em> reason to reject an action (not just the first) so failures are stable and testable, then refuses the action if any check vetoed it. All fifteen, in order:</p>
+
+    <div class="tw rv">
+      <table class="matrix checks">
+        <thead><tr><th>#</th><th>Check</th><th>What it refuses</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td class="mono">SCHEMA</td><td>Anything that isn't a well-formed, in-enum action.</td></tr>
+          <tr><td class="mono">2</td><td class="mono">TARGET_BINDING</td><td>A target whose URL and page ID don't match a crawled page, or is off-site, or hits a never-touch glob.</td></tr>
+          <tr><td class="mono">3</td><td class="mono">URL_ALLOWLIST</td><td>A payload URL that was never crawled or allowlisted; off-site URLs need an explicit allowlist.</td></tr>
+          <tr><td class="mono">4</td><td class="mono">FIRST_APPEARANCE</td><td>Any URL or domain whose <b>first sighting was inside third-party content.</b> One rule that kills canonical injection, attacker redirects, hreflang poisoning and disavow attacks.</td></tr>
+          <tr><td class="mono">5</td><td class="mono">DIFF_CAPS</td><td>A change larger than the per-kind byte and percentage caps, or a title/meta over its maximum length.</td></tr>
+          <tr><td class="mono">6</td><td class="mono">BLAST_RADIUS</td><td>A write when the kill switch is on, or once the per-run, hourly, or daily URL caps are hit.</td></tr>
+          <tr><td class="mono">7</td><td class="mono">POLICY_TIER</td><td>An action whose tier doesn't match its locked tier; every T4; any write during the observe window.</td></tr>
+          <tr><td class="mono">8</td><td class="mono">BUDGET</td><td>Anything that would push estimated spend past the daily budget.</td></tr>
+          <tr><td class="mono">9</td><td class="mono">INVISIBLE_CHARS</td><td>Output containing zero-width, bidi-override, or Unicode-tag characters.</td></tr>
+          <tr><td class="mono">10</td><td class="mono">ENCODED_PAYLOAD</td><td>Base64 or HTML-entity blobs smuggling an instruction into a field.</td></tr>
+          <tr><td class="mono">11</td><td class="mono">BANNED_SUBSTRING</td><td>Known-bad strings; a title carrying a URL or raw HTML; a meta description carrying HTML.</td></tr>
+          <tr><td class="mono">12</td><td class="mono">TWO_KEY</td><td>A T3 action without two distinct valid HMAC-signed approvals.</td></tr>
+          <tr><td class="mono">13</td><td class="mono">VERTICAL_BLOCK</td><td>Content generation on a site categorised YMYL or affiliate.</td></tr>
+          <tr><td class="mono">14</td><td class="mono">OBSERVE_PERIOD</td><td>Any write while the site is inside its 7-day observe-only window.</td></tr>
+          <tr><td class="mono">15</td><td class="mono">RATE_LIMIT</td><td>A new page beyond the daily cap, or a content refresh beyond its daily cap.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fineprint">The whole monitor lives in <code>packages/actions/src/validator.ts</code>. Each check returns a stable code, which is what lets the red-team suite assert on exact rejection reasons.</p>
+
+    <!-- ========== REDTEAM ========== -->
+    <h2 id="redteam">The red team: 30 payloads, every one blocked</h2>
+    <p>The suite in <code>redteam.test.ts</code> holds <strong>exactly 30</strong> hostile actions — the count is itself asserted, so the number can't quietly drift — and every one is run through the real validator with the assertion that it does <em>not</em> pass. A single false-positive guard runs alongside them: a clean title rewrite must still succeed, so the wall isn't just "reject everything." <strong>Adding a payload that gets through is a build failure.</strong></p>
+
+    <div class="rt-grid rv">
+      <div class="rt"><span class="rt-n">01·25</span> Off-site canonical injection</div>
+      <div class="rt"><span class="rt-n">02·11</span> <code>noindex</code> / robots disallow-all</div>
+      <div class="rt"><span class="rt-n">03·04</span> Prompt injection in a title or meta</div>
+      <div class="rt"><span class="rt-n">05·19</span> Hidden-text link to a foreign domain</div>
+      <div class="rt"><span class="rt-n">06</span> Unicode tag-block smuggling</div>
+      <div class="rt"><span class="rt-n">07</span> Bidi (RLO) override</div>
+      <div class="rt"><span class="rt-n">08</span> Zero-width character split</div>
+      <div class="rt"><span class="rt-n">09</span> <code>X-AI</code> header injection</div>
+      <div class="rt"><span class="rt-n">10</span> Off-site 301 redirect</div>
+      <div class="rt"><span class="rt-n">12</span> Attacker-requested disavow</div>
+      <div class="rt"><span class="rt-n">13</span> Write to a third-party domain</div>
+      <div class="rt"><span class="rt-n">14</span> Link buying / PBN</div>
+      <div class="rt"><span class="rt-n">15</span> Cloaking on user-agent</div>
+      <div class="rt"><span class="rt-n">16</span> YMYL content generation</div>
+      <div class="rt"><span class="rt-n">17</span> Base64-encoded instruction</div>
+      <div class="rt"><span class="rt-n">18</span> HTML-entity-encoded instruction</div>
+      <div class="rt"><span class="rt-n">20</span> New-page rate-limit abuse</div>
+      <div class="rt"><span class="rt-n">21</span> Diff bomb (oversized rewrite)</div>
+      <div class="rt"><span class="rt-n">22</span> Cross-page target mismatch</div>
+      <div class="rt"><span class="rt-n">23</span> <code>javascript:</code> URL</div>
+      <div class="rt"><span class="rt-n">24</span> <code>&lt;script&gt;</code> in a title</div>
+      <div class="rt"><span class="rt-n">26</span> Injection in alt text</div>
+      <div class="rt"><span class="rt-n">27</span> JSON-LD review-rating spam</div>
+      <div class="rt"><span class="rt-n">28</span> Attacker hreflang target</div>
+      <div class="rt"><span class="rt-n">29</span> Page deletion</div>
+      <div class="rt"><span class="rt-n">30</span> Write during observe period</div>
+    </div>
+
+    <!-- ========== DAEMON ========== -->
+    <h2 id="daemon">The daemon's front door is fail-closed</h2>
+    <p>The local daemon runs a web server so the dashboard can talk to it. That server is the network surface, so it is locked down by construction — there is no "insecure mode" that ships on. The full spec is <a href="https://github.com/seziro-team/agentsean/blob/main/docs/security.md" rel="noopener"><code>docs/security.md</code></a>; the middleware is <code>packages/daemon/src/security.ts</code>.</p>
+    <ul class="ticks">
+      <li><b>Loopback only.</b> Binds <code>127.0.0.1:7777</code>. Asked to bind off-loopback without auth, it throws <em>before the socket opens</em>.</li>
+      <li><b>Host allowlist.</b> Only <code>127.0.0.1</code>, <code>localhost</code>, and <code>[::1]</code> on the right port are accepted; <code>Host: evil.com</code> is a <code>403</code>. A DNS-rebinding test asserts this in CI.</li>
+      <li><b>Origin &amp; Sec-Fetch-Site.</b> A present Origin must be on the same allowlist; a <code>cross-site</code> fetch is <code>403</code>.</li>
+      <li><b>CSRF header on every mutation.</b> Writes require <code>X-Sean-Csrf: 1</code>; missing it is a <code>403</code>. GET/HEAD are exempt.</li>
+      <li><b>Token, constant-time.</b> Mutations must carry a valid token (Bearer header, <code>X-Sean-Token</code>, or cookie), compared in constant time. It's generated on first boot, at least <b>32 characters with 8 distinct</b>, and stored in the OS keyring where one exists, in an encrypted file where one does not — headless Linux, containers and CI usually have no Secret Service. Never plaintext on disk either way.</li>
+      <li><b>No CORS, ever.</b> No <code>Access-Control-Allow-*</code> headers are set; any that a plugin adds are stripped on the way out. A PR that adds CORS is treated as a security bug.</li>
+    </ul>
+
+    <!-- ========== FREEZE ========== -->
+    <h2 id="freeze">The escape hatches: freeze and revert</h2>
+    <p>Two levers give you a hard stop and a clean undo, and both are checked by the code on the paths that matter.</p>
+    <div class="grid-2" style="margin-top:26px;align-items:start">
+      <div class="card rv">
+        <h3>Freeze halts everything</h3>
+        <p style="margin-bottom:16px"><code>sean freeze</code> writes a <code>HALT</code> file under <code>~/.sean</code> (or set <code>SEAN_HALT=1</code>). The action validator and the scheduler both check it <b>before every write</b>, so a freeze stops all activity across every site at once — and because it's a file, it survives a restart. <code>sean unfreeze</code> lifts it.</p>
+        <p class="cmd" data-copy="sean freeze"><span class="p">$</span> sean freeze <button type="button">Copy</button></p>
+      </div>
+      <div class="card rv">
+        <h3>Every change is reversible</h3>
+        <p style="margin-bottom:16px">Before any write, the executor stores a before-snapshot, applies the change, then re-fetches the live page to confirm it landed — rolling back automatically if it didn't. Every applied change is recorded with its snapshot, so <code>sean revert &lt;changeId&gt;</code> restores the prior state from the ledger.</p>
+        <p class="cmd" data-copy="sean revert &lt;changeId&gt;"><span class="p">$</span> sean revert &lt;changeId&gt; <button type="button">Copy</button></p>
+      </div>
+    </div>
+
+    <!-- ========== REPORT ========== -->
+    <h2 id="report">Reporting a vulnerability</h2>
+    <p>Agent Sean holds write credentials to real websites, so security reports are taken as potential live-site incidents. <strong>Please don't open a public issue.</strong> Instead:</p>
+    <ul class="ticks">
+      <li>Email <a href="mailto:security@agentsean.dev">security@agentsean.dev</a>, or</li>
+      <li>Open a private <a href="https://github.com/seziro-team/agentsean/security/advisories/new" rel="noopener">GitHub security advisory</a>.</li>
+    </ul>
+    <p>Acknowledgement comes within <b>3 business days</b>, with a fix or public workaround targeted within <b>14 days</b> for anything that can expose the daemon or write to a site without an approval a human actually saw. The categories cared about most: anything that lets a crawled page cause a write, anything that bypasses the Host / Origin / CSRF / token checks, anything that logs or returns a decrypted secret, and anything that binds <code>0.0.0.0</code> or disables auth by default. Full policy in <a href="https://github.com/seziro-team/agentsean/blob/main/SECURITY.md" rel="noopener">SECURITY.md</a>.</p>
+
+    <div class="doc-next rv">
+      <a class="btn btn-primary" href="install.html">Install Agent Sean</a>
+      <a class="btn btn-ghost" href="index.html#how">How it works</a>
+      <a class="btn btn-ghost" href="https://github.com/seziro-team/agentsean" rel="noopener">Read the source</a>
+    </div>
   </main>
+</div>
+
 <footer>
   <div class="wrap">
     <div class="foot-bot" style="border-top:0;padding-top:0">

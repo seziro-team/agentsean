@@ -463,6 +463,72 @@
     }
   }
 
+  /* Platform tabs on the install page. With JS off, the <noscript> block shows
+     every panel and hides the bar, so this only ever runs when it can work. */
+  function tabs() {
+    var groups = document.querySelectorAll("[data-tabs]");
+    for (var g = 0; g < groups.length; g++) {
+      (function (group) {
+        var btns = group.querySelectorAll("[data-tab]");
+        var panels = group.querySelectorAll("[data-panel]");
+        function select(name) {
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute(
+              "aria-selected",
+              btns[i].getAttribute("data-tab") === name ? "true" : "false",
+            );
+          }
+          for (var j = 0; j < panels.length; j++) {
+            var match = panels[j].getAttribute("data-panel") === name;
+            if (match) panels[j].removeAttribute("hidden");
+            else panels[j].setAttribute("hidden", "");
+          }
+        }
+        for (var k = 0; k < btns.length; k++) {
+          (function (btn) {
+            btn.addEventListener("click", function () {
+              select(btn.getAttribute("data-tab"));
+            });
+          })(btns[k]);
+        }
+      })(groups[g]);
+    }
+  }
+
+  /* Highlight the table-of-contents entry for the section in view. */
+  function toc() {
+    var links = document.querySelectorAll(".toc nav a");
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var byId = {};
+    var targets = [];
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i].getAttribute("href") || "";
+      if (href.charAt(0) !== "#") continue;
+      var el = document.getElementById(href.slice(1));
+      if (el) {
+        byId[href.slice(1)] = links[i];
+        targets.push(el);
+      }
+    }
+    var current = null;
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) {
+            var link = byId[entries[k].target.id];
+            if (link && link !== current) {
+              if (current) current.classList.remove("active");
+              link.classList.add("active");
+              current = link;
+            }
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -70% 0px", threshold: 0 },
+    );
+    for (var t = 0; t < targets.length; t++) io.observe(targets[t]);
+  }
+
   function init() {
     stars();
     copy();
@@ -471,6 +537,8 @@
     demo();
     reveal();
     nav();
+    tabs();
+    toc();
     year();
   }
 
