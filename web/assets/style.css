@@ -21,7 +21,10 @@
   /* text */
   --fg: #eaf0f7;
   --fg-2: #9fadbf;
-  --fg-3: #67758a;
+  /* fg-3 nudged from #67758a so small secondary text clears WCAG AA (4.5:1) on
+     every ground, not just the large-text bar. Measured: 4.72 on bg-3 (worst),
+     5.46 on bg. fg-4 stays decorative (prompt sigils, dimmed punctuation). */
+  --fg-3: #7a8799;
   --fg-4: #46525f;
 
   /* the diff palette */
@@ -515,6 +518,11 @@ header.nav.scrolled {
   white-space: pre;
   min-height: 330px;
 }
+/* Static transcript shown only when JS is off (see the <noscript> in the head).
+   JS-on users get the typed replay in #tty instead. */
+.term-noscript {
+  display: none;
+}
 .c-p {
   color: var(--blue);
 }
@@ -921,6 +929,111 @@ td.hl {
   background: var(--green-bg);
   color: var(--green);
   border: 1px solid rgba(69, 210, 104, 0.3);
+}
+
+/* --------------------------------------------------------- evidence ladder */
+/* A→E confidence, coloured by how much the data supports the claim: green at
+   the top rung (a controlled experiment), cooling to muted at E (not yet
+   measurable). The colour IS the information, same as the diff palette. */
+.ladder {
+  display: grid;
+  gap: 10px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.rung {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: start;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-3);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+}
+.rung .lt {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 680;
+  line-height: 1;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid var(--line-2);
+  background: var(--bg-3);
+  color: var(--fg-3);
+  flex: none;
+}
+.rung .rh {
+  font-size: 1rem;
+  font-weight: 580;
+  letter-spacing: -0.014em;
+  color: var(--fg);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rung p {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.rung.a {
+  border-left-color: var(--green);
+}
+.rung.a .lt {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: rgba(69, 210, 104, 0.4);
+}
+.rung.b {
+  border-left-color: #7fc98a;
+}
+.rung.b .lt {
+  color: #7fc98a;
+}
+.rung.c {
+  border-left-color: var(--amber);
+}
+.rung.c .lt {
+  color: var(--amber);
+}
+.rung.d {
+  border-left-color: var(--line-3);
+}
+.rung.e {
+  border-left-color: var(--red);
+}
+.rung.e .lt {
+  color: var(--red);
+  background: var(--red-bg);
+  border-color: rgba(255, 106, 99, 0.32);
+}
+.cause {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.cause.yes {
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid rgba(69, 210, 104, 0.32);
+}
+.cause.no {
+  color: var(--fg-3);
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
 }
 
 /* ---------------------------------------------------------------- pricing */

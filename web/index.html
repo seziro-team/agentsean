@@ -18,6 +18,18 @@
 <meta name="twitter:image" content="https://agentsean.dev/assets/social.png"/>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="assets/style.css"/>
+<noscript>
+  <style>
+    /* The scroll-reveal (.rv) and the typing terminal are JS-driven. Without
+       JS, .rv would stay at opacity:0 and every section below the fold would be
+       invisible, and the terminal would be an empty box. Reveal everything and
+       swap the terminal for its readable transcript so the whole page — pricing
+       and install commands included — is reachable with JavaScript off. */
+    .rv { opacity: 1 !important; transform: none !important; }
+    #tty { display: none; }
+    .term-noscript { display: block; }
+  </style>
+</noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Agent Sean","applicationCategory":"DeveloperApplication","operatingSystem":"macOS, Linux, Windows","description":"Open-source, self-hosted autonomous SEO engineer that finds issues and writes reversible fixes to WordPress, Shopify, Git, or the edge.","license":"https://www.gnu.org/licenses/agpl-3.0.html","url":"https://agentsean.dev/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
@@ -72,6 +84,24 @@
       <span class="t">sean — 127.0.0.1:7777</span>
     </div>
     <pre id="tty" aria-label="Terminal showing an Agent Sean run"></pre>
+    <pre class="term-noscript" aria-label="Terminal showing an Agent Sean run"><span class="c-p">$</span> <span class="c-w">npx agentsean</span>
+
+<span class="c-d">?</span> What site should Sean work on?  <span class="c-g">https://acme.example</span>
+<span class="c-d">?</span> Where does it live?             <span class="c-g">WordPress</span>
+<span class="c-d">?</span> Connect Search Console?         <span class="c-g">yes → 127.0.0.1:7777/connect</span>
+
+<span class="c-w">Crawling acme.example</span> <span class="c-d">·············</span> 80 pages · 6s
+<span class="c-w">Running 425 checks</span>    <span class="c-d">·············</span> 14 findings · score <span class="c-a">62</span>
+
+  <span class="c-r">critical</span>  ONP.TITLE_TOO_SHORT      Homepage title is 12 characters
+  <span class="c-a">high</span>      IMG.ALT_MISSING          31 images without alt text
+  <span class="c-a">high</span>      LINK.BROKEN_INTERNAL     4 internal links return 404
+  <span class="c-d">…11 more</span>
+
+<span class="c-g">✓</span> Sean is watching. 7-day observe window, then it starts fixing.
+  <span class="c-d">Dashboard</span>       <span class="c-p">http://127.0.0.1:7777</span>
+  <span class="c-d">Survive reboot</span>  <span class="c-w">sean service install</span>
+  <span class="c-d">Stop everything</span> <span class="c-w">sean freeze</span></pre>
   </div>
 </div>
 
@@ -79,7 +109,7 @@
   <div class="proof-grid">
     <div><b>425</b><span>SEO checks</span></div>
     <div><b>30</b><span>Injections blocked</span></div>
-    <div><b>632</b><span>Tests in CI</span></div>
+    <div><b>14</b><span>Platforms it writes to</span></div>
     <div><b>$0</b><span>To self-host</span></div>
   </div>
 </div>
@@ -123,7 +153,7 @@
             <button class="btn btn-primary" id="demoApply" type="button">Let Sean fix it</button>
             <button class="btn btn-ghost" id="demoRevert" type="button" hidden>↺ Revert</button>
           </div>
-          <p class="small" style="color:var(--fg-4);margin:14px 0 0">
+          <p class="small" style="color:var(--fg-3);margin:14px 0 0">
             Every change stores a before-snapshot. Revert is one command, forever.
           </p>
         </div>
@@ -258,6 +288,54 @@
       </table>
     </div>
     <p class="center" style="margin-top:24px"><a href="https://github.com/seziro-team/agentsean/issues/new?template=03-adapter.yml" rel="noopener">Request an adapter →</a> <span class="muted small">the interface is six methods</span></p>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">The honesty ladder</span>
+      <h2>It grades its own confidence, and only the top rung may say "caused"</h2>
+      <p>Every result Sean reports carries an evidence tier from A to E. The tier is assigned by a formula, not chosen — and the code will not attach a causal claim to anything below tier&nbsp;A.</p>
+    </div>
+    <div class="ladder rv">
+      <div class="rung a">
+        <span class="lt">A</span>
+        <div class="rc">
+          <div class="rh">Controlled experiment <span class="cause yes">may claim causation</span></div>
+          <p>A pre-registered split-cohort test with a matched control and enough traffic to reach significance. The only rung permitted to say a change <em>caused</em> a result.</p>
+        </div>
+      </div>
+      <div class="rung b">
+        <span class="lt">B</span>
+        <div class="rc">
+          <div class="rh">Matched-cohort observational</div>
+          <p>A treated group measured against a comparable untreated one, where the effect clears the minimum detectable effect. Strong, but not a controlled experiment.</p>
+        </div>
+      </div>
+      <div class="rung c">
+        <span class="lt">C</span>
+        <div class="rc">
+          <div class="rh">Pre / post with a Google-update join</div>
+          <p>Before-and-after on the same pages, annotated against known Google updates so a ranking shift isn't quietly credited to Sean when the algorithm moved.</p>
+        </div>
+      </div>
+      <div class="rung d">
+        <span class="lt">D</span>
+        <div class="rc">
+          <div class="rh">Directional signal only</div>
+          <p>Movement in the right direction, but below the minimum detectable effect. Reported as a hint, never as proof.</p>
+        </div>
+      </div>
+      <div class="rung e">
+        <span class="lt">E</span>
+        <div class="rc">
+          <div class="rh">Applied, not yet measurable <span class="cause no">no causal claim</span></div>
+          <p>The change is live and reverted-able, but this site's traffic is too low to measure an effect. Most small sites land here — and Sean says so plainly instead of inventing a number. This is the default.</p>
+        </div>
+      </div>
+    </div>
+    <p class="center small muted" style="margin-top:26px">Per-URL click attribution is refused outright — clicks are only ever attributed to a cohort, never a single page. A tool that promises more than the data supports is the one people stop trusting.</p>
   </div>
 </section>
 
