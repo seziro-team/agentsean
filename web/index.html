@@ -6,7 +6,7 @@
 <title>Agent Sean — the SEO engineer that never sleeps</title>
 <meta name="description" content="Open-source, self-hosted autonomous SEO agent. Finds issues across 425 checks and actually fixes them — in WordPress, Shopify, Git, or at the edge — as a diff you can read and revert."/>
 <link rel="canonical" href="https://agentsean.dev/"/>
-<meta name="theme-color" content="#07090d"/>
+<meta name="theme-color" content="#06080c"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://agentsean.dev/"/>
 <meta property="og:title" content="Agent Sean — the SEO engineer that never sleeps"/>
@@ -20,12 +20,19 @@
 <link rel="stylesheet" href="assets/style.css"/>
 <noscript>
   <style>
-    /* The scroll-reveal (.rv) and the typing terminal are JS-driven. Without
-       JS, .rv would stay at opacity:0 and every section below the fold would be
-       invisible, and the terminal would be an empty box. Reveal everything and
-       swap the terminal for its readable transcript so the whole page — pricing
-       and install commands included — is reachable with JavaScript off. */
+    /* The scroll-reveal (.rv), the hero diff card, and the typing terminal are
+       JS-driven. With JS off, .rv would stay at opacity:0 and hide everything
+       below the fold, the hero diff would sit half-applied, and the terminal
+       would be an empty box. So: reveal everything, show the diff in its
+       already-applied state, and swap the terminal for its readable transcript.
+       The whole page — pricing and install commands included — stays reachable. */
     .rv { opacity: 1 !important; transform: none !important; }
+    .hd-line { opacity: 1 !important; transform: none !important; }
+    .hd-meta { opacity: 1 !important; }
+    .hd-actions, .hd-status { display: none; }
+    /* the live-state pill can't reflect anything real without JS — hide it
+       rather than leave it reading "idle" beside an applied diff. */
+    .hd-head .pill { display: none; }
     #tty { display: none; }
     .term-noscript { display: block; }
   </style>
@@ -35,6 +42,8 @@
 </script>
 </head>
 <body>
+
+<a class="skip" href="#how">Skip to content</a>
 
 <header class="nav" id="nav">
   <div class="nav-in">
@@ -59,51 +68,62 @@
   </div>
 </header>
 
-<section class="hero center">
+<section class="hero">
   <div class="wrap">
-    <span class="eyebrow"><span class="tag">v1.0</span> AGPL-3.0 · runs on your machine · BYOK</span>
-    <h1>Every SEO tool tells you<br/>what's wrong.<br/><span class="gradient">Agent Sean fixes it.</span></h1>
-    <p class="lead">
-      An open-source, self-hosted autonomous SEO engineer. It crawls your site,
-      connects to Search Console, finds what's broken across 425 checks — then
-      writes the fix into WordPress, Shopify, your Git repo, or the edge.
-    </p>
-    <div class="cta-row">
-      <span class="cmd" data-copy="npx agentsean"><span class="p">$</span> npx agentsean <button type="button">Copy</button></span>
-      <a class="btn btn-ghost btn-lg" href="https://github.com/seziro-team/agentsean" rel="noopener">View source</a>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="tag">v1.0</span> AGPL-3.0 · runs on your machine · BYOK</span>
+        <h1>Every SEO tool tells you what's wrong. <span class="gradient">Agent Sean fixes it.</span></h1>
+        <p class="lead">
+          An open-source, self-hosted autonomous SEO engineer. It crawls your
+          site, connects to Search Console, finds what's broken across 425
+          checks — then writes the fix into WordPress, Shopify, your Git repo,
+          or the edge. As a diff you can read and revert.
+        </p>
+        <div class="cta-row">
+          <span class="cmd" data-copy="npx agentsean"><span class="p">$</span> npx agentsean <button type="button">Copy</button></span>
+          <a class="btn btn-ghost btn-lg" href="https://github.com/seziro-team/agentsean" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            View source
+          </a>
+        </div>
+        <p class="hero-note">Runs once via <code>npx</code> — nothing installed. For a permanent <code>sean</code> command: <code>npm i -g agentsean</code>.</p>
+        <div class="trust">
+          <span><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.5 3.5 6 11 2.5 7.5 1 9l5 5 9-9z"/></svg> Free forever, self-hosted</span>
+          <span><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.5 3.5 6 11 2.5 7.5 1 9l5 5 9-9z"/></svg> No account, no card</span>
+          <span><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.5 3.5 6 11 2.5 7.5 1 9l5 5 9-9z"/></svg> No telemetry until you opt in</span>
+        </div>
+      </div>
+
+      <!-- The thesis, shown: a live diff Sean applies, verifies, and lets you
+           revert. It self-plays on load, then becomes interactive. -->
+      <div class="hero-diff rv">
+        <div class="hd-badge" id="hdBadge" hidden>evidence <b>tier E</b> · applied</div>
+        <div class="hd-card">
+          <div class="hd-head">
+            <span class="fname">acme.example / &lt;head&gt;</span>
+            <span class="pill" id="hdPill"><span class="pip"></span> <span id="hdPillText">idle</span></span>
+          </div>
+          <div class="hd-body">
+            <div class="hd-finding">
+              <span class="sev crit">critical</span>
+              <span class="fid">ONP.TITLE_TOO_SHORT</span>
+              <span class="ftext">Homepage title is 12 characters</span>
+            </div>
+            <div class="hd-line del pending" id="hdDel"><span class="sign">−</span><span>&lt;title&gt;Home&lt;/title&gt;</span></div>
+            <div class="hd-line add pending" id="hdAdd"><span class="sign">+</span><span>&lt;title&gt;Acme HVAC repairs in Austin, TX&lt;/title&gt;</span></div>
+            <div class="hd-meta" id="hdMetaWrap"><span id="hdMeta"></span></div>
+            <div class="hd-actions">
+              <button class="btn btn-primary btn-sm" id="hdApply" type="button">Let Sean fix it</button>
+              <button class="btn btn-ghost btn-sm" id="hdRevert" type="button" hidden>↺ Revert</button>
+            </div>
+            <div class="hd-status" id="hdStatus"></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="hero-note">Runs once via <code>npx</code> — nothing installed. For a permanent <code>sean</code> command: <code>npm i -g agentsean</code>.</p>
-    <p class="hero-note" style="margin-top:6px">Free forever, self-hosted. No account, no credit card, no telemetry until you say yes.</p>
   </div>
 </section>
-
-<div class="wrap" style="margin-bottom:92px">
-  <div class="term rv">
-    <div class="term-bar">
-      <i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>
-      <span class="t">sean — 127.0.0.1:7777</span>
-    </div>
-    <pre id="tty" aria-label="Terminal showing an Agent Sean run"></pre>
-    <pre class="term-noscript" aria-label="Terminal showing an Agent Sean run"><span class="c-p">$</span> <span class="c-w">npx agentsean</span>
-
-<span class="c-d">?</span> What site should Sean work on?  <span class="c-g">https://acme.example</span>
-<span class="c-d">?</span> Where does it live?             <span class="c-g">WordPress</span>
-<span class="c-d">?</span> Connect Search Console?         <span class="c-g">yes → 127.0.0.1:7777/connect</span>
-
-<span class="c-w">Crawling acme.example</span> <span class="c-d">·············</span> 80 pages · 6s
-<span class="c-w">Running 425 checks</span>    <span class="c-d">·············</span> 14 findings · score <span class="c-a">62</span>
-
-  <span class="c-r">critical</span>  ONP.TITLE_TOO_SHORT      Homepage title is 12 characters
-  <span class="c-a">high</span>      IMG.ALT_MISSING          31 images without alt text
-  <span class="c-a">high</span>      LINK.BROKEN_INTERNAL     4 internal links return 404
-  <span class="c-d">…11 more</span>
-
-<span class="c-g">✓</span> Sean is watching. 7-day observe window, then it starts fixing.
-  <span class="c-d">Dashboard</span>       <span class="c-p">http://127.0.0.1:7777</span>
-  <span class="c-d">Survive reboot</span>  <span class="c-w">sean service install</span>
-  <span class="c-d">Stop everything</span> <span class="c-w">sean freeze</span></pre>
-  </div>
-</div>
 
 <div class="proof">
   <div class="proof-grid">
@@ -119,7 +139,72 @@
     <div class="sec-head rv">
       <span class="kicker">The whole product in one interaction</span>
       <h2>It doesn't stop at the finding</h2>
-      <p>Reports are cheap. The gap in every SEO tool is that a human still has to go and do the work. Press the button.</p>
+      <p>Reports are cheap. The gap in every SEO tool is that a human still has to go and do the work. Here is a real onboarding run — it types itself out.</p>
+    </div>
+
+    <div class="wrap" style="padding:0;max-width:920px">
+      <div class="term rv">
+        <div class="term-bar">
+          <i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>
+          <span class="t">sean — 127.0.0.1:7777</span>
+        </div>
+        <pre id="tty" aria-label="Terminal showing an Agent Sean run"></pre>
+        <pre class="term-noscript" aria-label="Terminal showing an Agent Sean run"><span class="c-p">$</span> <span class="c-w">npx agentsean</span>
+
+<span class="c-d">?</span> What site should Sean work on?  <span class="c-g">https://acme.example</span>
+<span class="c-d">?</span> Where does it live?             <span class="c-g">WordPress</span>
+<span class="c-d">?</span> Connect Search Console?         <span class="c-g">yes → 127.0.0.1:7777/connect</span>
+
+<span class="c-w">Crawling acme.example</span> <span class="c-d">·············</span> 80 pages · 6s
+<span class="c-w">Running 425 checks</span>    <span class="c-d">·············</span> 14 findings · score <span class="c-a">62</span>
+
+  <span class="c-r">critical</span>  RESP.4XX_INTERNAL    3 pages return 404
+  <span class="c-a">medium</span>    IMG.MISSING_ALT_ATTR 31 images without alt text
+  <span class="c-a">medium</span>    LINK.BROKEN_INTERNAL 4 internal links return 404
+  <span class="c-d">…11 more</span>
+
+<span class="c-g">✓</span> Sean is watching. 7-day observe window, then it starts fixing.
+  <span class="c-d">Dashboard</span>       <span class="c-p">http://127.0.0.1:7777</span>
+  <span class="c-d">Survive reboot</span>  <span class="c-w">sean service install</span>
+  <span class="c-d">Stop everything</span> <span class="c-w">sean freeze</span></pre>
+      </div>
+    </div>
+
+    <div class="diffcols">
+      <div class="dcol add rv">
+        <div class="dcol-h"><span class="g">+</span> What it does after you walk away</div>
+        <ul class="ticks">
+          <li>Crawls weekly and after every deploy</li>
+          <li><b>Fixes</b> titles, meta, headings, alt text, broken links, sitemaps, schema</li>
+          <li>Refreshes decaying content — capped at 2 refreshes and 2 new pages per day</li>
+          <li>Queues anything dangerous for one click</li>
+          <li>Tracks ranks, brand mentions, and AI citation share</li>
+          <li>Reports weekly with an honest evidence tier on every claim</li>
+          <li>Stops instantly and everywhere on <code>sean freeze</code></li>
+        </ul>
+      </div>
+      <div class="dcol del rv">
+        <div class="dcol-h"><span class="g">−</span> What it will never do</div>
+        <ul class="ticks crosses">
+          <li>Scrape Google</li>
+          <li>Serve different HTML to crawlers than to people</li>
+          <li>Buy links, build PBNs, or hide text</li>
+          <li>Write to a domain that isn't yours</li>
+          <li>Generate content for YMYL or affiliate sites</li>
+          <li>Spin up unbounded city × service pages</li>
+          <li>Claim causation it cannot prove</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="try">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">Press the button</span>
+      <h2>The one thing no report can do</h2>
+      <p>A finding, and the fix for it, side by side. Apply it and watch Sean snapshot, write, and verify against the live page. Then take it back — the snapshot is always there.</p>
     </div>
 
     <div class="demo rv">
@@ -159,37 +244,10 @@
         </div>
       </div>
     </div>
-
-    <div class="grid-2" style="margin-top:52px">
-      <div class="rv">
-        <h3 style="font-size:1.28rem;margin-bottom:18px">What it does after you walk away</h3>
-        <ul class="ticks">
-          <li>Crawls weekly and after every deploy</li>
-          <li><b>Fixes</b> titles, meta, headings, alt text, broken links, sitemaps, schema</li>
-          <li>Refreshes decaying content — capped at 2 refreshes and 2 new pages per day</li>
-          <li>Queues anything dangerous for one click</li>
-          <li>Tracks ranks, brand mentions, and AI citation share</li>
-          <li>Reports weekly with an honest evidence tier on every claim</li>
-          <li>Stops instantly and everywhere on <code>sean freeze</code></li>
-        </ul>
-      </div>
-      <div class="rv">
-        <h3 style="font-size:1.28rem;margin-bottom:18px">What it will never do</h3>
-        <ul class="ticks crosses">
-          <li>Scrape Google</li>
-          <li>Serve different HTML to crawlers than to people</li>
-          <li>Buy links, build PBNs, or hide text</li>
-          <li>Write to a domain that isn't yours</li>
-          <li>Generate content for YMYL or affiliate sites</li>
-          <li>Spin up unbounded city × service pages</li>
-          <li>Claim causation it cannot prove</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
-<section class="alt">
+<section>
   <div class="wrap">
     <div class="sec-head rv">
       <span class="kicker">Why not a proxy tool</span>
@@ -213,7 +271,7 @@
   </div>
 </section>
 
-<section id="security">
+<section id="security" class="alt">
   <div class="wrap">
     <div class="sec-head rv">
       <span class="kicker">Threat model</span>
@@ -248,17 +306,17 @@
 
     <div class="grid-3" style="margin-top:44px">
       <div class="card rv">
-        <div class="ic">01</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
         <h3>The first-appearance rule</h3>
         <p>No action may contain a URL or domain whose first sighting was inside third-party content. One deterministic rule that kills canonical injection, attacker redirects, hreflang poisoning and disavow attacks — without asking a model to be clever.</p>
       </div>
       <div class="card rv">
-        <div class="ic">02</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
         <h3>Fail-closed by construction</h3>
         <p>Binds <code>127.0.0.1:7777</code>. Host-header allowlist, Origin and <code>Sec-Fetch-Site</code> checks, CSRF header, constant-time token compare, CORS stripped. Auth cannot be disabled; binding off-loopback without it throws before the socket opens.</p>
       </div>
       <div class="card rv">
-        <div class="ic">03</div>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>
         <h3>30 payloads, all blocked</h3>
         <p>Hidden text, Unicode tag blocks, bidi overrides, base64 and HTML-entity payloads, <code>X-AI</code> header injection, off-site canonicals, JSON-LD hijacks. Adding one that gets through is a build failure.</p>
       </div>
@@ -267,7 +325,7 @@
   </div>
 </section>
 
-<section id="surfaces" class="alt">
+<section id="surfaces">
   <div class="wrap">
     <div class="sec-head rv">
       <span class="kicker">Where it writes</span>
@@ -291,7 +349,7 @@
   </div>
 </section>
 
-<section id="evidence">
+<section id="evidence" class="alt">
   <div class="wrap">
     <div class="sec-head rv">
       <span class="kicker">The honesty ladder</span>
@@ -420,7 +478,7 @@
   </div>
 </section>
 
-<section class="alt">
+<section>
   <div class="wrap">
     <div class="sec-head rv">
       <span class="kicker">Questions</span>
@@ -440,13 +498,13 @@
 <section id="start">
   <div class="wrap">
     <div class="cta-box rv">
-      <span class="kicker">Ninety seconds</span>
+      <span class="kicker" style="justify-content:center">Ninety seconds</span>
       <h2 style="margin-bottom:14px">Start with the free one</h2>
       <p class="lead" style="margin:0 auto 30px">
         <code>sean audit</code> runs the full 425-check audit with no daemon, no
         account, and no credentials. If it isn't useful, you've lost a minute and a half.
       </p>
-      <div class="cta-row">
+      <div class="cta-row" style="justify-content:center">
         <span class="cmd" data-copy="npx agentsean audit https://your-site.com"><span class="p">$</span> npx agentsean audit https://your-site.com <button type="button">Copy</button></span>
       </div>
       <p class="small muted" style="margin-top:22px">
@@ -457,10 +515,10 @@
   </div>
 </section>
 
-<section style="padding-top:0">
+<section class="tight">
   <div class="wrap grid-2">
     <div class="rv">
-      <h3 style="font-size:1.3rem;margin-bottom:12px">Prior art</h3>
+      <h3 style="margin-bottom:12px">Prior art</h3>
       <p class="muted" style="margin:0">
         <a href="https://github.com/every-app/open-seo" rel="noopener">OpenSEO</a> proved an
         open-source SEO platform could work. Agent Sean is the execution layer that writes
@@ -469,7 +527,7 @@
       </p>
     </div>
     <div class="rv">
-      <h3 style="font-size:1.3rem;margin-bottom:12px">Open, and staying open</h3>
+      <h3 style="margin-bottom:12px">Open, and staying open</h3>
       <p class="muted" style="margin:0">
         The 66,000-word engineering plan this was built from and the 3&nbsp;MB of
         fact-checked research behind it are both published in the repository. The

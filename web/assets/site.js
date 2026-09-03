@@ -1,5 +1,8 @@
 /* Agent Sean — agentsean.dev
-   No dependencies. The only network call is the GitHub star count. */
+   No dependencies. The only network call is the GitHub star count.
+   Everything degrades: no JS at all still yields a readable page (see the
+   <noscript> block), and prefers-reduced-motion collapses every animation to
+   its finished state without losing information. */
 (function () {
   "use strict";
 
@@ -8,6 +11,26 @@
   var STAR_TTL = 6 * 60 * 60 * 1000; // 6h
   var reduce =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function onIntersect(el, cb, opts) {
+    if (!("IntersectionObserver" in window)) {
+      cb();
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) {
+            cb();
+            io.disconnect();
+            return;
+          }
+        }
+      },
+      opts || { threshold: 0.3 },
+    );
+    io.observe(el);
+  }
 
   /* ---------------------------------------------------- live star count ----
      Unauthenticated api.github.com allows 60 req/hr per IP, so paint from
@@ -107,6 +130,122 @@
     }
   }
 
+  /* ------------------------------------------------ hero diff (the thesis) --
+     Self-plays once when it scrolls into view: snapshot → write Sean's fix →
+     verify against the live page → reveal the evidence tier, then hand control
+     to the visitor with a Revert button. It is the product's argument, made
+     pressable. Reduced-motion jumps straight to the applied+interactive state.
+     With JS off, the <noscript> CSS shows the applied state statically. */
+  function heroDiff() {
+    var card = document.querySelector(".hero-diff");
+    if (!card) return;
+    var del = document.getElementById("hdDel");
+    var add = document.getElementById("hdAdd");
+    var meta = document.getElementById("hdMeta");
+    var badge = document.getElementById("hdBadge");
+    var pill = document.getElementById("hdPill");
+    var pillText = document.getElementById("hdPillText");
+    var status = document.getElementById("hdStatus");
+    var apply = document.getElementById("hdApply");
+    var revert = document.getElementById("hdRevert");
+    if (!del || !add || !apply || !revert) return;
+
+    var busy = false;
+    var wait = function (ms) {
+      return new Promise(function (r) {
+        setTimeout(r, reduce ? 0 : ms);
+      });
+    };
+    var live = function (on, text) {
+      if (pill) pill.classList.toggle("live", !!on);
+      if (pillText) pillText.textContent = text;
+    };
+    var say = function (t) {
+      if (status) status.textContent = t;
+    };
+
+    var run = function () {
+      if (busy) return Promise.resolve();
+      busy = true;
+      apply.disabled = true;
+      live(true, "snapshotting");
+      say("Storing a before-snapshot…");
+      return wait(560)
+        .then(function () {
+          del.classList.remove("pending");
+          live(true, "writing");
+          say("Writing to WordPress post meta…");
+          return wait(620);
+        })
+        .then(function () {
+          add.classList.remove("pending");
+          live(true, "verifying");
+          say("Re-fetching the live page to verify…");
+          return wait(760);
+        })
+        .then(function () {
+          if (meta)
+            meta.innerHTML =
+              '<span class="ok">✓ verified</span> · live HTML now serves the new title';
+          if (badge) badge.hidden = false;
+          live(true, "verified");
+          say("");
+          apply.hidden = true;
+          revert.hidden = false;
+          apply.disabled = false;
+          busy = false;
+        });
+    };
+
+    var reset = function () {
+      if (busy) return;
+      busy = true;
+      live(true, "reverting");
+      say("Restoring the snapshot…");
+      if (meta) meta.innerHTML = "";
+      if (badge) badge.hidden = true;
+      wait(480)
+        .then(function () {
+          add.classList.add("pending");
+          return wait(360);
+        })
+        .then(function () {
+          del.classList.add("pending");
+          live(false, "reverted · snapshot restored");
+          say("The title is exactly as it was. Nothing left behind.");
+          revert.hidden = true;
+          apply.hidden = false;
+          busy = false;
+          return wait(2000);
+        })
+        .then(function () {
+          if (apply.hidden === false && del.classList.contains("pending")) {
+            live(false, "idle");
+            say("");
+          }
+        });
+    };
+
+    apply.addEventListener("click", run);
+    revert.addEventListener("click", reset);
+
+    if (reduce) {
+      // Show the finished, interactive state without animating.
+      del.classList.remove("pending");
+      add.classList.remove("pending");
+      if (meta)
+        meta.innerHTML =
+          '<span class="ok">✓ verified</span> · live HTML now serves the new title';
+      if (badge) badge.hidden = false;
+      live(true, "verified");
+      apply.hidden = true;
+      revert.hidden = false;
+      return;
+    }
+    // Auto-play the first apply when the card enters the viewport.
+    onIntersect(card, run, { threshold: 0.45 });
+  }
+
   /* ---------------------------------------------------- terminal replay ----
      Types out a real onboarding run. Content is identical whether or not the
      animation plays, so reduced-motion users get the same information. */
@@ -136,15 +275,15 @@
     },
     { t: "", d: 120 },
     {
-      t: '  <span class="c-r">critical</span>  ONP.TITLE_TOO_SHORT      Homepage title is 12 characters',
+      t: '  <span class="c-r">critical</span>  RESP.4XX_INTERNAL    3 pages return 404',
       d: 130,
     },
     {
-      t: '  <span class="c-a">high</span>      IMG.ALT_MISSING          31 images without alt text',
+      t: '  <span class="c-a">medium</span>    IMG.MISSING_ALT_ATTR 31 images without alt text',
       d: 130,
     },
     {
-      t: '  <span class="c-a">high</span>      LINK.BROKEN_INTERNAL     4 internal links return 404',
+      t: '  <span class="c-a">medium</span>    LINK.BROKEN_INTERNAL 4 internal links return 404',
       d: 130,
     },
     { t: '  <span class="c-d">…11 more</span>', d: 260 },
@@ -192,24 +331,13 @@
       };
       step();
     };
-    if (!("IntersectionObserver" in window)) return run();
-    var io = new IntersectionObserver(
-      function (entries) {
-        for (var k = 0; k < entries.length; k++) {
-          if (entries[k].isIntersecting) {
-            run();
-            io.disconnect();
-          }
-        }
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
+    onIntersect(el, run, { threshold: 0.25 });
   }
 
   /* ------------------------------------------------------- the diff demo ---
-     The product's whole thesis, made pressable: apply a fix, watch the diff
-     land, then revert it. Purely local — nothing is sent anywhere. */
+     The product's whole thesis, made pressable a second time (lower in the
+     page, with the finding fully described): apply a fix, watch the diff land,
+     then revert it. Purely local — nothing is sent anywhere. */
   function demo() {
     var apply = document.getElementById("demoApply");
     var revert = document.getElementById("demoRevert");
@@ -283,7 +411,10 @@
     });
   }
 
-  /* ------------------------------------------------------- scroll reveal -- */
+  /* ------------------------------------------------------- scroll reveal --
+     Adds .in as elements enter the viewport. Siblings inside a common parent
+     get a small stagger via a --d delay so a row of cards cascades instead of
+     snapping in together. */
   function reveal() {
     var els = document.querySelectorAll(".rv");
     if (!els.length) return;
@@ -295,8 +426,17 @@
       function (entries) {
         for (var k = 0; k < entries.length; k++) {
           if (entries[k].isIntersecting) {
-            entries[k].target.classList.add("in");
-            io.unobserve(entries[k].target);
+            var el = entries[k].target;
+            // Stagger against same-parent .rv siblings already queued this frame.
+            var sibs = el.parentElement
+              ? el.parentElement.querySelectorAll(":scope > .rv")
+              : [el];
+            var idx = Array.prototype.indexOf.call(sibs, el);
+            if (idx > 0 && sibs.length > 1 && sibs.length <= 8) {
+              el.style.setProperty("--d", (idx * 0.07).toFixed(2) + "s");
+            }
+            el.classList.add("in");
+            io.unobserve(el);
           }
         }
       },
@@ -326,6 +466,7 @@
   function init() {
     stars();
     copy();
+    heroDiff();
     terminal();
     demo();
     reveal();
