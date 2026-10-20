@@ -54,7 +54,7 @@
     "fastify": "5.12.1"
   },
   "devDependencies": {
-    "typescript": "~5.9.3",
+    "typescript": "~7.0.2",
     "vitest": "^4.1.11",
     "@agentsean/ee": "workspace:*"
   },
