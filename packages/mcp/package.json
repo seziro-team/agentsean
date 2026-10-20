@@ -26,7 +26,7 @@
     "@agentsean/measure": "workspace:*",
     "@agentsean/surfaces": "workspace:*",
     "@agentsean/providers": "workspace:*",
-    "drizzle-orm": "0.45.2"
+    "drizzle-orm": "0.45.4"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
