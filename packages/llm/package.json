@@ -23,8 +23,8 @@
   "dependencies": {
     "@agentsean/credentials": "workspace:*",
     "@agentsean/db": "workspace:*",
-    "ai": "7.0.87",
-    "drizzle-orm": "0.45.2"
+    "ai": "7.0.146",
+    "drizzle-orm": "0.45.4"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
