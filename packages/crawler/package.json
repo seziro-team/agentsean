@@ -28,7 +28,7 @@
     "linkedom": "0.18.13",
     "parse5": "8.0.1",
     "saxes": "6.0.0",
-    "undici": "8.10.1"
+    "undici": "8.12.2"
   },
   "optionalDependencies": {
     "playwright": "1.62.1"
